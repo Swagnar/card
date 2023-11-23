@@ -1,0 +1,42 @@
+.navbar {
+  background-color: #fff;
+  border-bottom: 1px solid #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  margin-left: .5rem;
+}
+
+.navbar .item button {
+  background-color: #fff;
+  border: none;
+  font: inherit;
+  padding: 7px 10px;
+  height: 38px;
+}
+
+.navbar .item .logo {
+  position: relative;
+  height: 38px;
+  width: 48px;
+}
+
+.navbar .item .logo::before {
+  background: url(../static/tux.png);
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 30px;
+  width: 30px;
+}
