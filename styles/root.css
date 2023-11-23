@@ -15,7 +15,7 @@ a  { text-decoration: none }
 
 
 
-.wrapper {
+#wrapper {
   width: 100%;
   height: 100%;
   display: flex;
@@ -23,7 +23,7 @@ a  { text-decoration: none }
   align-items: center;
 }
 
-.desktop {
+#desktop {
   width: 800px;
   height: 600px;
   background: url(../static/bg.png) 0 0 repeat;
@@ -31,5 +31,39 @@ a  { text-decoration: none }
   border-radius: .65rem;
   overflow: hidden;
   margin-top: 2.5rem;
+}
+
+#dialog {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 2px solid #000;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  box-shadow: 0 0 0 4px #fff;
+}
+#dialog-head {
+  display: flex;
+  justify-content: flex-end;
+}
+#dialog-head button {
+  border: none;
+  padding: 0.25rem;
+  border-bottom: 2px solid black;
+  border-left: 2px solid black;
+  width: 1rem;
+}
+#dialog-body {
+  padding: 0 3rem 1rem 3rem;
+}
+#dialog-body p {
+  margin: 0;
+}
+
+.dialog-hidden {
+  display: none;
+}
+.dialog-open {
+  display: block;
 }
 

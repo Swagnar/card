@@ -28,6 +28,7 @@
 .drop li a {
   display: block;
   color: black;
+  padding-left: .5rem;
 }
 .drop li a[disabled] {
   color: #999;
@@ -44,7 +45,7 @@
   filter: invert();
 }
 
-.navbar div.active {
+div.navbar div.d-flex div.active {
   background-color: black;
   color: white;
 } 
@@ -60,7 +61,9 @@
 }
 
 .navbar .item button {
-  background-color: #fff;
+  /* background-color: #fff; */
+  background-color: transparent;
+  color: inherit;
   border: none;
   font: inherit;
   padding: 7px 10px;
