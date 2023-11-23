@@ -10,10 +10,53 @@
   width: 100%;
 }
 
+.drop {
+  background-color: #fff;
+  border: 1px solid black;
+  border-top: none;
+  position: absolute;
+  left: 0;
+  top: calc(100% + 1px);
+  width: 160px;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  visibility: hidden;
+  list-style: none;
+}
+
+.drop li a {
+  display: block;
+  color: black;
+}
+.drop li a[disabled] {
+  color: #999;
+}
+.drop li a:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.navbar .active button.logo {
+  background-color: #000;
+}
+.navbar .active button.logo::before {
+  filter: invert();
+}
+
+.navbar div.active {
+  background-color: black;
+  color: white;
+} 
+
 .navbar-left {
   display: flex;
   align-items: center;
   margin-left: .5rem;
+}
+
+.navbar .item {
+  position: relative;
 }
 
 .navbar .item button {

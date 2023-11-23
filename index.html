@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=VT323">
   <link rel="stylesheet" href="styles/root.css">
   <link rel="stylesheet" href="styles/navbar.css">
   <title>Time Machine</title>
@@ -14,12 +15,29 @@
         <div class="navbar-left">
           <div class="item submenu">
             <button class="logo"></button>
-            <ul class="drop"></ul>
+            <ul class="drop">
+              <li>
+                <a href="#" id="about">About</a>
+              </li>
+              <li>
+                <a href="#" id="battery">Battery</a>
+              </li>
+            </ul>
           </div>
           <div class="d-flex">
             <div class="item submenu">
               <button>File</button>
-              <ul class="drop"></ul>
+              <ul class="drop">
+                <li>
+                  <a href="#" id="new" disabled>New</a>
+                </li>
+                <li>
+                  <a href="#" id="open" disabled>Open</a>
+                </li>
+                <li>
+                  <a href="#">Share</a>
+                </li>
+              </ul>
             </div>
             <div class="item submenu">
               <button>Edit</button>
