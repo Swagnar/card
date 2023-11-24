@@ -8,6 +8,7 @@
   left: 0;
   top: 0;
   width: 100%;
+  font-weight: bold;
 }
 
 .drop {
@@ -23,6 +24,7 @@
   opacity: 0;
   visibility: hidden;
   list-style: none;
+  font-weight: normal;
 }
 
 .drop li a {
@@ -54,6 +56,10 @@ div.navbar div.d-flex div.active {
   display: flex;
   align-items: center;
   margin-left: .5rem;
+}
+
+.navbar-right .d-flex>.item:first-of-type{
+  margin-right: 2rem;
 }
 
 .navbar .item {
