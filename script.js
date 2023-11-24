@@ -1,13 +1,81 @@
 const dialogContents = {
-  about: "<p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p><p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>"
+  about: "<p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p><p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>",
+  battery: "<p>Battery power provided by YEG Inc. YEG Inc. is not loable for any burns. explosions or airborne carcinogens caused by this battery pack. Battery pack is single use; <u>Do not</u> attempt to recycle</p>"
 }
 
 
 
 
+
+function startBios() {
+  var bios = document.getElementById('bios')
+  bios.innerHTML = "<p>YEG_OS</p><p>Copyright (c) 2023,2024. All Rights Reserved</p><p>BIOS Version: 202347 Release 1</p><br>"
+
+
+  function appendToBios(text, lineBreak) {
+    let p = document.createElement('p')
+    p.textContent = text
+    bios.appendChild(p)
+
+    if(lineBreak) {
+      let br = document.createElement('br')
+      bios.appendChild(br)
+    }
+  }
+
+  function addClickListener() {
+    bios.addEventListener('click', () => {
+      bios.style.display = 'none'
+    })
+  }
+
+  let biosContents = [
+    "Battery: 95% OK",
+    "Memory Test: 32M OK",
+    "Initializing USB Controllers ... Done",
+    "Press Any Key to boot system"
+  ]
+
+  for(let i = 0; i < biosContents.length; i++) {
+    setTimeout(() => {
+      if(i === 2) {
+        appendToBios(biosContents[i], true)
+      } else {
+        appendToBios(biosContents[i])
+      }
+
+      if(i == biosContents.length - 1) {
+        addClickListener()
+      }
+    }, 500 * (i + 1))
+  }
+}
+
+function showDialog(content) {
+  var dialog = document.getElementById('dialog')
+  var dialogBody = document.getElementById('dialog-body')
+
+  if(!dialog.classList.contains('dialog-open')) {
+    dialog.classList.remove('dialog-hidden')
+    dialog.classList.add('dialog-open')
+  }
+
+  dialogBody.innerHTML = content
+}
+
+function closeDialog() {
+  var dialog = document.getElementById('dialog')
+
+  dialog.classList.remove('dialog-open')
+  dialog.classList.add('dialog-hidden')
+}
+
 window.onload = function() {
-  const dialog = document.getElementById('dialog')
-  const dialogBody = document.getElementById('dialog-body')
+
+  startBios()
+
+
+
 
   const datetime = document.getElementById('datetime')
 
@@ -39,17 +107,17 @@ window.onload = function() {
   });
 
   document.getElementById('dialog-close-btn').addEventListener('click', () => {
-    dialog.classList.remove('dialog-open')
-    dialog.classList.add('dialog-hidden')
+    closeDialog()
+    
+
   })
 
   document.getElementById('about').addEventListener('click', () => {
-    if(!dialog.classList.contains('dialog-open')) {
-      dialog.classList.remove('dialog-hidden')
-      dialog.classList.add('dialog-open')
-    }
-    dialogBody.innerHTML = dialogContents.about
+    showDialog(dialogContents.about)
   }) 
+  document.getElementById('battery').addEventListener('click', () => {
+    showDialog(dialogContents.battery)
+  })
 
 
 
@@ -58,14 +126,15 @@ window.onload = function() {
   function update_clock() {
     var now = new Date()
     var month = now.toLocaleString('en-us', {month: 'long'})
-    
+    var day = now.getDate()
+
     var hours = now.getHours()
     var minutes = now.getMinutes()
 
     hours = hours < 10 ? '0' + hours : hours
     minutes = minutes < 10 ? '0' + minutes : minutes
     
-    datetime.innerText = `${hours}:${minutes} - ${month.slice(0,3)}. ${now.getDay()}, ${now.getFullYear()}`
+    datetime.innerText = `${hours}:${minutes} - ${month.slice(0,3)}. ${day}, ${now.getFullYear()}`
   
     
   }

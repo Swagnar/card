@@ -1,0 +1,14 @@
+#bios {
+  background-color: #101010;
+  color: #fff;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 9;
+  padding: 1.5rem;
+  width: 100%;
+  height: 100%;
+}
+#bios p {
+  margin: 0;
+}
