@@ -1,0 +1,49 @@
+.file {
+  padding: 0;
+  border: none;
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  outline: 0;
+  width: 120px;
+}
+.file.folder {
+  padding-top: 40px;
+}
+.file-icon {
+  bottom: 25px;
+  display: block;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 32px;
+  width: 32px;
+}
+.file-icon.folder-icon {
+  background: transparent url('../static/dir.png');
+}
+.file-label {
+  background-color: #fff;
+  color: #000;
+  display: inline;
+  padding: 0 3px;
+}
+
+#folder1,
+#folder2 {
+  display: none;
+  position: absolute;
+}
+
+#folder1 {
+  top: 4rem;
+  right: 2rem;
+}
+#folder2 {
+  top: 9rem;
+  right: 2rem;
+}

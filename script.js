@@ -3,9 +3,52 @@ const dialogContents = {
   battery: "<p>Battery power provided by YEG Inc. YEG Inc. is not loable for any burns. explosions or airborne carcinogens caused by this battery pack. Battery pack is single use; <u>Do not</u> attempt to recycle</p>"
 }
 
+function folderClicked(folder) {
+  var icon = folder.firstElementChild
+  var label = folder.lastElementChild
 
+  icon.style.backgroundImage = "url('static/dir-clicked.png')"
 
+  label.style.backgroundColor = "#000"
+  label.style.color = "#fff"
+}
+function folderReleased(folder) {
+  var icon = folder.firstElementChild
+  var label = folder.lastElementChild
 
+  icon.style.backgroundImage = "url('static/dir.png')"
+
+  label.style.backgroundColor = "#fff"
+  label.style.color = "#000"
+}
+
+function initEvents() {
+  document.getElementById('dialog-close-btn').addEventListener('click', () => {
+    closeDialog()
+  })
+
+  document.getElementById('about').addEventListener('click', () => {
+    showDialog(dialogContents.about)
+  }) 
+  document.getElementById('battery').addEventListener('click', () => {
+    showDialog(dialogContents.battery)
+  })
+  document.getElementById('toggle-fullscreen').addEventListener('click', () => {
+    if(!document.fullscreenElement) {
+      document.documentElement.requestFullscreen()
+    }
+  })
+  document.getElementById('restart').addEventListener('click', () => {
+    location.reload()
+  })
+
+  const folders = Array.from(document.querySelectorAll('.folder'))
+
+  folders.forEach(folder => {
+    folder.addEventListener('mousedown', () => {folderClicked(folder)})
+    folder.addEventListener('mouseup', () => {folderReleased(folder)})
+  })
+}
 
 function startBios() {
   var bios = document.getElementById('bios')
@@ -24,8 +67,26 @@ function startBios() {
   }
 
   function addClickListener() {
+    function loadDesktop() {
+      let navbar = document.querySelector('.navbar')
+      let folders = document.querySelectorAll('.folder')
+
+      folders.forEach(folder => {
+        folder.style.display = 'block'
+      })
+      navbar.style.display = 'flex'
+    }
+
     bios.addEventListener('click', () => {
       bios.style.display = 'none'
+
+      document.body.classList.add('cursor-wait')
+
+      setTimeout(() => {
+        document.body.classList.remove('cursor-wait')
+
+        loadDesktop()
+      }, 1500)
     })
   }
 
@@ -73,11 +134,12 @@ function closeDialog() {
 window.onload = function() {
 
   startBios()
+  initEvents()
 
 
 
-
-  const datetime = document.getElementById('datetime')
+  const date = document.getElementById('date')
+  const time = document.getElementById('time')
 
   const navbarItems = Array.from(document.querySelectorAll('.item > button'))
   const navbarParentElements = navbarItems.map((item) => item.parentElement)
@@ -106,23 +168,7 @@ window.onload = function() {
     });
   });
 
-  document.getElementById('dialog-close-btn').addEventListener('click', () => {
-    closeDialog()
-    
-
-  })
-
-  document.getElementById('about').addEventListener('click', () => {
-    showDialog(dialogContents.about)
-  }) 
-  document.getElementById('battery').addEventListener('click', () => {
-    showDialog(dialogContents.battery)
-  })
-
-
-
-
-
+  
   function update_clock() {
     var now = new Date()
     var month = now.toLocaleString('en-us', {month: 'long'})
@@ -134,7 +180,8 @@ window.onload = function() {
     hours = hours < 10 ? '0' + hours : hours
     minutes = minutes < 10 ? '0' + minutes : minutes
     
-    datetime.innerText = `${hours}:${minutes} - ${month.slice(0,3)}. ${day}, ${now.getFullYear()}`
+    date.innerText = `\xa0- ${month.slice(0,3)}. ${day}, ${now.getFullYear()}`
+    time.innerText = `${hours}:${minutes}`
   
     
   }

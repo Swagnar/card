@@ -8,14 +8,14 @@
   <link rel="stylesheet" href="styles/root.css">
   <link rel="stylesheet" href="styles/bios.css">
   <link rel="stylesheet" href="styles/navbar.css">
+  <link rel="stylesheet" href="styles/folders.css">
+  <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
   <title>YEG_OS</title>
 </head>
 <body>
   <div id="wrapper">
     <div id="desktop">
-      <div id="bios">
-
-      </div>
+      <div id="bios"></div>
       <div class="navbar">
         <div class="navbar-left">
           <div class="item submenu">
@@ -35,7 +35,7 @@
               </li>
             </ul>
           </div>
-          <div class="d-flex">
+          <div class="d-flex align-items-center">
             <div class="item submenu">
               <button>File</button>
               <ul class="drop">
@@ -66,16 +66,27 @@
           </div>
         </div>
         <div class="navbar-right">
-          <div class="d-flex">
+          <div class="d-flex align-items-center">
             <div class="item">
               <span>YEG_OS</span>
             </div>
             <div class="item">
-              <span id="datetime"></span>
+              <span id="time"></span>
+            </div>
+            <div class="item">
+              <span id="date"></span>
             </div>
           </div>
         </div>
       </div>
+      <button id="folder1" class="file folder" data-label="D&D">
+        <span class="file-icon folder-icon"></span>
+        <span class="file-label">D&D</span>
+      </button>
+      <button id="folder2" class="file folder" data-label="Work">
+        <span class="file-icon folder-icon"></span>
+        <span class="file-label">WORK</span>
+      </button>
       <div id="dialog" class="dialog-hidden">
         <div id="dialog-head">
           <button id="dialog-close-btn">X</button>

@@ -7,6 +7,8 @@ Hello and welcome. Learn about my work, hobbies and more through this applicatio
 
 - flickering animation made by [Alec Lowens](aleclownes.com)
 
+- favicon by [Freepik](https://www.flaticon.com/free-icons/computer)
+
 
 
 

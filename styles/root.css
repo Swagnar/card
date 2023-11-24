@@ -13,6 +13,10 @@ a  { text-decoration: none }
   display: flex !important;
 }
 
+.align-items-center {
+  align-items: center;
+}
+
 @keyframes flicker {
   0% {
     opacity: 0.27861;
@@ -168,5 +172,9 @@ a  { text-decoration: none }
 }
 .dialog-open {
   display: block;
+}
+
+.cursor-wait {
+  cursor: url('../static/wait-cursor.png'), auto;
 }
 

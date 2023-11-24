@@ -1,7 +1,8 @@
 .navbar {
   background-color: #fff;
   border-bottom: 1px solid #000;
-  display: flex;
+  display: none;
+  /* display: flex; */
   justify-content: space-between;
   align-items: center;
   position: absolute;
@@ -57,9 +58,12 @@ div.navbar div.d-flex div.active {
   align-items: center;
   margin-left: .5rem;
 }
+.navbar-right {
+  padding-right: .5rem;
+}
 
 .navbar-right .d-flex>.item:first-of-type{
-  margin-right: 2rem;
+  margin-right: 1rem;
 }
 
 .navbar .item {
@@ -91,4 +95,13 @@ div.navbar div.d-flex div.active {
   transform: translate(-50%, -50%);
   height: 30px;
   width: 30px;
+}
+
+@media screen and (max-width: 450px) {
+  .navbar-right .d-flex>.item:first-of-type{
+    margin-right: .5rem;
+  }
+  #date {
+    display: none;
+  }
 }
