@@ -11,6 +11,7 @@
   outline: 0;
   width: 120px;
 }
+.file.archive,
 .file.folder {
   padding-top: 40px;
 }
@@ -26,6 +27,9 @@
 .file-icon.folder-icon {
   background: transparent url('../static/dir.png');
 }
+.file-icon.archive-icon {
+  background: transparent url('../static/archive.png');
+}
 .file-label {
   background-color: #fff;
   color: #000;
@@ -34,7 +38,8 @@
 }
 
 #folder1,
-#folder2 {
+#folder2,
+#archive1 {
   display: none;
   position: absolute;
 }
@@ -46,4 +51,8 @@
 #folder2 {
   top: 9rem;
   right: 2rem;
+}
+#archive1 {
+  top: 5rem;
+  right: 7rem;
 }

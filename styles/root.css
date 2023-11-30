@@ -9,6 +9,10 @@ body {
 ul { margin: 0; padding: 0; }
 a  { text-decoration: none }
 
+span[lang] {
+  display: none;
+}
+
 .d-flex {
   display: flex !important;
 }

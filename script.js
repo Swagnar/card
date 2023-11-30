@@ -1,37 +1,82 @@
-const dialogContents = {
-  about: "<p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p><p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>",
-  battery: "<p>Battery power provided by YEG Inc. YEG Inc. is not loable for any burns. explosions or airborne carcinogens caused by this battery pack. Battery pack is single use; <u>Do not</u> attempt to recycle</p>"
-}
+// function that resets icons to default ones after clicking or dragging
+function resetStyles(element) {
+  var icon = element.firstElementChild;
+  var label = element.lastElementChild;
 
+  if (element.classList.contains('folder')) {
+    icon.style.backgroundImage = "url('static/dir.png')";
+  } else if (element.classList.contains('archive')) {
+    icon.style.backgroundImage = "url('static/archive.png')";
+  }
+
+  label.style.backgroundColor = "#fff";
+  label.style.color = "#000";
+}
 function folderClicked(folder) {
-  var icon = folder.firstElementChild
-  var label = folder.lastElementChild
+  resetStyles(folder);
+  var icon = folder.firstElementChild;
+  var label = folder.lastElementChild;
 
-  icon.style.backgroundImage = "url('static/dir-clicked.png')"
-
-  label.style.backgroundColor = "#000"
-  label.style.color = "#fff"
+  icon.style.backgroundImage = "url('static/dir-clicked.png')";
+  label.style.backgroundColor = "#000";
+  label.style.color = "#fff";
 }
-function folderReleased(folder) {
-  var icon = folder.firstElementChild
-  var label = folder.lastElementChild
 
-  icon.style.backgroundImage = "url('static/dir.png')"
+function archiveClicked(archive) {
+  resetStyles(archive);
+  var icon = archive.firstElementChild;
+  var label = archive.lastElementChild;
 
-  label.style.backgroundColor = "#fff"
-  label.style.color = "#000"
+  icon.style.backgroundImage = "url('static/archive-clicked.png')";
+  label.style.backgroundColor = "#000";
+  label.style.color = "#fff";
 }
+function folderReleased(folder) { resetStyles(folder); }
+function archiveReleased(archive) { resetStyles(archive); }
+
+function allowDrop(event) {
+  event.preventDefault()
+}
+function drop(event) {
+  event.preventDefault();
+  var data = event.dataTransfer.getData("text/plain");
+  var draggedElement = document.getElementById(data);
+
+  var desktopRect = document.getElementById('desktop').getBoundingClientRect();
+
+  var elementWidth = draggedElement.offsetWidth;
+  var elementHeight = draggedElement.offsetHeight;
+
+  var x = event.clientX - desktopRect.left - elementWidth / 2;
+  var y = event.clientY - desktopRect.top - elementHeight / 2;
+
+  draggedElement.style.left = x + "px";
+  draggedElement.style.top = y + "px";
+}
+function fileDragStart(event, element) {
+  event.dataTransfer.setData("text/plain", element.id);
+}
+function fileDrag(event, element) {}
+
+function fileDragEnd(element) { resetStyles(element) }
 
 function initEvents() {
+
+  document.getElementById('desktop').addEventListener('dragover', () => {allowDrop(event)})
+  document.getElementById('desktop').addEventListener('drop', () => {drop(event)})
+
   document.getElementById('dialog-close-btn').addEventListener('click', () => {
     closeDialog()
   })
 
+  /*
+    <li> elements inside first submenu in navbar
+  */
   document.getElementById('about').addEventListener('click', () => {
-    showDialog(dialogContents.about)
+    showDialog('about')
   }) 
   document.getElementById('battery').addEventListener('click', () => {
-    showDialog(dialogContents.battery)
+    showDialog('battery')
   })
   document.getElementById('toggle-fullscreen').addEventListener('click', () => {
     if(!document.fullscreenElement) {
@@ -43,51 +88,73 @@ function initEvents() {
   })
 
   const folders = Array.from(document.querySelectorAll('.folder'))
-
+  const archives = Array.from(document.querySelectorAll('.archive'))
   folders.forEach(folder => {
-    folder.addEventListener('mousedown', () => {folderClicked(folder)})
-    folder.addEventListener('mouseup', () => {folderReleased(folder)})
+    folder.addEventListener('mousedown', () => { folderClicked(folder) });
+    folder.addEventListener('mouseup', () => { folderReleased(folder) });
+    folder.addEventListener('dragstart', (event) => { fileDragStart(event, folder) });
+    folder.addEventListener('drag', (event) => { fileDrag(event, folder) });
+    folder.addEventListener('dragend', () => { fileDragEnd(folder) });
+  });
+  archives.forEach(archive => {
+    archive.addEventListener('mousedown', function() {archiveClicked(this)})
+    archive.addEventListener('mouseup', function() {archiveReleased(this)})
+    archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) });
+    archive.addEventListener('drag', (event) => { fileDrag(event, archive) });
+    archive.addEventListener('dragend', () => { fileDragEnd(archive) });
   })
+  archives[0].addEventListener('dblclick', function() {showDialog('archive1')})
+
 }
 
-function startBios() {
-  var bios = document.getElementById('bios')
-  bios.innerHTML = "<p>YEG_OS</p><p>Copyright (c) 2023,2024. All Rights Reserved</p><p>BIOS Version: 202347 Release 1</p><br>"
-
+function startSystem() {
+  var bios = document.getElementById('bios');
+  bios.innerHTML = "<p>YEG_OS</p><p>Copyright (c) 2023,2024. All Rights Reserved</p><p>BIOS Version: 202347 Release 1</p><br>";
 
   function appendToBios(text, lineBreak) {
-    let p = document.createElement('p')
-    p.textContent = text
-    bios.appendChild(p)
+    let p = document.createElement('p');
+    p.textContent = text;
+    bios.appendChild(p);
 
-    if(lineBreak) {
-      let br = document.createElement('br')
-      bios.appendChild(br)
+    if (lineBreak) {
+      let br = document.createElement('br');
+      bios.appendChild(br);
     }
   }
 
   function addClickListener() {
     function loadDesktop() {
-      let navbar = document.querySelector('.navbar')
-      let folders = document.querySelectorAll('.folder')
+      let navbar = document.querySelector('.navbar');
+      let archives = document.querySelectorAll('.archive');
+      let folders = document.querySelectorAll('.folder');
+
+      archives.forEach(archive => {
+        archive.style.display = 'block';
+      });
 
       folders.forEach(folder => {
-        folder.style.display = 'block'
-      })
-      navbar.style.display = 'flex'
+        folder.style.display = 'block';
+      });
+      navbar.style.display = 'flex';
     }
 
-    bios.addEventListener('click', () => {
-      bios.style.display = 'none'
+    // Add event listener for both mouse click and key press
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
 
-      document.body.classList.add('cursor-wait')
+    function handleUserInteraction() {
+      bios.style.display = 'none';
+      document.body.classList.add('cursor-wait');
 
       setTimeout(() => {
-        document.body.classList.remove('cursor-wait')
-
-        loadDesktop()
-      }, 1500)
-    })
+        document.body.classList.remove('cursor-wait');
+        loadDesktop();
+        
+        // Remove event listeners after user interaction
+        document.removeEventListener('click', handleUserInteraction);
+        document.removeEventListener('keydown', handleUserInteraction);
+      }, 1500);
+    }
   }
 
   let biosContents = [
@@ -95,24 +162,33 @@ function startBios() {
     "Memory Test: 32M OK",
     "Initializing USB Controllers ... Done",
     "Press Any Key to boot system"
-  ]
+  ];
 
-  for(let i = 0; i < biosContents.length; i++) {
+  for (let i = 0; i < biosContents.length; i++) {
     setTimeout(() => {
-      if(i === 2) {
-        appendToBios(biosContents[i], true)
+      if (i === 2) {
+        appendToBios(biosContents[i], true);
       } else {
-        appendToBios(biosContents[i])
+        appendToBios(biosContents[i]);
       }
 
-      if(i == biosContents.length - 1) {
-        addClickListener()
+      if (i == biosContents.length - 1) {
+        addClickListener();
       }
-    }, 500 * (i + 1))
+    }, 500 * (i + 1));
   }
 }
 
+
 function showDialog(content) {
+
+  let dialogContents = {
+    'about': "<p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p><p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>",
+    'battery': "<p>Battery power provided by YEG Inc. YEG Inc. is not loable for any burns. explosions or airborne carcinogens caused by this battery pack. Battery pack is single use; <u>Do not</u> attempt to recycle</p>",
+    'archive': "File corrupted! Please download "
+    
+  }
+
   var dialog = document.getElementById('dialog')
   var dialogBody = document.getElementById('dialog-body')
 
@@ -121,7 +197,7 @@ function showDialog(content) {
     dialog.classList.add('dialog-open')
   }
 
-  dialogBody.innerHTML = content
+  dialogBody.innerHTML = dialogContents[content]
 }
 
 function closeDialog() {
@@ -133,7 +209,7 @@ function closeDialog() {
 
 window.onload = function() {
 
-  startBios()
+  startSystem()
   initEvents()
 
 
@@ -159,8 +235,6 @@ window.onload = function() {
       });
   
       if (!isActive) {
-        console.log(navbarParentElements[i].classList);
-  
         navbarParentElements[i].classList.add('active');
         navbarDropLists[i].style.opacity = '1';
         navbarDropLists[i].style.visibility = 'visible';
@@ -168,7 +242,6 @@ window.onload = function() {
     });
   });
 
-  
   function update_clock() {
     var now = new Date()
     var month = now.toLocaleString('en-us', {month: 'long'})
@@ -182,11 +255,7 @@ window.onload = function() {
     
     date.innerText = `\xa0- ${month.slice(0,3)}. ${day}, ${now.getFullYear()}`
     time.innerText = `${hours}:${minutes}`
-  
-    
   }
-
   setInterval(update_clock, 1000)
-
   update_clock()
 }
