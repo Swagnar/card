@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="styles/bios.css">
   <link rel="stylesheet" href="styles/navbar.css">
   <link rel="stylesheet" href="styles/folders.css">
+  <link rel="stylesheet" href="styles/windows.css">
   <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
   <title>YEG_OS</title>
 </head>
@@ -79,11 +80,11 @@
           </div>
         </div>
       </div>
-      <button id="folder1" class="file folder" draggable="true">
+      <button id="folder-dnd" class="file folder" draggable="true">
         <span class="file-icon folder-icon"></span>
         <span class="file-label">D&D</span>
       </button>
-      <button id="folder2" class="file folder" draggable="true">
+      <button id="folder-work" class="file folder" draggable="true">
         <span class="file-icon folder-icon"></span>
         <span class="file-label">WORK</span>
       </button>
@@ -91,6 +92,23 @@
         <span class="file-icon archive-icon"></span>
         <span class="file-label">ASTRONOMY.ZIP</span>
       </button>
+      <div class="window" id="window-dnd" draggable="true">
+        <header>
+          <span>Dungeon & Dragons</span>
+          <button>X</button>
+        </header>
+        <div class="body">
+          <div class="d-flex flex-wrap">
+            <button class="file md-file" id="readme-dnd">
+              <span>README.md</span>
+            </button>
+            <button class="file text-file">
+              <span>Characters.txt</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div id="dialog" class="dialog-hidden">
         <div id="dialog-head">
           <button id="dialog-close-btn">X</button>

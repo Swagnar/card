@@ -1,4 +1,62 @@
-// function that resets icons to default ones after clicking or dragging
+
+function showWindow(name) {
+  let window = document.getElementById(`window-${name}`);
+  // window.classList.remove('hide')
+  // window.classList.add('show')
+
+  setTimeout(() => {
+    window.style.transition = 'none';
+    window.classList.remove('show');
+    window.classList.add('hide');
+    window.offsetHeight; // Trigger reflow
+    window.style.transition = ''; // Re-enable transitions
+    window.classList.remove('hide');
+    window.classList.add('show');
+  }, 50);
+}
+
+function closeWindow(btn) {
+  let header = btn.parentElement
+  let window = header.parentElement
+
+  window.classList.remove('show')
+  window.classList.add('hide')
+}
+
+/*---------------------------------------------//
+//     pop-up dialog functions (open/close)    //
+//---------------------------------------------*/
+
+function showDialog(content) {
+
+  let dialogContents = {
+    'about': "<p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p><p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>",
+    'battery': "<p>Battery power provided by YEG Inc. YEG Inc. is not loable for any burns. explosions or airborne carcinogens caused by this battery pack. Battery pack is single use; <u>Do not</u> attempt to recycle</p>",
+    'archive1': "<s>File corrupted! Please download again.</s><br>I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil."
+  }
+
+  let dialog = document.getElementById('dialog')
+  let dialogBody = document.getElementById('dialog-body')
+
+  if(!dialog.classList.contains('dialog-open')) {
+    dialog.classList.remove('dialog-hidden')
+    dialog.classList.add('dialog-open')
+  }
+
+  dialogBody.innerHTML = dialogContents[content]
+}
+
+function closeDialog() {
+  let dialog = document.getElementById('dialog')
+
+  dialog.classList.remove('dialog-open')
+  dialog.classList.add('dialog-hidden')
+}
+
+/*---------------------------------------------//
+//     changing icons for desktop elements     //
+//---------------------------------------------*/
+
 function resetStyles(element) {
   var icon = element.firstElementChild;
   var label = element.lastElementChild;
@@ -21,7 +79,6 @@ function folderClicked(folder) {
   label.style.backgroundColor = "#000";
   label.style.color = "#fff";
 }
-
 function archiveClicked(archive) {
   resetStyles(archive);
   var icon = archive.firstElementChild;
@@ -31,79 +88,90 @@ function archiveClicked(archive) {
   label.style.backgroundColor = "#000";
   label.style.color = "#fff";
 }
-function folderReleased(folder) { resetStyles(folder); }
-function archiveReleased(archive) { resetStyles(archive); }
 
-function allowDrop(event) {
-  event.preventDefault()
-}
+/*---------------------------------------------//
+//        drag and drop functionality          //
+//---------------------------------------------*/
+function allowDrop(event) { event.preventDefault() }
 function drop(event) {
-  event.preventDefault();
-  var data = event.dataTransfer.getData("text/plain");
-  var draggedElement = document.getElementById(data);
+  event.preventDefault()
 
-  var desktopRect = document.getElementById('desktop').getBoundingClientRect();
+  var data = event.dataTransfer.getData("text/plain")
+  var draggedElement = document.getElementById(data)
 
-  var elementWidth = draggedElement.offsetWidth;
-  var elementHeight = draggedElement.offsetHeight;
+  var desktopRect = document.getElementById('desktop').getBoundingClientRect()
 
-  var x = event.clientX - desktopRect.left - elementWidth / 2;
-  var y = event.clientY - desktopRect.top - elementHeight / 2;
+  var elementWidth = draggedElement.offsetWidth
+  var elementHeight = draggedElement.offsetHeight
 
-  draggedElement.style.left = x + "px";
-  draggedElement.style.top = y + "px";
+  var x = event.clientX - desktopRect.left - elementWidth / 2
+  var y = event.clientY - desktopRect.top - elementHeight / 2
+
+  draggedElement.style.left = x + "px"
+  draggedElement.style.top = y + "px"
+
+  
 }
-function fileDragStart(event, element) {
-  event.dataTransfer.setData("text/plain", element.id);
+function fileDragStart(event, element) { 
+  event.dataTransfer.setData("text/plain", element.id) 
 }
 function fileDrag(event, element) {}
-
 function fileDragEnd(element) { resetStyles(element) }
+
+/*---------------------------------------------//
+//            adding EventListeners            //
+//---------------------------------------------*/
 
 function initEvents() {
 
-  document.getElementById('desktop').addEventListener('dragover', () => {allowDrop(event)})
-  document.getElementById('desktop').addEventListener('drop', () => {drop(event)})
+  const folders = Array.from(document.querySelectorAll('.folder'))
+  const archives = Array.from(document.querySelectorAll('.archive'))
+  const windows = Array.from(document.querySelectorAll('.window'))
+  const windowsCloseBtns = document.querySelectorAll('.window>header>button')
 
-  document.getElementById('dialog-close-btn').addEventListener('click', () => {
-    closeDialog()
-  })
+  document.getElementById('desktop').addEventListener('dragover', () => { allowDrop(event) })
+  document.getElementById('desktop').addEventListener('drop', () => { drop(event) })
 
-  /*
-    <li> elements inside first submenu in navbar
-  */
-  document.getElementById('about').addEventListener('click', () => {
-    showDialog('about')
-  }) 
-  document.getElementById('battery').addEventListener('click', () => {
-    showDialog('battery')
-  })
+  document.getElementById('dialog-close-btn').addEventListener('click', () => { closeDialog() })
+
+  document.getElementById('about').addEventListener('click', () => { showDialog('about') }) 
+  document.getElementById('battery').addEventListener('click', () => { showDialog('battery') })
+  
+  document.getElementById('restart').addEventListener('click', () => { location.reload() })
+  
   document.getElementById('toggle-fullscreen').addEventListener('click', () => {
     if(!document.fullscreenElement) {
       document.documentElement.requestFullscreen()
     }
   })
-  document.getElementById('restart').addEventListener('click', () => {
-    location.reload()
+
+  folders.forEach(folder => {
+    folder.addEventListener('mousedown',  () => { folderClicked(folder) });
+    folder.addEventListener('mouseup',    () => { resetStyles(folder) });
+    folder.addEventListener('dragstart',  (event) => { fileDragStart(event, folder) });
+    folder.addEventListener('drag',       (event) => { fileDrag(event, folder) });
+    folder.addEventListener('dragend',    () => { fileDragEnd(folder) });
+  });
+
+  folders[0].addEventListener('dblclick', () => { showWindow('dnd') })
+  archives.forEach(archive => {
+    archive.addEventListener('mousedown', () => { archiveClicked(archive) })
+    archive.addEventListener('mouseup',   () => { resetStyles(archive) })
+    archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) });
+    archive.addEventListener('drag',      (event) => { fileDrag(event, archive) });
+    archive.addEventListener('dragend',   () => { fileDragEnd(archive) });
+  })
+  archives[0].addEventListener('dblclick', () => { showDialog('archive1') })
+
+  windows.forEach(window => {
+    window.addEventListener('dragstart',  (event) => { fileDragStart(event, window) })
+    window.addEventListener('drag',       (event) => { fileDrag(event, window) })
+    window.addEventListener('dragend',    () => { fileDragEnd(window) })
   })
 
-  const folders = Array.from(document.querySelectorAll('.folder'))
-  const archives = Array.from(document.querySelectorAll('.archive'))
-  folders.forEach(folder => {
-    folder.addEventListener('mousedown', () => { folderClicked(folder) });
-    folder.addEventListener('mouseup', () => { folderReleased(folder) });
-    folder.addEventListener('dragstart', (event) => { fileDragStart(event, folder) });
-    folder.addEventListener('drag', (event) => { fileDrag(event, folder) });
-    folder.addEventListener('dragend', () => { fileDragEnd(folder) });
-  });
-  archives.forEach(archive => {
-    archive.addEventListener('mousedown', function() {archiveClicked(this)})
-    archive.addEventListener('mouseup', function() {archiveReleased(this)})
-    archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) });
-    archive.addEventListener('drag', (event) => { fileDrag(event, archive) });
-    archive.addEventListener('dragend', () => { fileDragEnd(archive) });
+  windowsCloseBtns.forEach(btn => {
+    btn.addEventListener('click', function() { closeWindow(this) })
   })
-  archives[0].addEventListener('dblclick', function() {showDialog('archive1')})
 
 }
 
@@ -180,32 +248,7 @@ function startSystem() {
 }
 
 
-function showDialog(content) {
 
-  let dialogContents = {
-    'about': "<p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p><p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>",
-    'battery': "<p>Battery power provided by YEG Inc. YEG Inc. is not loable for any burns. explosions or airborne carcinogens caused by this battery pack. Battery pack is single use; <u>Do not</u> attempt to recycle</p>",
-    'archive': "File corrupted! Please download "
-    
-  }
-
-  var dialog = document.getElementById('dialog')
-  var dialogBody = document.getElementById('dialog-body')
-
-  if(!dialog.classList.contains('dialog-open')) {
-    dialog.classList.remove('dialog-hidden')
-    dialog.classList.add('dialog-open')
-  }
-
-  dialogBody.innerHTML = dialogContents[content]
-}
-
-function closeDialog() {
-  var dialog = document.getElementById('dialog')
-
-  dialog.classList.remove('dialog-open')
-  dialog.classList.add('dialog-hidden')
-}
 
 window.onload = function() {
 

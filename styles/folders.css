@@ -1,5 +1,5 @@
 .file {
-  padding: 0;
+  padding-top: 40px;
   border: none;
   font: inherit;
   color: inherit;
@@ -10,6 +10,7 @@
   margin: 10px;
   outline: 0;
   width: 120px;
+  position: relative;
 }
 .file.archive,
 .file.folder {
@@ -37,18 +38,18 @@
   padding: 0 3px;
 }
 
-#folder1,
-#folder2,
+#folder-dnd,
+#folder-work,
 #archive1 {
   display: none;
   position: absolute;
 }
 
-#folder1 {
+#folder-dnd {
   top: 4rem;
   right: 2rem;
 }
-#folder2 {
+#folder-work {
   top: 9rem;
   right: 2rem;
 }

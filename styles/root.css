@@ -9,17 +9,11 @@ body {
 ul { margin: 0; padding: 0; }
 a  { text-decoration: none }
 
-span[lang] {
-  display: none;
-}
+.d-flex { display: flex !important; }
 
-.d-flex {
-  display: flex !important;
-}
+.flex-wrap { flex-wrap: wrap !important; }
 
-.align-items-center {
-  align-items: center;
-}
+.align-items-center { align-items: center; }
 
 @keyframes flicker {
   0% {

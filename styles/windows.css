@@ -1,0 +1,95 @@
+.window {
+  visibility: hidden;
+  opacity: 0;
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: .2rem;
+  position: absolute;
+  left: 1rem;
+  top: 3rem;
+  z-index: 1;
+  transform-origin: left top;
+  transform: scale(0);
+  transition: 
+    transform .5s ease, 
+    opacity .5s ease, 
+    visibility .5s ease;
+}
+
+.window.show {
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.window.hide {
+  transform: scale(0);
+  opacity: 0;
+  visibility: hidden;
+}
+
+
+.window header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.25rem;
+  border-bottom: 1px solid #000;
+  height: 26px;
+  position: relative;
+}
+.window header span {
+  margin-left: .5rem;
+}
+.window header button {
+  border: none;
+  border-top-right-radius: .2rem;
+  padding: 0.25rem;
+  border-left: 1px solid black;
+  width: 1rem;
+  float: right;
+  height: 100%;
+}
+
+.window .body {
+  display: flex;
+  align-items: flex-start;
+  flex-flow: row wrap;
+  height: calc(100% - 20px);
+  overflow: hidden;
+}
+
+.window .body button::before {
+  content: "";
+  width: 24px;
+  height: 32px;
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+.text-file::before { background: url('../static/text-file2.png');}
+.md-file::before { background: url('../static/markdown-file.png');}
+
+
+
+@keyframes windowOpen {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes windowClose {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
