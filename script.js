@@ -1,3 +1,11 @@
+function isMobile() {
+  let userAgent = navigator.userAgent.toLowerCase();
+  return /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+}
+
+/*---------------------------------------------//
+//     directories functions (open/close)      //
+//---------------------------------------------*/
 
 function showWindow(name) {
   let window = document.getElementById(`window-${name}`);
@@ -132,42 +140,71 @@ function initEvents() {
   document.getElementById('desktop').addEventListener('dragover', () => { allowDrop(event) })
   document.getElementById('desktop').addEventListener('drop', () => { drop(event) })
 
-  document.getElementById('dialog-close-btn').addEventListener('click', () => { closeDialog() })
+  document.getElementById('dialog-close-btn').addEventListener('pointerdown', () => { closeDialog() })
 
-  document.getElementById('about').addEventListener('click', () => { showDialog('about') }) 
-  document.getElementById('battery').addEventListener('click', () => { showDialog('battery') })
+  document.getElementById('about').addEventListener('pointerdown', () => { showDialog('about') }) 
+  document.getElementById('battery').addEventListener('pointerdown', () => { showDialog('battery') })
   
-  document.getElementById('restart').addEventListener('click', () => { location.reload() })
+  document.getElementById('restart').addEventListener('pointerdown', () => { location.reload() })
   
-  document.getElementById('toggle-fullscreen').addEventListener('click', () => {
+  document.getElementById('toggle-fullscreen').addEventListener('pointerdown', () => {
     if(!document.fullscreenElement) {
       document.documentElement.requestFullscreen()
     }
   })
 
   folders.forEach(folder => {
-    folder.addEventListener('mousedown',  () => { folderClicked(folder) });
-    folder.addEventListener('mouseup',    () => { resetStyles(folder) });
-    folder.addEventListener('dragstart',  (event) => { fileDragStart(event, folder) });
-    folder.addEventListener('drag',       (event) => { fileDrag(event, folder) });
-    folder.addEventListener('dragend',    () => { fileDragEnd(folder) });
+    folder.addEventListener('pointerdown',  () => { folderClicked(folder) });
+    folder.addEventListener('pointerup',    () => { resetStyles(folder) });
   });
-
-  folders[0].addEventListener('dblclick', () => { showWindow('dnd') })
   archives.forEach(archive => {
-    archive.addEventListener('mousedown', () => { archiveClicked(archive) })
-    archive.addEventListener('mouseup',   () => { resetStyles(archive) })
-    archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) });
-    archive.addEventListener('drag',      (event) => { fileDrag(event, archive) });
-    archive.addEventListener('dragend',   () => { fileDragEnd(archive) });
+    archive.addEventListener('pointerdown', () => { archiveClicked(archive) })
+    archive.addEventListener('pointerup',   () => { resetStyles(archive) })
   })
+
+  if(isMobile()) {
+    folders.forEach(folder => {
+      folder.addEventListener('touchstart', (event) => { fileDragStart(event, folder) });
+      folder.addEventListener('touchmove',  (event) => { fileDrag(event, folder) });
+      folder.addEventListener('touchend',   () => { fileDragEnd(folder) });
+    })
+
+    archives.forEach(archive => {
+      archive.addEventListener('touchstart', (event) => { fileDragStart(event, archive) });
+      archive.addEventListener('touchmove',      (event) => { fileDrag(event, archive) });
+      archive.addEventListener('touchend',   () => { fileDragEnd(archive) });  
+    })
+
+    windows.forEach(window => {
+      window.addEventListener('touchstart',  (event) => { fileDragStart(event, window) })
+      window.addEventListener('touchmove',       (event) => { fileDrag(event, window) })
+      window.addEventListener('touchend',    () => { fileDragEnd(window) })
+    })
+  } else {
+    folders.forEach(folder => {
+      folder.addEventListener('dragstart',  (event) => { fileDragStart(event, folder) });
+      folder.addEventListener('drag',       (event) => { fileDrag(event, folder) });
+      folder.addEventListener('dragend',    () => { fileDragEnd(folder) });
+    })
+
+    archives.forEach(archive => {
+      archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) });
+      archive.addEventListener('drag',      (event) => { fileDrag(event, archive) });
+      archive.addEventListener('dragend',   () => { fileDragEnd(archive) });  
+    })
+
+    windows.forEach(window => {
+      window.addEventListener('dragstart',  (event) => { fileDragStart(event, window) })
+      window.addEventListener('drag',       (event) => { fileDrag(event, window) })
+      window.addEventListener('dragend',    () => { fileDragEnd(window) })
+    })
+  }
+  
+  folders[0].addEventListener('dblclick', () => { showWindow('dnd') })
+  
   archives[0].addEventListener('dblclick', () => { showDialog('archive1') })
 
-  windows.forEach(window => {
-    window.addEventListener('dragstart',  (event) => { fileDragStart(event, window) })
-    window.addEventListener('drag',       (event) => { fileDrag(event, window) })
-    window.addEventListener('dragend',    () => { fileDragEnd(window) })
-  })
+  
 
   windowsCloseBtns.forEach(btn => {
     btn.addEventListener('click', function() { closeWindow(this) })
@@ -247,11 +284,8 @@ function startSystem() {
   }
 }
 
-
-
-
 window.onload = function() {
-
+  isMobile()
   startSystem()
   initEvents()
 
