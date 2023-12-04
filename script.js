@@ -1,6 +1,16 @@
+const DESKTOP = document.getElementById('desktop')
+
+
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase();
   return /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+}
+
+function showContextMenu(event, menu) {
+  event.preventDefault()
+  menu.style.display = 'block'
+  menu.style.left = event.layerX + "px"
+  menu.style.top = event.layerY + "px"
 }
 
 /*---------------------------------------------//
@@ -22,7 +32,6 @@ function showWindow(name) {
     window.classList.add('show');
   }, 50);
 }
-
 function closeWindow(btn) {
   let header = btn.parentElement
   let window = header.parentElement
@@ -39,7 +48,22 @@ function showDialog(content) {
 
   let dialogContents = {
     'about': "<p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p><p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>",
-    'battery': "<p>Battery power provided by YEG Inc. YEG Inc. is not loable for any burns. explosions or airborne carcinogens caused by this battery pack. Battery pack is single use; <u>Do not</u> attempt to recycle</p>",
+    'battery': "<p>Battery power provided by YEG Inc. YEG Inc. is not liable for any burns, explosions or airborne carcinogens caused by this battery pack. Battery pack is single use; <u>Do not</u> attempt to recycle</p>",
+    'properties': `
+      <p>Screen size: 800px X 600px</p>
+      <p>Color depth: 8-bit</p>
+      <p style='text-align: center; border-bottom: 1px solid black;'>Impostor host info</p>
+      <ul>
+        <li>OS: ${navigator.platform.includes('Win') ? 'Windows' :
+        navigator.platform.includes('Mac') ? 'Mac OS' :
+        navigator.platform.includes('Linux') ? 'Linux' :
+        navigator.platform.includes('Iphone') || navigator.platform.includes('ipad') || navigator.platform.includes('ipod') ? 'iOS' :
+        navigator.platform.includes('Android') ? 'Android' :
+        'Unknown'}</li>
+        <li>AGENT: ${navigator.userAgent}</li>
+        <li>AUTOMATA: ${navigator.webdriver}</li>
+        <li>AVAIABLE CORES: ${navigator.hardwareConcurrency}</li>
+      </ul>`,
     'archive1': "<s>File corrupted! Please download again.</s><br>I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil."
   }
 
@@ -60,6 +84,32 @@ function closeDialog() {
   dialog.classList.remove('dialog-open')
   dialog.classList.add('dialog-hidden')
 }
+
+/*---------------------------------------------//
+//     settings functions (load/open/close)    //
+//---------------------------------------------*/
+
+function loadSettings() {
+  let flickering = DESKTOP.classList.contains('flicker') ? true : false
+
+}
+
+function showSettings() {
+  let settings = document.getElementById('settings')
+  
+  if(!settings.classList.contains('dialog-open')) {
+    settings.classList.remove('dialog-hidden')
+    settings.classList.add('dialog-open')
+  }
+}
+
+function closeSettings() {
+  let settings = document.getElementById('settings')
+
+  settings.classList.remove('dialog-open')
+  settings.classList.add('dialog-hidden')
+}
+
 
 /*---------------------------------------------//
 //     changing icons for desktop elements     //
@@ -107,7 +157,7 @@ function drop(event) {
   var data = event.dataTransfer.getData("text/plain")
   var draggedElement = document.getElementById(data)
 
-  var desktopRect = document.getElementById('desktop').getBoundingClientRect()
+  var desktopRect = DESKTOP.getBoundingClientRect()
 
   var elementWidth = draggedElement.offsetWidth
   var elementHeight = draggedElement.offsetHeight
@@ -137,21 +187,52 @@ function initEvents() {
   const windows = Array.from(document.querySelectorAll('.window'))
   const windowsCloseBtns = document.querySelectorAll('.window>header>button')
 
-  document.getElementById('desktop').addEventListener('dragover', () => { allowDrop(event) })
-  document.getElementById('desktop').addEventListener('drop', () => { drop(event) })
-
-  document.getElementById('dialog-close-btn').addEventListener('pointerdown', () => { closeDialog() })
-
-  document.getElementById('about').addEventListener('pointerdown', () => { showDialog('about') }) 
-  document.getElementById('battery').addEventListener('pointerdown', () => { showDialog('battery') })
+  const navbarItems = Array.from(document.querySelectorAll('.item > button'))
+  const navbarParentElements = navbarItems.map((item) => item.parentElement)
+  const navbarDropLists = navbarItems.map((item) => item.nextElementSibling)
   
-  document.getElementById('restart').addEventListener('pointerdown', () => { location.reload() })
+
+  DESKTOP.addEventListener('dragover', () => { allowDrop(event) })
+  DESKTOP.addEventListener('drop', () => { drop(event) })
+  DESKTOP.addEventListener('contextmenu', function(event) { showContextMenu(event, document.getElementById('context-menu')) })
+  DESKTOP.addEventListener('click', () => { document.getElementById('context-menu').style.display = 'none' })
+
+  
+  document.getElementById('dialog-close-btn').addEventListener('pointerdown', () => closeDialog())
+  document.getElementById('settings-close-btn').addEventListener('pointerdown', () => closeSettings())  
+
+  document.getElementById('about').addEventListener('pointerdown', () => showDialog('about') ) 
+  document.getElementById('battery').addEventListener('pointerdown', () => showDialog('battery') )
+  
+  document.getElementById('restart').addEventListener('pointerdown', () => location.reload() )
   
   document.getElementById('toggle-fullscreen').addEventListener('pointerdown', () => {
     if(!document.fullscreenElement) {
       document.documentElement.requestFullscreen()
     }
   })
+
+  navbarItems.forEach((item, i) => {
+    item.addEventListener('click', () => {
+
+      const isActive = navbarParentElements[i].classList.contains('active');
+  
+      navbarParentElements.forEach((item) => {
+        item.classList.remove('active')
+      })
+      navbarDropLists.forEach((list) => {
+        list.style.opacity = '0'
+        list.style.visibility = 'hidden'
+      })
+  
+      if (!isActive) {
+        navbarParentElements[i].classList.add('active')
+        navbarDropLists[i].style.opacity = '1'
+        navbarDropLists[i].style.visibility = 'visible'
+      }
+    })
+  })
+
 
   folders.forEach(folder => {
     folder.addEventListener('pointerdown',  () => { folderClicked(folder) });
@@ -171,13 +252,13 @@ function initEvents() {
 
     archives.forEach(archive => {
       archive.addEventListener('touchstart', (event) => { fileDragStart(event, archive) });
-      archive.addEventListener('touchmove',      (event) => { fileDrag(event, archive) });
+      archive.addEventListener('touchmove',  (event) => { fileDrag(event, archive) });
       archive.addEventListener('touchend',   () => { fileDragEnd(archive) });  
     })
 
     windows.forEach(window => {
       window.addEventListener('touchstart',  (event) => { fileDragStart(event, window) })
-      window.addEventListener('touchmove',       (event) => { fileDrag(event, window) })
+      window.addEventListener('touchmove',   (event) => { fileDrag(event, window) })
       window.addEventListener('touchend',    () => { fileDragEnd(window) })
     })
   } else {
@@ -201,6 +282,7 @@ function initEvents() {
   }
   
   folders[0].addEventListener('dblclick', () => { showWindow('dnd') })
+  folders[1].addEventListener('dblclick', () => { showWindow('work') })
   
   archives[0].addEventListener('dblclick', () => { showDialog('archive1') })
 
@@ -229,36 +311,34 @@ function startSystem() {
 
   function addClickListener() {
     function loadDesktop() {
-      let navbar = document.querySelector('.navbar');
-      let archives = document.querySelectorAll('.archive');
-      let folders = document.querySelectorAll('.folder');
+      let navbar = document.querySelector('.navbar')
+      let archives = document.querySelectorAll('.archive')
+      let folders = document.querySelectorAll('.folder')
 
       archives.forEach(archive => {
-        archive.style.display = 'block';
+        archive.style.display = 'block'
       });
 
       folders.forEach(folder => {
-        folder.style.display = 'block';
+        folder.style.display = 'block'
       });
-      navbar.style.display = 'flex';
+      navbar.style.display = 'flex'
     }
 
-    // Add event listener for both mouse click and key press
-    document.addEventListener('click', handleUserInteraction);
-    document.addEventListener('keydown', handleUserInteraction);
+    document.addEventListener('click', handleUserInteraction)
+    document.addEventListener('keydown', handleUserInteraction)
 
     function handleUserInteraction() {
-      bios.style.display = 'none';
-      document.body.classList.add('cursor-wait');
+      bios.style.display = 'none'
+      document.body.classList.add('cursor-wait')
 
       setTimeout(() => {
-        document.body.classList.remove('cursor-wait');
-        loadDesktop();
+        document.body.classList.remove('cursor-wait')
+        loadDesktop()
         
-        // Remove event listeners after user interaction
-        document.removeEventListener('click', handleUserInteraction);
-        document.removeEventListener('keydown', handleUserInteraction);
-      }, 1500);
+        document.removeEventListener('click', handleUserInteraction)
+        document.removeEventListener('keydown', handleUserInteraction)
+      }, 1500)
     }
   }
 
@@ -272,67 +352,42 @@ function startSystem() {
   for (let i = 0; i < biosContents.length; i++) {
     setTimeout(() => {
       if (i === 2) {
-        appendToBios(biosContents[i], true);
+        appendToBios(biosContents[i], true)
       } else {
-        appendToBios(biosContents[i]);
+        appendToBios(biosContents[i])
       }
 
       if (i == biosContents.length - 1) {
-        addClickListener();
+        addClickListener()
       }
-    }, 500 * (i + 1));
+    }, 500 * (i + 1))
   }
+}
+function update_clock() {
+
+  const date = document.getElementById('date')
+  const time = document.getElementById('time')
+
+  var now = new Date()
+  var month = now.toLocaleString('en-us', {month: 'long'})
+  var day = now.getDate()
+
+  var hours = now.getHours()
+  var minutes = now.getMinutes()
+
+  hours = hours < 10 ? '0' + hours : hours
+  minutes = minutes < 10 ? '0' + minutes : minutes
+  
+  date.innerText = `\xa0- ${month.slice(0,3)}. ${day}, ${now.getFullYear()}`
+  time.innerText = `${hours}:${minutes}`
 }
 
 window.onload = function() {
   isMobile()
   startSystem()
   initEvents()
+  loadSettings()
 
-
-
-  const date = document.getElementById('date')
-  const time = document.getElementById('time')
-
-  const navbarItems = Array.from(document.querySelectorAll('.item > button'))
-  const navbarParentElements = navbarItems.map((item) => item.parentElement)
-  const navbarDropLists = navbarItems.map((item) => item.nextElementSibling)
-  
-  navbarItems.forEach((item, i) => {
-    item.addEventListener('click', () => {
-
-      const isActive = navbarParentElements[i].classList.contains('active');
-  
-      navbarParentElements.forEach((item) => {
-        item.classList.remove('active');
-      });
-      navbarDropLists.forEach((list) => {
-        list.style.opacity = '0';
-        list.style.visibility = 'hidden';
-      });
-  
-      if (!isActive) {
-        navbarParentElements[i].classList.add('active');
-        navbarDropLists[i].style.opacity = '1';
-        navbarDropLists[i].style.visibility = 'visible';
-      }
-    });
-  });
-
-  function update_clock() {
-    var now = new Date()
-    var month = now.toLocaleString('en-us', {month: 'long'})
-    var day = now.getDate()
-
-    var hours = now.getHours()
-    var minutes = now.getMinutes()
-
-    hours = hours < 10 ? '0' + hours : hours
-    minutes = minutes < 10 ? '0' + minutes : minutes
-    
-    date.innerText = `\xa0- ${month.slice(0,3)}. ${day}, ${now.getFullYear()}`
-    time.innerText = `${hours}:${minutes}`
-  }
   setInterval(update_clock, 1000)
   update_clock()
 }

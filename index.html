@@ -15,7 +15,7 @@
 </head>
 <body>
   <div id="wrapper">
-    <div id="desktop">
+    <div id="desktop" class="flicker res1400x1050">
       <div id="bios"></div>
       <div class="navbar">
         <div class="navbar-left">
@@ -33,6 +33,9 @@
               </li>
               <li>
                 <a href="#" id="restart">Restart</a>
+              </li>
+              <li>
+                <a href="#" onclick="showDialog('properties')">Properties</a>
               </li>
             </ul>
           </div>
@@ -108,12 +111,60 @@
           </div>
         </div>
       </div>
+      <div class="window" id="window-work" draggable="true">
+        <header>
+          <span>Work</span>
+          <button>X</button>
+        </header>
+        <div class="body">
+          <div class="d-flex flex-wrap">
+            <button class="file bat-file">
+              <span>Misc.bat</span>
+            </button>
+            <button class="file bat-file">
+              <span>Amazon.bat</span>
+            </button>
+            <button class="file text-file">
+              <span>Teacher.txt</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
 
       <div id="dialog" class="dialog-hidden">
-        <div id="dialog-head">
+        <div class="dialog-head">
           <button id="dialog-close-btn">X</button>
         </div>
         <div id="dialog-body"></div>
+      </div>
+
+      <div id="settings" class="dialog-hidden">
+        <div class="dialog-head">
+          <button id="settings-close-btn">X</button>
+        </div>
+        <div id="settings-body">
+          Flickering?
+          <input type="checkbox" class="chbx" id="flickering-chbx">
+
+          Resolution [px]
+          <select id="resolution-select">
+            <option value="800x600">800x600</option>
+            <option value="1280x768">1280x768</option>
+            <option value="1400x1050">1400x1050</option>
+          </select>
+
+          <button onclick="saveSettings()">Save</button>
+          <button onclick="resetSettings()">Reset</button>
+        </div>
+      </div>
+      
+
+      <div id="context-menu">
+        <header>[ YEG_OS ]</header>
+        <span class="context-menu-item">Reset desktop</span>
+        <span class="context-menu-item" onclick="showDialog('properties')">Properties</span>
+        <span class="context-menu-item" onclick="showSettings()">Settings</span>
       </div>
     </div>
   </div>

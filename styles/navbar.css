@@ -27,6 +27,7 @@
   visibility: hidden;
   list-style: none;
   font-weight: normal;
+  z-index: 3;
 }
 
 .drop li a {
@@ -77,7 +78,7 @@ div.navbar div.d-flex div.active {
   color: inherit;
   border: none;
   font: inherit;
-  padding: 7px 10px;
+  padding: 0 .5rem;
   height: 38px;
 }
 

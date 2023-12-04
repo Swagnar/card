@@ -1,9 +1,11 @@
 .window {
   visibility: hidden;
+  overflow: hidden;
+  resize: both;
   opacity: 0;
   background-color: #fff;
   border: 1px solid #000;
-  border-radius: .2rem;
+  border-radius: var(--border-radius-low);
   position: absolute;
   left: 1rem;
   top: 3rem;
@@ -42,7 +44,7 @@
 }
 .window header button {
   border: none;
-  border-top-right-radius: .2rem;
+  border-top-right-radius: var(--border-radius-low);
   padding: 0.25rem;
   border-left: 1px solid black;
   width: 1rem;
@@ -68,8 +70,9 @@
   top: 0;
   transform: translateX(-50%);
 }
-.text-file::before { background: url('../static/text-file2.png');}
-.md-file::before { background: url('../static/markdown-file.png');}
+.text-file::before { background: url('../static/text-file.png');}
+.md-file::before   { background: url('../static/markdown-file.png');}
+.bat-file::before  { background: url('../static/bat-file.png'); }
 
 
 
