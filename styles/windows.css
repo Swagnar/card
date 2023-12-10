@@ -52,7 +52,7 @@
   height: 100%;
 }
 
-.window .body {
+.window-body {
   display: flex;
   align-items: flex-start;
   flex-flow: row wrap;
@@ -60,7 +60,7 @@
   overflow: hidden;
 }
 
-.window .body button::before {
+.window-body button::before {
   content: "";
   width: 24px;
   height: 32px;
@@ -73,6 +73,9 @@
 .text-file::before { background: url('../static/text-file.png');}
 .md-file::before   { background: url('../static/markdown-file.png');}
 .bat-file::before  { background: url('../static/bat-file.png'); }
+
+
+
 
 
 

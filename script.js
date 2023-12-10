@@ -1,9 +1,138 @@
+const commands = {
+  ls: function(args) {
+    return (`Running ls with ${args}`)
+  },
+  cd: function(args) {
+    return (`Running cd with ${args}`)
+  },
+  neofetch: function() {
+    return `
+    ,--------------------------===---.
+    | YEG Inc.                        |
+    | ,----------------------------.  |
+    | |                             | |
+    | |            OS_OS            | |
+    | |       VERSION:  0.6.7       | |
+    | |   LAST UPDATE:  10.XII.23   | |     CPU: 0.66MHz Apophis
+    | |                             | |     RAM: 256MB DDJ1 
+    | |                             | |    GPU1: MISSING
+    | |.............................| |    GPU2: 128MB VRAM
+    | |  _  :          '      :  _  | |
+    | | |_| :                 : |_| | |
+    | |  _  :_               _:  _  | |
+    | | |_| :.)        .    (.: |_| | |
+    | '-----....._________.....-----' |
+    '---------------------------------'
+    `
+  },
+  help: function() {
+    return `
+    Avaiable commands:
+    - ls [...OPTIONS]
+    - cd [...OPTIONS]
+    - neofetch
+    `
+  }
+}
+
+
+class Terminal {
+  constructor(pid) {
+    this.container = document.getElementById(`pid${pid}-window-terminal`)
+    this.outputContainer = document.getElementById(`pid${pid}-terminal-output`)
+    this.prefixElement = document.getElementById('terminal-input-prefix')
+    this.prefix = ":~#"
+    this.inputContainer = document.getElementById(`pid${pid}-terminal-input-wrapper`)
+    this.input = document.getElementById('terminal-input')
+    this.history = []
+
+    this.initListeners()
+  }
+
+  appendToLog(content, commandName) {
+
+    console.log(`append content: ${content}`)
+    const logElement = document.createElement('div')
+    logElement.classList.add('terminal-log-element')
+
+    const logElementText = document.createElement('pre')
+    const logElementPrefixSpan = document.createElement('span')
+    const logElementCommandSpan = document.createElement('span')
+
+    logElementPrefixSpan.innerText = this.prefix
+    logElementCommandSpan.innerText = commandName
+
+
+    logElementText.innerText = `\n${content}`
+
+    logElement.append(logElementPrefixSpan)
+    logElement.append(logElementCommandSpan)
+    logElement.append(logElementText)
+
+    this.outputContainer.append(logElement)
+  }
+
+  runCommand(command) {
+    let args = command.split(' ')
+    let name = args.shift()
+    this.history.push({name: name, args: args})
+    let output = commands[name](args)
+    return output
+  }
+
+  handleInput(args) {
+    const command = args
+    const output = this.runCommand(command)
+
+    console.log(`handleInput args: ${args}`)
+    console.log(`handleInput output: ${output}`)
+
+    this.appendToLog(output, command)
+
+    this.input.value = ''
+    this.input.focus()
+  }
+
+  setPrefix(prefix) {
+    this.prefixElement.innerText = prefix
+    this.prefix = prefix
+  }
+
+  showTerminal() {
+    setTimeout(() => {
+      this.container.style.transition = 'none'
+      this.container.classList.remove('show')
+      this.container.classList.add('hide')
+      this.container.offsetHeight // Trigger reflow
+      this.container.style.transition = '' // Re-enable transitions
+      this.container.classList.remove('hide')
+      this.container.classList.add('show')
+    }, 50)
+  }
+  closeTerminal() {
+
+  }
+
+  initListeners() {
+    this.input.addEventListener('keypress', (event) => {
+      if(event.key == 'Enter') {
+        this.handleInput(event.target.value)
+      }
+    })
+  }
+}
+
+const QUEUE = [
+  new Terminal(47)
+]
 const DESKTOP = document.getElementById('desktop')
 
 
+
+
 function isMobile() {
-  let userAgent = navigator.userAgent.toLowerCase();
-  return /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+  let userAgent = navigator.userAgent.toLowerCase()
+  return /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
 }
 
 function showContextMenu(event, menu) {
@@ -18,19 +147,17 @@ function showContextMenu(event, menu) {
 //---------------------------------------------*/
 
 function showWindow(name) {
-  let window = document.getElementById(`window-${name}`);
-  // window.classList.remove('hide')
-  // window.classList.add('show')
+  let window = document.getElementById(`window-${name}`)
 
   setTimeout(() => {
-    window.style.transition = 'none';
-    window.classList.remove('show');
-    window.classList.add('hide');
-    window.offsetHeight; // Trigger reflow
-    window.style.transition = ''; // Re-enable transitions
-    window.classList.remove('hide');
-    window.classList.add('show');
-  }, 50);
+    window.style.transition = 'none'
+    window.classList.remove('show')
+    window.classList.add('hide')
+    window.offsetHeight
+    window.style.transition = ''
+    window.classList.remove('hide')
+    window.classList.add('show')
+  }, 50)
 }
 function closeWindow(btn) {
   let header = btn.parentElement
@@ -48,11 +175,11 @@ function showDialog(content) {
 
   let dialogContents = {
     'about': "<p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p><p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>",
-    'battery': "<p>Battery power provided by YEG Inc. YEG Inc. is not liable for any burns, explosions or airborne carcinogens caused by this battery pack. Battery pack is single use; <u>Do not</u> attempt to recycle</p>",
+    'battery': "<p>Battery power provided by YEG Inc. YEG Inc. is not liable for any burns, explosions or airborne carcinogens caused by this battery pack. Battery pack is single use <u>Do not</u> attempt to recycle</p>",
     'properties': `
       <p>Screen size: 800px X 600px</p>
       <p>Color depth: 8-bit</p>
-      <p style='text-align: center; border-bottom: 1px solid black;'>Impostor host info</p>
+      <p style='text-align: center border-bottom: 1px solid black'>Impostor host info</p>
       <ul>
         <li>OS: ${navigator.platform.includes('Win') ? 'Windows' :
         navigator.platform.includes('Mac') ? 'Mac OS' :
@@ -86,11 +213,92 @@ function closeDialog() {
 }
 
 /*---------------------------------------------//
+//     terminal functions (load/open/close)    //
+//---------------------------------------------*/
+
+function showTerminal() {
+  QUEUE[0].showTerminal()
+  QUEUE[0].setPrefix(":~#")
+}
+
+function handleTerminalInput(input) {
+  QUEUE[0].handleInput(input)
+}
+
+
+
+/*---------------------------------------------//
 //     settings functions (load/open/close)    //
 //---------------------------------------------*/
 
+function saveSettings(settings) {
+  localStorage.setItem('savedSettings', JSON.stringify(settings))
+}
+
+function applySettings(settings) {
+  DESKTOP.classList = []
+
+  if (settings.flickering) {
+    DESKTOP.classList.add('flicker')
+  }
+
+  const resolutionClass = `res${settings.width}x${settings.height}`
+  DESKTOP.classList.add(resolutionClass)
+}
+
+function saveSettingsForm() {
+  const selectedResolution = document.getElementById('resolution-select').value
+  const flickering = document.getElementById('flickering-chbx').checked
+
+  const [width, height] = selectedResolution.split('x')
+  const settings = {
+    width: parseInt(width),
+    height: parseInt(height),
+    flickering: flickering,
+  }
+
+  localStorage.setItem('savedSettings', JSON.stringify(settings))
+
+  applySettings(settings)
+}
+
 function loadSettings() {
-  let flickering = DESKTOP.classList.contains('flicker') ? true : false
+  let savedSettings = localStorage.getItem('savedSettings')
+  let settings
+
+  if (savedSettings) {
+    try {
+      settings = JSON.parse(savedSettings)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  if (!settings || typeof settings !== 'object') {
+    settings = {
+      flickering: false,
+      width: 800,
+      height: 600,
+    }
+    localStorage.setItem('savedSettings', JSON.stringify(settings))
+  }
+
+  applySettings(settings)
+}
+
+function resetSettings() {
+  settings = {
+    flickering: true,
+    width: 800,
+    height: 600
+  }
+
+  saveSettings(settings)
+  applySettings(settings)
+
+  document.getElementById('flickering-chbx').checked = settings.flickering
+  let resolutionClass = `res${settings.width}x${settings.height}`
+  document.getElementById('resolution-select').value = resolutionClass
 
 }
 
@@ -116,35 +324,35 @@ function closeSettings() {
 //---------------------------------------------*/
 
 function resetStyles(element) {
-  var icon = element.firstElementChild;
-  var label = element.lastElementChild;
+  var icon = element.firstElementChild
+  var label = element.lastElementChild
 
   if (element.classList.contains('folder')) {
-    icon.style.backgroundImage = "url('static/dir.png')";
+    icon.style.backgroundImage = "url('static/dir.png')"
   } else if (element.classList.contains('archive')) {
-    icon.style.backgroundImage = "url('static/archive.png')";
+    icon.style.backgroundImage = "url('static/archive.png')"
   }
 
-  label.style.backgroundColor = "#fff";
-  label.style.color = "#000";
+  label.style.backgroundColor = "#fff"
+  label.style.color = "#000"
 }
 function folderClicked(folder) {
-  resetStyles(folder);
-  var icon = folder.firstElementChild;
-  var label = folder.lastElementChild;
+  resetStyles(folder)
+  var icon = folder.firstElementChild
+  var label = folder.lastElementChild
 
-  icon.style.backgroundImage = "url('static/dir-clicked.png')";
-  label.style.backgroundColor = "#000";
-  label.style.color = "#fff";
+  icon.style.backgroundImage = "url('static/dir-clicked.png')"
+  label.style.backgroundColor = "#000"
+  label.style.color = "#fff"
 }
 function archiveClicked(archive) {
-  resetStyles(archive);
-  var icon = archive.firstElementChild;
-  var label = archive.lastElementChild;
+  resetStyles(archive)
+  var icon = archive.firstElementChild
+  var label = archive.lastElementChild
 
-  icon.style.backgroundImage = "url('static/archive-clicked.png')";
-  label.style.backgroundColor = "#000";
-  label.style.color = "#fff";
+  icon.style.backgroundImage = "url('static/archive-clicked.png')"
+  label.style.backgroundColor = "#000"
+  label.style.color = "#fff"
 }
 
 /*---------------------------------------------//
@@ -174,7 +382,7 @@ function fileDragStart(event, element) {
   event.dataTransfer.setData("text/plain", element.id) 
 }
 function fileDrag(event, element) {}
-function fileDragEnd(element) { resetStyles(element) }
+function fileDragEnd(element) { }
 
 /*---------------------------------------------//
 //            adding EventListeners            //
@@ -215,7 +423,7 @@ function initEvents() {
   navbarItems.forEach((item, i) => {
     item.addEventListener('click', () => {
 
-      const isActive = navbarParentElements[i].classList.contains('active');
+      const isActive = navbarParentElements[i].classList.contains('active')
   
       navbarParentElements.forEach((item) => {
         item.classList.remove('active')
@@ -235,9 +443,9 @@ function initEvents() {
 
 
   folders.forEach(folder => {
-    folder.addEventListener('pointerdown',  () => { folderClicked(folder) });
-    folder.addEventListener('pointerup',    () => { resetStyles(folder) });
-  });
+    folder.addEventListener('pointerdown',  () => { folderClicked(folder) })
+    folder.addEventListener('pointerup',    () => { resetStyles(folder) })
+  })
   archives.forEach(archive => {
     archive.addEventListener('pointerdown', () => { archiveClicked(archive) })
     archive.addEventListener('pointerup',   () => { resetStyles(archive) })
@@ -245,15 +453,15 @@ function initEvents() {
 
   if(isMobile()) {
     folders.forEach(folder => {
-      folder.addEventListener('touchstart', (event) => { fileDragStart(event, folder) });
-      folder.addEventListener('touchmove',  (event) => { fileDrag(event, folder) });
-      folder.addEventListener('touchend',   () => { fileDragEnd(folder) });
+      folder.addEventListener('touchstart', (event) => { fileDragStart(event, folder) })
+      folder.addEventListener('touchmove',  (event) => { fileDrag(event, folder) })
+      folder.addEventListener('touchend',   () => { fileDragEnd(folder) })
     })
 
     archives.forEach(archive => {
-      archive.addEventListener('touchstart', (event) => { fileDragStart(event, archive) });
-      archive.addEventListener('touchmove',  (event) => { fileDrag(event, archive) });
-      archive.addEventListener('touchend',   () => { fileDragEnd(archive) });  
+      archive.addEventListener('touchstart', (event) => { fileDragStart(event, archive) })
+      archive.addEventListener('touchmove',  (event) => { fileDrag(event, archive) })
+      archive.addEventListener('touchend',   () => { fileDragEnd(archive) })  
     })
 
     windows.forEach(window => {
@@ -263,15 +471,15 @@ function initEvents() {
     })
   } else {
     folders.forEach(folder => {
-      folder.addEventListener('dragstart',  (event) => { fileDragStart(event, folder) });
-      folder.addEventListener('drag',       (event) => { fileDrag(event, folder) });
-      folder.addEventListener('dragend',    () => { fileDragEnd(folder) });
+      folder.addEventListener('dragstart',  (event) => { fileDragStart(event, folder) })
+      folder.addEventListener('drag',       (event) => { fileDrag(event, folder) })
+      folder.addEventListener('dragend',    () => { fileDragEnd(folder) })
     })
 
     archives.forEach(archive => {
-      archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) });
-      archive.addEventListener('drag',      (event) => { fileDrag(event, archive) });
-      archive.addEventListener('dragend',   () => { fileDragEnd(archive) });  
+      archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) })
+      archive.addEventListener('drag',      (event) => { fileDrag(event, archive) })
+      archive.addEventListener('dragend',   () => { fileDragEnd(archive) })  
     })
 
     windows.forEach(window => {
@@ -295,17 +503,17 @@ function initEvents() {
 }
 
 function startSystem() {
-  var bios = document.getElementById('bios');
-  bios.innerHTML = "<p>YEG_OS</p><p>Copyright (c) 2023,2024. All Rights Reserved</p><p>BIOS Version: 202347 Release 1</p><br>";
+  var bios = document.getElementById('bios')
+  bios.innerHTML = "<p>YEG_OS</p><p>Copyright (c) 2023,2024. All Rights Reserved</p><p>BIOS Version: 202347 Release 1</p><br>"
 
   function appendToBios(text, lineBreak) {
-    let p = document.createElement('p');
-    p.textContent = text;
-    bios.appendChild(p);
+    let p = document.createElement('p')
+    p.textContent = text
+    bios.appendChild(p)
 
     if (lineBreak) {
-      let br = document.createElement('br');
-      bios.appendChild(br);
+      let br = document.createElement('br')
+      bios.appendChild(br)
     }
   }
 
@@ -317,11 +525,11 @@ function startSystem() {
 
       archives.forEach(archive => {
         archive.style.display = 'block'
-      });
+      })
 
       folders.forEach(folder => {
         folder.style.display = 'block'
-      });
+      })
       navbar.style.display = 'flex'
     }
 
@@ -347,7 +555,7 @@ function startSystem() {
     "Memory Test: 32M OK",
     "Initializing USB Controllers ... Done",
     "Press Any Key to boot system"
-  ];
+  ]
 
   for (let i = 0; i < biosContents.length; i++) {
     setTimeout(() => {

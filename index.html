@@ -10,12 +10,13 @@
   <link rel="stylesheet" href="styles/navbar.css">
   <link rel="stylesheet" href="styles/folders.css">
   <link rel="stylesheet" href="styles/windows.css">
+  <link rel="stylesheet" href="styles/terminal.css">
   <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
-  <title>YEG_OS</title>
+  <title>OS_OS</title>
 </head>
 <body>
   <div id="wrapper">
-    <div id="desktop" class="flicker res1400x1050">
+    <div id="desktop" class="flicker res800x600">
       <div id="bios"></div>
       <div class="navbar">
         <div class="navbar-left">
@@ -72,7 +73,7 @@
         <div class="navbar-right">
           <div class="d-flex align-items-center">
             <div class="item">
-              <span>[ YEG_OS ]</span>
+              <span>[ OS_OS ]</span>
             </div>
             <div class="item">
               <span id="time"></span>
@@ -100,7 +101,7 @@
           <span>Dungeon & Dragons</span>
           <button>X</button>
         </header>
-        <div class="body">
+        <div class="window-body">
           <div class="d-flex flex-wrap">
             <button class="file md-file" id="readme-dnd">
               <span>README.md</span>
@@ -116,7 +117,7 @@
           <span>Work</span>
           <button>X</button>
         </header>
-        <div class="body">
+        <div class="window-body">
           <div class="d-flex flex-wrap">
             <button class="file bat-file">
               <span>Misc.bat</span>
@@ -154,17 +155,34 @@
             <option value="1400x1050">1400x1050</option>
           </select>
 
-          <button onclick="saveSettings()">Save</button>
+          <button onclick="saveSettingsForm()">Save</button>
           <button onclick="resetSettings()">Reset</button>
+          
         </div>
       </div>
-      
+
+
+      <div class="window window-terminal" id="pid47-window-terminal" draggable="true">
+        <header>
+          <span>[ OS_SHELL ]</span>
+          <button>X</button>
+        </header>
+        <div class="terminal-body">
+          <div class="terminal-input-wrapper" id="pid47-terminal-input-wrapper">
+            <span id="terminal-input-prefix"></span>
+            <input value="lolcat" type="text" id="terminal-input">
+          </div>
+          <div class="terminal-output" id="pid47-terminal-output">
+          </div>
+        </div>
+      </div>
 
       <div id="context-menu">
-        <header>[ YEG_OS ]</header>
+        <header>[ OS_OS ]</header>
         <span class="context-menu-item">Reset desktop</span>
         <span class="context-menu-item" onclick="showDialog('properties')">Properties</span>
         <span class="context-menu-item" onclick="showSettings()">Settings</span>
+        <span class="context-menu-item" onclick="showTerminal()">Terminal</span>
       </div>
     </div>
   </div>
