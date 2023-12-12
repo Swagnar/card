@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="styles/terminal.css">
   <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
   <title>OS_OS</title>
+  <script src="lib/mousetrap.min.js"></script>
   <script src="scripts/dialog.js"></script>
 
 </head>
@@ -21,27 +22,27 @@
       <div id="bios"></div>
       <div class="navbar dark-mode">
         <div class="navbar-left">
-          <div class="item submenu">
-            <button class="logo"></button>
-            <ul class="drop dark-mode">
-              <li>
-                <a href="#" id="about">About</a>
-              </li>
-              <li>
-                <a href="#" id="battery">Battery</a>
-              </li>
-              <li>
-                <a href="#" id="toggle-fullscreen">Toggle fullscreen</a>
-              </li>
-              <li>
-                <a href="#" id="restart">Restart</a>
-              </li>
-              <li>
-                <a href="#" onclick="showDialog('properties')">Properties</a>
-              </li>
-            </ul>
-          </div>
           <div class="d-flex align-items-center">
+            <div class="item submenu">
+              <button class="logo"></button>
+              <ul class="drop dark-mode">
+                <li>
+                  <a href="#" id="about">About</a>
+                </li>
+                <li>
+                  <a href="#" id="battery">Battery</a>
+                </li>
+                <li>
+                  <a href="#" id="toggle-fullscreen">Toggle fullscreen</a>
+                </li>
+                <li>
+                  <a href="#" id="restart">Restart</a>
+                </li>
+                <li>
+                  <a href="#" onclick="showDialog('properties')">Properties</a>
+                </li>
+              </ul>
+            </div>
             <div class="item submenu">
               <button>File</button>
               <ul class="drop dark-mode">
@@ -63,6 +64,8 @@
                   <a href="mailto:derkarus@gmail.com" id="contact">
                     E-mail
                   </a>
+                </li>
+                <li>
                   <a href="#" id="discord">
                     Discord
                   </a>
@@ -70,6 +73,10 @@
               </ul>
             </div>
           </div>
+          
+          <!-- <div class="d-flex align-items-center">
+            
+          </div> -->
         </div>
         <div class="navbar-right">
           <div class="d-flex align-items-center">

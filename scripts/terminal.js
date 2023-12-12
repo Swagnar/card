@@ -9,13 +9,14 @@ const commands = {
    * @returns {string} - result of running ls command
    */
   ls: function(args) {
-    return (`[NOT IMPLEMENTED] Running ls with ${args}`)
+    return `[NOT IMPLEMENTED] Running ls with ${args}`
   },
 
-  /**
-   * Display system information in fromat inspired by `neofetch`
-   * @returns {string} - system infomartion as ASCII art
-   */
+
+  kbind: function() {
+    return `CTRL + S :  : SETTINGS`
+  },
+
   neofetch: function() {
     return `
     ,--------------------------===---.
@@ -23,8 +24,8 @@ const commands = {
     | ,----------------------------.  |
     | |                             | |
     | |            OS_OS            | |
-    | |       VERSION:  0.6.7       | |
-    | |   LAST UPDATE:  10.XII.23   | |     CPU: 0.66MHz Apophis
+    | |      VERSION:  :0.6.7       | |
+    | |  LAST UPDATE:  :10.XII.23   | |     CPU: 0.66MHz Apophis
     | |                             | |     RAM: 32MB DDR1 
     | |                             | |    GPU1: MISSING
     | |.............................| |    GPU2: 16MB VRAM
@@ -43,13 +44,14 @@ const commands = {
    */
   help: function() {
     return `
-    Avaiable commands:
-    > ls [...OPTIONS]
-    > neofetch
-      - displays system info
-    > clear
-      - clears terminal
-    `
+Avaiable commands:
+> ls [...OPTIONS]
+> kbind
+  - shows a list of key bindings
+> neofetch
+  - displays system info
+> clear
+  - clears terminal`
   },
 
   /**

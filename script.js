@@ -1,7 +1,3 @@
-/**
- * Determinates if the user is on a mobile device
- * @returns {boolean} - true if mobile, false otherwise
- */
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
   return /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
@@ -152,7 +148,9 @@ function fileDragEnd(element) { }
 //---------------------------------------------*/
 
 function initEvents() {
-
+  Mousetrap.bind('ctrl+s', function(e) {
+    showSettings()
+  })
   const folders = Array.from(document.querySelectorAll('.folder'))
   const archives = Array.from(document.querySelectorAll('.archive'))
   const windows = Array.from(document.querySelectorAll('.window'))
@@ -163,11 +161,11 @@ function initEvents() {
   const navbarDropLists = navbarItems.map((item) => item.nextElementSibling)
   
 
-  DESKTOP.addEventListener('dragover', () => { allowDrop(event) })
-  DESKTOP.addEventListener('drop', () => { drop(event) })
+  DESKTOP.addEventListener('dragover', function(event) { allowDrop(event) })
+  DESKTOP.addEventListener('drop', function(event) { drop(event) })
   DESKTOP.addEventListener('contextmenu', function(event) { showContextMenu(event, document.getElementById('context-menu')) })
   DESKTOP.addEventListener('click', () => { document.getElementById('context-menu').style.display = 'none' })
-
+    
   
   document.getElementById('dialog-close-btn').addEventListener('pointerdown', () => closeDialog())
   document.getElementById('settings-close-btn').addEventListener('pointerdown', () => closeSettings())  

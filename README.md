@@ -1,15 +1,29 @@
 # card
 
-Hello and welcome. Learn about my work, hobbies and more through this application<br>
+>‏
+>‏
+>‏
+>‏
+>‏
+>‏
+>‏
+>‏
+> Pet project
 
-Application is being hosted on Github Pages, check it out [here](https://swagnar.github.io/card/) <br>
+Inspired by [Kanye2049](https://kanye2049.com/) <br>
 
-## Notes 
-- heavily inspired by [Kanye2049](https://kanye2049.com/)
+Application is hosted on Github Pages, check it out [here](https://swagnar.github.io/card/) <br>
 
-- flickering animation made by [Alec Lowens](aleclownes.com)
 
-- favicon by [Freepik](https://www.flaticon.com/free-icons/computer)
+## Libraries
+
+- [Mousetrap](https://github.com/ccampbell/mousetrap) by [ccampbell](https://github.com/ccampbell)
+
+## Special thanks
+
+- [Alec Lowens](aleclownes.com) for great flickering animation
+
+- [Freepik](https://www.flaticon.com/free-icons/computer) for favicon 
 
 
 

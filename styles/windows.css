@@ -5,32 +5,25 @@
   opacity: 0;
   background-color: #fff;
   border: 1px solid #000;
-  border-radius: var(--border-radius-low);
+  border-radius: 0.2rem;
   position: absolute;
   left: 1rem;
   top: 3rem;
   z-index: 1;
   transform-origin: left top;
   transform: scale(0);
-  transition: 
-    transform .5s ease, 
-    opacity .5s ease, 
-    visibility .5s ease;
+  transition: transform 0.5s ease, opacity 0.5s ease, visibility 0.5s ease;
 }
-
 .window.show {
   visibility: visible;
   opacity: 1;
   transform: scale(1);
 }
-
 .window.hide {
-  transform: scale(0);
-  opacity: 0;
   visibility: hidden;
+  opacity: 0;
+  transform: scale(0);
 }
-
-
 .window header {
   text-align: center;
   font-weight: bold;
@@ -40,11 +33,11 @@
   position: relative;
 }
 .window header span {
-  margin-left: .5rem;
+  margin-left: 0.5rem;
 }
 .window header button {
   border: none;
-  border-top-right-radius: var(--border-radius-low);
+  border-top-right-radius: 0.2rem;
   padding: 0.25rem;
   border-left: 1px solid black;
   width: 1rem;
@@ -59,7 +52,6 @@
   height: calc(100% - 20px);
   overflow: hidden;
 }
-
 .window-body button::before {
   content: "";
   width: 24px;
@@ -70,32 +62,15 @@
   top: 0;
   transform: translateX(-50%);
 }
-.text-file::before { background: url('../static/text-file.png');}
-.md-file::before   { background: url('../static/markdown-file.png');}
-.bat-file::before  { background: url('../static/bat-file.png'); }
 
-
-
-
-
-
-@keyframes windowOpen {
-  from {
-    transform: scale(0);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+.text-file::before {
+  background: url(../static/text-file.png);
 }
-@keyframes windowClose {
-  from {
-    transform: scale(1);
-    opacity: 1;
-  }
-  to {
-    transform: scale(0);
-    opacity: 0;
-  }
+
+.md-file::before {
+  background: url(../static/markdown-file.png);
 }
+
+.bat-file::before {
+  background: url(../static/bat-file.png);
+}/*# sourceMappingURL=windows.css.map */
