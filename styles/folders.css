@@ -12,25 +12,26 @@
   width: 120px;
   position: relative;
 }
-.file.archive,
-.file.folder {
+.file.archive, .file.folder {
   padding-top: 40px;
 }
+
 .file-icon {
+  position: absolute;
   bottom: 25px;
   display: block;
-  position: absolute;
   left: 50%;
   transform: translateX(-50%);
   height: 32px;
   width: 32px;
 }
 .file-icon.folder-icon {
-  background: transparent url('../static/dir.png');
+  background: transparent url(../static/dir.png);
 }
 .file-icon.archive-icon {
-  background: transparent url('../static/archive.png');
+  background: transparent url(../static/archive.png);
 }
+
 .file-label {
   background-color: #fff;
   color: #000;
@@ -50,11 +51,13 @@
   top: 4rem;
   right: 2rem;
 }
+
 #folder-work {
   top: 9rem;
   right: 2rem;
 }
+
 #archive1 {
   top: 5rem;
   right: 7rem;
-}
+}/*# sourceMappingURL=folders.css.map */

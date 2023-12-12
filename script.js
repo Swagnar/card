@@ -1,140 +1,32 @@
-const commands = {
-  ls: function(args) {
-    return (`Running ls with ${args}`)
-  },
-  cd: function(args) {
-    return (`Running cd with ${args}`)
-  },
-  neofetch: function() {
-    return `
-    ,--------------------------===---.
-    | YEG Inc.                        |
-    | ,----------------------------.  |
-    | |                             | |
-    | |            OS_OS            | |
-    | |       VERSION:  0.6.7       | |
-    | |   LAST UPDATE:  10.XII.23   | |     CPU: 0.66MHz Apophis
-    | |                             | |     RAM: 256MB DDJ1 
-    | |                             | |    GPU1: MISSING
-    | |.............................| |    GPU2: 128MB VRAM
-    | |  _  :          '      :  _  | |
-    | | |_| :                 : |_| | |
-    | |  _  :_               _:  _  | |
-    | | |_| :.)        .    (.: |_| | |
-    | '-----....._________.....-----' |
-    '---------------------------------'
-    `
-  },
-  help: function() {
-    return `
-    Avaiable commands:
-    - ls [...OPTIONS]
-    - cd [...OPTIONS]
-    - neofetch
-    `
-  }
-}
-
-
-class Terminal {
-  constructor(pid) {
-    this.container = document.getElementById(`pid${pid}-window-terminal`)
-    this.outputContainer = document.getElementById(`pid${pid}-terminal-output`)
-    this.prefixElement = document.getElementById('terminal-input-prefix')
-    this.prefix = ":~#"
-    this.inputContainer = document.getElementById(`pid${pid}-terminal-input-wrapper`)
-    this.input = document.getElementById('terminal-input')
-    this.history = []
-
-    this.initListeners()
-  }
-
-  appendToLog(content, commandName) {
-
-    console.log(`append content: ${content}`)
-    const logElement = document.createElement('div')
-    logElement.classList.add('terminal-log-element')
-
-    const logElementText = document.createElement('pre')
-    const logElementPrefixSpan = document.createElement('span')
-    const logElementCommandSpan = document.createElement('span')
-
-    logElementPrefixSpan.innerText = this.prefix
-    logElementCommandSpan.innerText = commandName
-
-
-    logElementText.innerText = `\n${content}`
-
-    logElement.append(logElementPrefixSpan)
-    logElement.append(logElementCommandSpan)
-    logElement.append(logElementText)
-
-    this.outputContainer.append(logElement)
-  }
-
-  runCommand(command) {
-    let args = command.split(' ')
-    let name = args.shift()
-    this.history.push({name: name, args: args})
-    let output = commands[name](args)
-    return output
-  }
-
-  handleInput(args) {
-    const command = args
-    const output = this.runCommand(command)
-
-    console.log(`handleInput args: ${args}`)
-    console.log(`handleInput output: ${output}`)
-
-    this.appendToLog(output, command)
-
-    this.input.value = ''
-    this.input.focus()
-  }
-
-  setPrefix(prefix) {
-    this.prefixElement.innerText = prefix
-    this.prefix = prefix
-  }
-
-  showTerminal() {
-    setTimeout(() => {
-      this.container.style.transition = 'none'
-      this.container.classList.remove('show')
-      this.container.classList.add('hide')
-      this.container.offsetHeight // Trigger reflow
-      this.container.style.transition = '' // Re-enable transitions
-      this.container.classList.remove('hide')
-      this.container.classList.add('show')
-    }, 50)
-  }
-  closeTerminal() {
-
-  }
-
-  initListeners() {
-    this.input.addEventListener('keypress', (event) => {
-      if(event.key == 'Enter') {
-        this.handleInput(event.target.value)
-      }
-    })
-  }
-}
-
-const QUEUE = [
-  new Terminal(47)
-]
-const DESKTOP = document.getElementById('desktop')
-
-
-
-
+/**
+ * Determinates if the user is on a mobile device
+ * @returns {boolean} - true if mobile, false otherwise
+ */
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
   return /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
 }
 
+const DESKTOP = document.getElementById('desktop')
+const TERMINAL = new Terminal()
+
+/*---------------------------------------------//
+//             terminal DOM bindings           //
+//---------------------------------------------*/
+
+function showTerminal() {
+  TERMINAL.showTerminal()
+}
+
+function handleTerminalInput(input) {
+  TERMINAL.handleInput(input)
+}
+
+/**
+ * 
+ * @param {Event} event - triggering event (right click)
+ * @param {HTMLElement} menu - the context menu element
+ */
 function showContextMenu(event, menu) {
   event.preventDefault()
   menu.style.display = 'block'
@@ -146,6 +38,10 @@ function showContextMenu(event, menu) {
 //     directories functions (open/close)      //
 //---------------------------------------------*/
 
+/**
+ * Function to show a window with given name
+ * @param {string} name - window name to open
+ */
 function showWindow(name) {
   let window = document.getElementById(`window-${name}`)
 
@@ -159,6 +55,11 @@ function showWindow(name) {
     window.classList.add('show')
   }, 50)
 }
+
+/**
+ * Function closing a window 
+ * @param {HTMLElement} btn - button inside window for closing
+ */
 function closeWindow(btn) {
   let header = btn.parentElement
   let window = header.parentElement
@@ -168,161 +69,13 @@ function closeWindow(btn) {
 }
 
 /*---------------------------------------------//
-//     pop-up dialog functions (open/close)    //
-//---------------------------------------------*/
-
-function showDialog(content) {
-
-  let dialogContents = {
-    'about': "<p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p><p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>",
-    'battery': "<p>Battery power provided by YEG Inc. YEG Inc. is not liable for any burns, explosions or airborne carcinogens caused by this battery pack. Battery pack is single use <u>Do not</u> attempt to recycle</p>",
-    'properties': `
-      <p>Screen size: 800px X 600px</p>
-      <p>Color depth: 8-bit</p>
-      <p style='text-align: center border-bottom: 1px solid black'>Impostor host info</p>
-      <ul>
-        <li>OS: ${navigator.platform.includes('Win') ? 'Windows' :
-        navigator.platform.includes('Mac') ? 'Mac OS' :
-        navigator.platform.includes('Linux') ? 'Linux' :
-        navigator.platform.includes('Iphone') || navigator.platform.includes('ipad') || navigator.platform.includes('ipod') ? 'iOS' :
-        navigator.platform.includes('Android') ? 'Android' :
-        'Unknown'}</li>
-        <li>AGENT: ${navigator.userAgent}</li>
-        <li>AUTOMATA: ${navigator.webdriver}</li>
-        <li>AVAIABLE CORES: ${navigator.hardwareConcurrency}</li>
-      </ul>`,
-    'archive1': "<s>File corrupted! Please download again.</s><br>I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil."
-  }
-
-  let dialog = document.getElementById('dialog')
-  let dialogBody = document.getElementById('dialog-body')
-
-  if(!dialog.classList.contains('dialog-open')) {
-    dialog.classList.remove('dialog-hidden')
-    dialog.classList.add('dialog-open')
-  }
-
-  dialogBody.innerHTML = dialogContents[content]
-}
-
-function closeDialog() {
-  let dialog = document.getElementById('dialog')
-
-  dialog.classList.remove('dialog-open')
-  dialog.classList.add('dialog-hidden')
-}
-
-/*---------------------------------------------//
-//     terminal functions (load/open/close)    //
-//---------------------------------------------*/
-
-function showTerminal() {
-  QUEUE[0].showTerminal()
-  QUEUE[0].setPrefix(":~#")
-}
-
-function handleTerminalInput(input) {
-  QUEUE[0].handleInput(input)
-}
-
-
-
-/*---------------------------------------------//
-//     settings functions (load/open/close)    //
-//---------------------------------------------*/
-
-function saveSettings(settings) {
-  localStorage.setItem('savedSettings', JSON.stringify(settings))
-}
-
-function applySettings(settings) {
-  DESKTOP.classList = []
-
-  if (settings.flickering) {
-    DESKTOP.classList.add('flicker')
-  }
-
-  const resolutionClass = `res${settings.width}x${settings.height}`
-  DESKTOP.classList.add(resolutionClass)
-}
-
-function saveSettingsForm() {
-  const selectedResolution = document.getElementById('resolution-select').value
-  const flickering = document.getElementById('flickering-chbx').checked
-
-  const [width, height] = selectedResolution.split('x')
-  const settings = {
-    width: parseInt(width),
-    height: parseInt(height),
-    flickering: flickering,
-  }
-
-  localStorage.setItem('savedSettings', JSON.stringify(settings))
-
-  applySettings(settings)
-}
-
-function loadSettings() {
-  let savedSettings = localStorage.getItem('savedSettings')
-  let settings
-
-  if (savedSettings) {
-    try {
-      settings = JSON.parse(savedSettings)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  if (!settings || typeof settings !== 'object') {
-    settings = {
-      flickering: false,
-      width: 800,
-      height: 600,
-    }
-    localStorage.setItem('savedSettings', JSON.stringify(settings))
-  }
-
-  applySettings(settings)
-}
-
-function resetSettings() {
-  settings = {
-    flickering: true,
-    width: 800,
-    height: 600
-  }
-
-  saveSettings(settings)
-  applySettings(settings)
-
-  document.getElementById('flickering-chbx').checked = settings.flickering
-  let resolutionClass = `res${settings.width}x${settings.height}`
-  document.getElementById('resolution-select').value = resolutionClass
-
-}
-
-function showSettings() {
-  let settings = document.getElementById('settings')
-  
-  if(!settings.classList.contains('dialog-open')) {
-    settings.classList.remove('dialog-hidden')
-    settings.classList.add('dialog-open')
-  }
-}
-
-function closeSettings() {
-  let settings = document.getElementById('settings')
-
-  settings.classList.remove('dialog-open')
-  settings.classList.add('dialog-hidden')
-}
-
-
-/*---------------------------------------------//
 //     changing icons for desktop elements     //
 //---------------------------------------------*/
 
+/**
+ * Resets the styles of a desktop icon element to default values 
+ * @param {HTMLElement} element - the element to reset styles for
+ */
 function resetStyles(element) {
   var icon = element.firstElementChild
   var label = element.lastElementChild
@@ -336,6 +89,11 @@ function resetStyles(element) {
   label.style.backgroundColor = "#fff"
   label.style.color = "#000"
 }
+
+/**
+ * Handles the click event for a folder element, updating its styles
+ * @param {HTMLElement} folder - the folder element that was clicked
+ */
 function folderClicked(folder) {
   resetStyles(folder)
   var icon = folder.firstElementChild
@@ -345,6 +103,11 @@ function folderClicked(folder) {
   label.style.backgroundColor = "#000"
   label.style.color = "#fff"
 }
+
+/**
+ * Handles the click event for an archive element, updating its styles
+ * @param {HTMLElement} archive - the archive element that was clicked
+ */
 function archiveClicked(archive) {
   resetStyles(archive)
   var icon = archive.firstElementChild
@@ -501,7 +264,6 @@ function initEvents() {
   })
 
 }
-
 function startSystem() {
   var bios = document.getElementById('bios')
   bios.innerHTML = "<p>YEG_OS</p><p>Copyright (c) 2023,2024. All Rights Reserved</p><p>BIOS Version: 202347 Release 1</p><br>"

@@ -6,23 +6,24 @@
   <meta name="description" content="Application to show off my hobbies, work and more (i think)">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=VT323">
   <link rel="stylesheet" href="styles/root.css">
-  <link rel="stylesheet" href="styles/bios.css">
   <link rel="stylesheet" href="styles/navbar.css">
   <link rel="stylesheet" href="styles/folders.css">
   <link rel="stylesheet" href="styles/windows.css">
   <link rel="stylesheet" href="styles/terminal.css">
   <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
   <title>OS_OS</title>
+  <script src="scripts/dialog.js"></script>
+
 </head>
 <body>
   <div id="wrapper">
-    <div id="desktop" class="flicker res800x600">
+    <div id="desktop" class="flicker res800x600 dark-mode">
       <div id="bios"></div>
-      <div class="navbar">
+      <div class="navbar dark-mode">
         <div class="navbar-left">
           <div class="item submenu">
             <button class="logo"></button>
-            <ul class="drop">
+            <ul class="drop dark-mode">
               <li>
                 <a href="#" id="about">About</a>
               </li>
@@ -43,7 +44,7 @@
           <div class="d-flex align-items-center">
             <div class="item submenu">
               <button>File</button>
-              <ul class="drop">
+              <ul class="drop dark-mode">
                 <li>
                   <a href="#" id="new" disabled>New</a>
                 </li>
@@ -57,7 +58,7 @@
             </div>
             <div class="item submenu">
               <button lang="en">Contact</button>
-              <ul class="drop">
+              <ul class="drop dark-mode">
                 <li>
                   <a href="mailto:derkarus@gmail.com" id="contact">
                     E-mail
@@ -140,13 +141,16 @@
         <div id="dialog-body"></div>
       </div>
 
-      <div id="settings" class="dialog-hidden">
+      <div id="settings" class="dialog-hidden dark-mode">
         <div class="dialog-head">
           <button id="settings-close-btn">X</button>
         </div>
         <div id="settings-body">
           Flickering?
           <input type="checkbox" class="chbx" id="flickering-chbx">
+
+          Dark mode
+          <input type="checkbox" class="chbx" id="dark-mode-chbx">
 
           Resolution [px]
           <select id="resolution-select">
@@ -162,22 +166,22 @@
       </div>
 
 
-      <div class="window window-terminal" id="pid47-window-terminal" draggable="true">
+      <div class="window" id="window-terminal" draggable="true">
         <header>
           <span>[ OS_SHELL ]</span>
           <button>X</button>
         </header>
-        <div class="terminal-body">
-          <div class="terminal-input-wrapper" id="pid47-terminal-input-wrapper">
+        <div id="terminal-body">
+          <div id="terminal-input-wrapper">
             <span id="terminal-input-prefix"></span>
-            <input value="lolcat" type="text" id="terminal-input">
+            <input value="neofetch" type="text" id="terminal-input">
           </div>
-          <div class="terminal-output" id="pid47-terminal-output">
+          <div id="terminal-output">
           </div>
         </div>
       </div>
 
-      <div id="context-menu">
+      <div id="context-menu" class="dark-mode">
         <header>[ OS_OS ]</header>
         <span class="context-menu-item">Reset desktop</span>
         <span class="context-menu-item" onclick="showDialog('properties')">Properties</span>
@@ -186,6 +190,8 @@
       </div>
     </div>
   </div>
+  <script src="scripts/settings.js"></script>
+  <script src="scripts/terminal.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
