@@ -10,6 +10,41 @@
   width: 100%;
   font-size: 1.5rem;
 }
+.navbar button.logo {
+  position: relative;
+  height: 38px;
+  width: 48px;
+}
+.navbar button.logo::before {
+  background: url(../static/tux.png);
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  height: 30px;
+  width: 30px;
+  filter: drop-shadow(0 0 5px #000);
+  filter: drop-shadow(0 0 5px #000);
+}
+.navbar .active button.logo {
+  position: relative;
+  height: 38px;
+  width: 48px;
+}
+.navbar .active button.logo::before {
+  background: url(../static/tux.png);
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  height: 30px;
+  width: 30px;
+  filter: invert(100%);
+  filter: drop-shadow(0 0 5px #000);
+  filter: drop-shadow(0 0 5px #fff);
+}
 .navbar div.item {
   position: relative;
   background-color: transparent;
@@ -23,23 +58,6 @@
   font: inherit;
   padding: 0 0.5rem;
   height: 38px;
-}
-.navbar div.item .logo {
-  position: relative;
-  height: 38px;
-  width: 48px;
-}
-.navbar div.item .logo::before {
-  background: url(../static/tux.png);
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -55%);
-  height: 30px;
-  width: 30px;
-  filter: drop-shadow(0 0 5px #000);
-  filter: drop-shadow(0 0 5px #000);
 }
 .navbar div.item.active {
   position: relative;
@@ -59,12 +77,17 @@
   padding: 0 0.5rem;
   height: 38px;
 }
-.navbar div.item.active .logo {
+.navbar.dark-mode {
+  background-color: rgb(47, 47, 47);
+  border-bottom: 1px solid #fff;
+  color: #fff;
+}
+.navbar.dark-mode button.logo {
   position: relative;
   height: 38px;
   width: 48px;
 }
-.navbar div.item.active .logo::before {
+.navbar.dark-mode button.logo::before {
   background: url(../static/tux.png);
   content: "";
   position: absolute;
@@ -73,25 +96,40 @@
   transform: translate(-50%, -55%);
   height: 30px;
   width: 30px;
-  filter: drop-shadow(0 0 5px #000);
+  filter: drop-shadow(0 0 5px #fff);
   filter: drop-shadow(0 0 5px #fff);
 }
-.navbar .active button.logo {
-  background-color: #000;
-}
-.navbar .active button.logo::before {
-  filter: invert(100%);
-}
-.navbar.dark-mode {
-  background-color: rgb(47, 47, 47);
-  border-bottom: 1px solid #fff;
-  color: #fff;
-}
 .navbar.dark-mode .active button.logo {
-  background-color: #fff;
+  position: relative;
+  height: 38px;
+  width: 48px;
 }
 .navbar.dark-mode .active button.logo::before {
+  background: url(../static/tux.png);
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  height: 30px;
+  width: 30px;
   filter: invert(100%);
+  filter: drop-shadow(0 0 5px #fff);
+  filter: drop-shadow(0 0 5px #000);
+}
+.navbar.dark-mode div.item {
+  position: relative;
+  background-color: transparent;
+  border-top-left-radius: 0.65rem;
+  border-top-right-radius: 0.65rem;
+}
+.navbar.dark-mode div.item button {
+  background-color: transparent;
+  color: inherit;
+  border: none;
+  font: inherit;
+  padding: 0 0.5rem;
+  height: 38px;
 }
 .navbar.dark-mode div.item.active {
   position: relative;
@@ -108,54 +146,6 @@
   font: inherit;
   padding: 0 0.5rem;
   height: 38px;
-}
-.navbar.dark-mode div.item.active .logo {
-  position: relative;
-  height: 38px;
-  width: 48px;
-}
-.navbar.dark-mode div.item.active .logo::before {
-  background: url(../static/tux.png);
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -55%);
-  height: 30px;
-  width: 30px;
-  filter: drop-shadow(0 0 5px #fff);
-  filter: drop-shadow(0 0 5px #000);
-}
-.navbar.active .item {
-  position: relative;
-  background-color: transparent;
-  border-top-left-radius: 0.65rem;
-  border-top-right-radius: 0.65rem;
-}
-.navbar.active .item button {
-  background-color: transparent;
-  color: inherit;
-  border: none;
-  font: inherit;
-  padding: 0 0.5rem;
-  height: 38px;
-}
-.navbar.active .item .logo {
-  position: relative;
-  height: 38px;
-  width: 48px;
-}
-.navbar.active .item .logo::before {
-  background: url(../static/tux.png);
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -55%);
-  height: 30px;
-  width: 30px;
-  filter: drop-shadow(0 0 5px #000);
-  filter: drop-shadow(0 0 5px #000);
 }
 .navbar:not(.navbar li) {
   font-weight: bold;
@@ -220,18 +210,18 @@
   color: #fff;
   border-bottom: 1px solid #fff;
 }
+.drop.dark-mode li a {
+  color: #fff;
+}
+.drop.dark-mode li a[disabled] {
+  color: #999;
+}
 .drop.dark-mode li:hover {
   color: #000;
   background-color: #fff;
 }
 .drop.dark-mode li:hover a {
   color: #000;
-}
-.drop.dark-mode li a {
-  color: #fff;
-}
-.drop.dark-mode li a[disabled] {
-  color: #333;
 }
 
 @media screen and (max-width: 450px) {

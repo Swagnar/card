@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles/folders.css">
   <link rel="stylesheet" href="styles/windows.css">
   <link rel="stylesheet" href="styles/terminal.css">
+  <link rel="stylesheet" href="styles/checkbox.css">
   <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
   <title>OS_OS</title>
   <script src="lib/mousetrap.min.js"></script>
@@ -18,14 +19,14 @@
 </head>
 <body>
   <div id="wrapper">
-    <div id="desktop" class="flicker res800x600 dark-mode">
+    <div id="desktop" class="flicker res800x600">
       <div id="bios"></div>
-      <div class="navbar dark-mode">
+      <div class="navbar">
         <div class="navbar-left">
           <div class="d-flex align-items-center">
             <div class="item submenu">
               <button class="logo"></button>
-              <ul class="drop dark-mode">
+              <ul class="drop">
                 <li>
                   <a href="#" id="about">About</a>
                 </li>
@@ -45,7 +46,7 @@
             </div>
             <div class="item submenu">
               <button>File</button>
-              <ul class="drop dark-mode">
+              <ul class="drop">
                 <li>
                   <a href="#" id="new" disabled>New</a>
                 </li>
@@ -59,7 +60,7 @@
             </div>
             <div class="item submenu">
               <button lang="en">Contact</button>
-              <ul class="drop dark-mode">
+              <ul class="drop">
                 <li>
                   <a href="mailto:derkarus@gmail.com" id="contact">
                     E-mail
@@ -74,9 +75,6 @@
             </div>
           </div>
           
-          <!-- <div class="d-flex align-items-center">
-            
-          </div> -->
         </div>
         <div class="navbar-right">
           <div class="d-flex align-items-center">
@@ -141,23 +139,30 @@
       </div>
 
 
-      <div id="dialog" class="dialog-hidden">
+      <div id="dialog" class="dialog dialog-hidden">
         <div class="dialog-head">
           <button id="dialog-close-btn">X</button>
         </div>
-        <div id="dialog-body"></div>
+        <div id="dialog-body" class="dialog-body"></div>
       </div>
 
-      <div id="settings" class="dialog-hidden dark-mode">
+      <div id="settings" class="dialog dialog-hidden">
         <div class="dialog-head">
           <button id="settings-close-btn">X</button>
         </div>
-        <div id="settings-body">
-          Flickering?
-          <input type="checkbox" class="chbx" id="flickering-chbx">
+        <div id="settings-body" class="dialog-body">
+          CRT Flicker
+          <div class="checkbox-wrapper">
+            <input class="toggle-input" type="checkbox" id="flickering-chbx"></input>
+            <label for="flickering-chbx" class="toggle-label"></label>
+          </div>
 
           Dark mode
-          <input type="checkbox" class="chbx" id="dark-mode-chbx">
+          <div class="checkbox-wrapper">            
+            <input class="toggle-input" type="checkbox" id="dark-mode-chbx"></input>
+            <label for="dark-mode-chbx" class="toggle-label"></label>
+          </div>
+
 
           Resolution [px]
           <select id="resolution-select">
@@ -179,16 +184,18 @@
           <button>X</button>
         </header>
         <div id="terminal-body">
+          
+          <div id="terminal-output">
+          </div>
+
           <div id="terminal-input-wrapper">
             <span id="terminal-input-prefix"></span>
             <input value="neofetch" type="text" id="terminal-input">
           </div>
-          <div id="terminal-output">
-          </div>
         </div>
       </div>
 
-      <div id="context-menu" class="dark-mode">
+      <div id="context-menu" class="">
         <header>[ OS_OS ]</header>
         <span class="context-menu-item">Reset desktop</span>
         <span class="context-menu-item" onclick="showDialog('properties')">Properties</span>

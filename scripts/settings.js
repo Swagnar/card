@@ -27,10 +27,10 @@ function applySettings(settings) {
     desktop: DESKTOP,
     navbar: document.querySelectorAll('.navbar')[0],
     dropDowns: document.querySelectorAll('.drop'),
-    settingsDialog: document.getElementById('settings'),
-    contextMenu: document.getElementById('context-menu')
+    dialogs: document.querySelectorAll('.dialog'),
+    contextMenu: document.getElementById('context-menu'),
+    checkboxes: document.querySelectorAll('.checkbox-wrapper'),
   }
-
   
   /**
    * CSS class for flickering animation

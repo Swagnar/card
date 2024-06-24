@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  height: 100%;
   font-family: "VT323", monospace;
   font-size: 1.125rem;
   font-weight: 400;
@@ -88,8 +89,7 @@ a {
   animation: flicker 0.15s infinite;
 }
 
-#settings,
-#dialog {
+.dialog {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -98,29 +98,32 @@ a {
   background-color: #fff;
   box-shadow: 0 0 0 4px #fff;
 }
-#settings.dark-mode,
-#dialog.dark-mode {
+.dialog .dialog-head {
+  display: flex;
+  justify-content: flex-end;
+}
+.dialog .dialog-head button {
+  border: none;
+  padding: 0.25rem;
+  border-bottom: 2px solid #000;
+  border-left: 2px solid #000;
+  width: 1rem;
+}
+.dialog .dialog-body {
+  padding: 0 3rem 1rem 3rem;
+}
+.dialog .dialog-body#settings-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  justify-items: center;
+}
+.dialog.dark-mode {
   background-color: rgb(47, 47, 47);
   color: #fff;
   box-shadow: 0 0 0 4px #fff;
 }
-
-#settings-body,
-#dialog-body {
-  padding: 0 3rem 1rem 3rem;
-}
-
-#settings-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.dialog-head {
-  display: flex;
-  justify-content: flex-end;
-}
-.dialog-head button {
+.dialog.dark-mode .dialog-head button {
   border: none;
   padding: 0.25rem;
   border-bottom: 2px solid #fff;

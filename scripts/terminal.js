@@ -43,16 +43,22 @@ const commands = {
    * @returns {string} - help information
    */
   help: function() {
-    return `
-Avaiable commands:
+    return `Avaiable commands:
 > ls [...OPTIONS]
 > kbind
   - shows a list of key bindings
 > neofetch
   - displays system info
 > clear
-  - clears terminal`
+  - clears terminal
+> wpf
+  - shows WPF hints
+`
   },
+
+  // wpf: function() {
+  //   return `Slajd [X] i slajd [Y]`
+  // },
 
   /**
    * Clears the terminal output
@@ -77,7 +83,7 @@ class Terminal {
     this.input = document.getElementById('terminal-input')
     this.history = []
     this.#prefix = ":~#"
-    this.initListeners()
+    this.init()
     this.displayMOTD("Welcome to OS_SHELL. Type `help` to get list of avaiable commands")
   }
 
@@ -142,8 +148,13 @@ class Terminal {
   runCommand(command) {
     let args = command.split(' ')
     let name = args.shift()
+    let output
     this.history.push({name: name, args: args})
-    let output = commands[name](args)
+    try {
+      output = commands[name](args)
+    } catch (TypeError) {
+      output = `Command '${name}' was not found. Try 'help' to see available commands`
+    }
     return output
   }
 
@@ -176,13 +187,17 @@ class Terminal {
   }
 
   /**
-   * Initializes the listener for terminal input
+   * Initializes the terminal and adds a listener
    */
-  initListeners() {
+  init() {
+    this.prefixElement.innerText = this.#prefix
     this.input.addEventListener('keypress', (event) => {
       if(event.key == 'Enter') {
         this.handleInput(event.target.value)
       }
+    })
+    this.outputContainer.addEventListener('click', () => {
+      this.input.focus()
     })
   }
 }

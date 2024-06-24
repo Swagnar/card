@@ -5,18 +5,6 @@
   z-index: 3;
 }
 
-#terminal-output {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  overflow-x: visible;
-  overflow-y: scroll;
-  justify-content: flex-end;
-  flex-grow: 1;
-  margin-bottom: 45px;
-}
-
 #terminal-body {
   background-color: black;
   color: lightgreen;
@@ -27,6 +15,17 @@
   display: flex;
   flex-direction: column;
   font-size: 15px;
+}
+
+#terminal-output {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100% - 26px);
+  justify-content: flex-end;
+  flex-grow: 1;
+  margin-bottom: 45px;
+  overflow-y: scroll;
 }
 
 #terminal-input-wrapper {
@@ -52,11 +51,12 @@
   font-family: var(--font-main);
   color: #fff;
   font-size: 100%;
+  caret-color: #90ee90;
 }
 
 .terminal-log-element pre {
   display: inline;
-  font-family: var(--font-main);
+  font-family: "VT323", monospace;
 }
 
 .terminal-log-element span:nth-of-type(2) {
