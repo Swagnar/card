@@ -1,3 +1,6 @@
+import { Terminal } from "./scripts/terminal.js"
+import { ContextMenu } from "./scripts/context_menu.js"
+
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
   return /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
@@ -5,30 +8,8 @@ function isMobile() {
 
 const DESKTOP = document.getElementById('desktop')
 const TERMINAL = new Terminal()
+const CONTEXT_MENU = new ContextMenu(DESKTOP)
 
-/*---------------------------------------------//
-//             terminal DOM bindings           //
-//---------------------------------------------*/
-
-function showTerminal() {
-  TERMINAL.showTerminal()
-}
-
-function handleTerminalInput(input) {
-  TERMINAL.handleInput(input)
-}
-
-/**
- * 
- * @param {Event} event - triggering event (right click)
- * @param {HTMLElement} menu - the context menu element
- */
-function showContextMenu(event, menu) {
-  event.preventDefault()
-  menu.style.display = 'block'
-  menu.style.left = event.layerX + "px"
-  menu.style.top = event.layerY + "px"
-}
 
 /*---------------------------------------------//
 //     directories functions (open/close)      //
@@ -163,7 +144,8 @@ function initEvents() {
 
   DESKTOP.addEventListener('dragover', function(event) { allowDrop(event) })
   DESKTOP.addEventListener('drop', function(event) { drop(event) })
-  DESKTOP.addEventListener('contextmenu', function(event) { showContextMenu(event, document.getElementById('context-menu')) })
+  DESKTOP.addEventListener('contextmenu', function(event) { CONTEXT_MENU.showContextMenu(event) });
+  
   DESKTOP.addEventListener('click', () => { document.getElementById('context-menu').style.display = 'none' })
     
   
@@ -261,6 +243,11 @@ function initEvents() {
     btn.addEventListener('click', function() { closeWindow(this) })
   })
 
+  // Binding events from ContextMenuItem class with application functions
+  //
+  document.addEventListener('showTerminal', function() { TERMINAL.showTerminal() })
+  document.addEventListener('showDialog', function(event) { showDialog(event.detail) })
+  document.addEventListener('showSettings', function() { showSettings() })
 }
 function startSystem() {
   var bios = document.getElementById('bios')

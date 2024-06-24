@@ -6,28 +6,40 @@ function showDialog(content) {
 
   /**
    * Object containing predefined dialog contents
-   * @type {Object.<string, string>}
+   * @type {Object<string, string>}
    */
 
   let dialogContents = {
-    'about': "<p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p><p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>",
-    'battery': "<p>Battery power provided by YEG Inc. YEG Inc. is not liable for any burns, explosions or airborne carcinogens caused by this battery pack. Battery pack is single use <u>Do not</u> attempt to recycle</p>",
-    'properties': `
-      <p>Screen size: 800px X 600px</p>
-      <p>Color depth: 8-bit</p>
-      <p style='text-align: center border-bottom: 1px solid black'>Impostor host info</p>
-      <ul>
-        <li>OS: ${navigator.platform.includes('Win') ? 'Windows' :
+    about: `
+      <p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p>
+      <p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>
+    `,
+    battery: `
+      <p>Battery power provided by YEG Inc. YEG Inc. is not liable for any burns, explosions or airborne carcinogens caused by this battery pack. Battery pack is single (1) use. <u>Do not</u> attempt to recycle</p>
+    `,
+    properties: `
+      <fieldset>
+        <legend>OS_OS</legend>
+        <p>Screen size: 800px X 600px</p>
+        <p>Color depth: 8-bit</p>
+      </fieldset>
+      <fieldset>
+        <legend>Impostor host</legend>
+        <p><strong>OS</strong>: ${navigator.platform.includes('Win') ? 'Windows' :
         navigator.platform.includes('Mac') ? 'Mac OS' :
         navigator.platform.includes('Linux') ? 'Linux' :
         navigator.platform.includes('Iphone') || navigator.platform.includes('ipad') || navigator.platform.includes('ipod') ? 'iOS' :
         navigator.platform.includes('Android') ? 'Android' :
-        'Unknown'}</li>
-        <li>AGENT: ${navigator.userAgent}</li>
-        <li>AUTOMATA: ${navigator.webdriver}</li>
-        <li>AVAIABLE CORES: ${navigator.hardwareConcurrency}</li>
-      </ul>`,
-    'archive1': "<s>File corrupted! Please download again.</s><br>I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil."
+        'Unknown'}</p>
+        <p><strong>AGENT</strong>: ${navigator.userAgent}</p>
+        <p><strong>AUTOMATA</strong>: ${navigator.webdriver}</p>
+        <p><strong>AVAIABLE CORES</strong>: ${navigator.hardwareConcurrency}</p>
+      </fieldset>
+    `,
+    archive1: `
+      <s>File corrupted! Please download again.</s><br>
+      I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil.
+    `,
   }
 
   let dialog = document.getElementById('dialog')
