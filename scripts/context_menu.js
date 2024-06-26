@@ -50,6 +50,7 @@ export class ContextMenu {
       new ContextMenuItem("Properties", "context-menu-item-properties", "showDialog-properties"),
       new ContextMenuItem("Settings", "context-menu-item-settings", "showSettings"),
       new ContextMenuItem("Terminal", "context-menu-item-terminal", "showTerminal"),
+      new ContextMenuItem("EMPI3", "context-menu-item-audio-player", "showAudioPlayer")
     ]
 
     this.#body.append(this.#header)

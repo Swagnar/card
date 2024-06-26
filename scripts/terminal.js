@@ -189,6 +189,7 @@ export class Terminal {
 `
   },
 
+
   // wpf: function() {
   //   return `Slajd [X] i slajd [Y]`
   // },

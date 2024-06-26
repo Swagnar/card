@@ -1,14 +1,21 @@
 /**
  * Shows the dialog window with specific content
- * @param {string} content - type of content to populate the dialog with 
+ * @param {string} content - type of content to populate the dialog with. Avaiable options are:
+ * `about`, `battery`, `properties`, `archive1`
  */
 function showDialog(content) {
+  var clientWidth = 800 
+  var clientHeight = 600;
 
+  if(content === 'properties') {
+    var bounds = document.getElementById('desktop').getBoundingClientRect()
+    clientWidth = bounds.width
+    clientHeight = bounds.height
+  }
   /**
    * Object containing predefined dialog contents
    * @type {Object<string, string>}
    */
-
   let dialogContents = {
     about: `
       <p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p>
@@ -20,8 +27,8 @@ function showDialog(content) {
     properties: `
       <fieldset>
         <legend>OS_OS</legend>
-        <p>Screen size: 800px X 600px</p>
-        <p>Color depth: 8-bit</p>
+        <p><strong>Screen size</strong>: ${clientWidth}px X ${clientHeight}px</p>
+        <p><strong>Color depth</strong>: 8-bit</p>
       </fieldset>
       <fieldset>
         <legend>Impostor host</legend>

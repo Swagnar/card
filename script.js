@@ -1,5 +1,7 @@
 import { Terminal } from "./scripts/terminal.js"
 import { ContextMenu } from "./scripts/context_menu.js"
+import { CDirectory, CArchive, YGGDRASIL } from "./scripts/yggdrasil.js"
+import { AudioPlayer } from "./scripts/audio_player.js"
 
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
@@ -10,11 +12,59 @@ const DESKTOP = document.getElementById('desktop')
 const TERMINAL = new Terminal()
 const CONTEXT_MENU = new ContextMenu(DESKTOP)
 
+const AUDIO_PLAYER = new AudioPlayer(0);
+
+const FOLDERS = []
+const ARCHIVES = []
+
+/**
+ * Yggdrasil is a array that contains all objects representing directories and archives found on the application desktop.
+ * Im not crazy enough to add a propper file explorer, come on.
+ * 
+ * This functions loops through the array and creates DOM elements.
+ * If the iterable element is a CDirectory instance, the DOM elements (the `container` and the `icon`) has different class values than for example the CArchive class
+ * 
+ * Then, the ready-to-go DOM elements are added to their corresponding arrays, FOLDERS or ARCHIVES.
+ * // TODO: InitListeners on Yggdrasil maybe?
+ */
+
+function loadYggdrasil() {
+  YGGDRASIL.forEach(element => {
+    var container = document.createElement('button')
+    container.classList.add('file')
+    container.draggable = true
+    container.id = element.id
+    
+    var icon = document.createElement('span')
+    icon.classList.add('file-icon')
+    
+    var label = document.createElement('span')
+    label.classList.add('file-label')
+    label.innerHTML = element.name
+    
+    container.append(icon)
+    container.append(label)
+
+    if(element instanceof CDirectory) {
+      container.classList.add('folder')
+      icon.classList.add('folder-icon')
+      FOLDERS.push(container)
+    }
+    if(element instanceof CArchive) {
+      container.classList.add('archive')
+      icon.classList.add('archive-icon')
+      ARCHIVES.push(container)
+    }
+  })
+}
+
 
 /*---------------------------------------------//
 //     directories functions (open/close)      //
 //---------------------------------------------*/
 
+// TODO: Create window on the fly, don't fetch via getElementById()
+//
 /**
  * Function to show a window with given name
  * @param {string} name - window name to open
@@ -98,7 +148,9 @@ function archiveClicked(archive) {
 /*---------------------------------------------//
 //        drag and drop functionality          //
 //---------------------------------------------*/
-function allowDrop(event) { event.preventDefault() }
+function allowDrop(event) { 
+  event.preventDefault() 
+}
 function drop(event) {
   event.preventDefault()
 
@@ -115,14 +167,14 @@ function drop(event) {
 
   draggedElement.style.left = x + "px"
   draggedElement.style.top = y + "px"
-
-  
 }
 function fileDragStart(event, element) { 
   event.dataTransfer.setData("text/plain", element.id) 
 }
 function fileDrag(event, element) {}
-function fileDragEnd(element) { }
+function fileDragEnd(element) { 
+  resetStyles(element); 
+}
 
 /*---------------------------------------------//
 //            adding EventListeners            //
@@ -132,8 +184,6 @@ function initEvents() {
   Mousetrap.bind('ctrl+s', function(e) {
     showSettings()
   })
-  const folders = Array.from(document.querySelectorAll('.folder'))
-  const archives = Array.from(document.querySelectorAll('.archive'))
   const windows = Array.from(document.querySelectorAll('.window'))
   const windowsCloseBtns = document.querySelectorAll('.window>header>button')
 
@@ -185,23 +235,23 @@ function initEvents() {
   })
 
 
-  folders.forEach(folder => {
+  FOLDERS.forEach(folder => {
     folder.addEventListener('pointerdown',  () => { folderClicked(folder) })
     folder.addEventListener('pointerup',    () => { resetStyles(folder) })
   })
-  archives.forEach(archive => {
+  ARCHIVES.forEach(archive => {
     archive.addEventListener('pointerdown', () => { archiveClicked(archive) })
     archive.addEventListener('pointerup',   () => { resetStyles(archive) })
   })
 
   if(isMobile()) {
-    folders.forEach(folder => {
+    FOLDERS.forEach(folder => {
       folder.addEventListener('touchstart', (event) => { fileDragStart(event, folder) })
       folder.addEventListener('touchmove',  (event) => { fileDrag(event, folder) })
       folder.addEventListener('touchend',   () => { fileDragEnd(folder) })
     })
 
-    archives.forEach(archive => {
+    ARCHIVES.forEach(archive => {
       archive.addEventListener('touchstart', (event) => { fileDragStart(event, archive) })
       archive.addEventListener('touchmove',  (event) => { fileDrag(event, archive) })
       archive.addEventListener('touchend',   () => { fileDragEnd(archive) })  
@@ -213,13 +263,13 @@ function initEvents() {
       window.addEventListener('touchend',    () => { fileDragEnd(window) })
     })
   } else {
-    folders.forEach(folder => {
+    FOLDERS.forEach(folder => {
       folder.addEventListener('dragstart',  (event) => { fileDragStart(event, folder) })
       folder.addEventListener('drag',       (event) => { fileDrag(event, folder) })
       folder.addEventListener('dragend',    () => { fileDragEnd(folder) })
     })
 
-    archives.forEach(archive => {
+    ARCHIVES.forEach(archive => {
       archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) })
       archive.addEventListener('drag',      (event) => { fileDrag(event, archive) })
       archive.addEventListener('dragend',   () => { fileDragEnd(archive) })  
@@ -232,10 +282,10 @@ function initEvents() {
     })
   }
   
-  folders[0].addEventListener('dblclick', () => { showWindow('dnd') })
-  folders[1].addEventListener('dblclick', () => { showWindow('work') })
+  FOLDERS[0].addEventListener('dblclick', () => { showWindow('dnd') })
+  // FOLDERS[1].addEventListener('dblclick', () => { showWindow('work') })
   
-  archives[0].addEventListener('dblclick', () => { showDialog('archive1') })
+  ARCHIVES[0].addEventListener('dblclick', () => { showDialog('archive1') })
 
   
 
@@ -248,6 +298,7 @@ function initEvents() {
   document.addEventListener('showTerminal', function() { TERMINAL.showTerminal() })
   document.addEventListener('showDialog', function(event) { showDialog(event.detail) })
   document.addEventListener('showSettings', function() { showSettings() })
+  document.addEventListener('showAudioPlayer', function() { AUDIO_PLAYER.playAudio(0)})
 }
 function startSystem() {
   var bios = document.getElementById('bios')
@@ -266,17 +317,22 @@ function startSystem() {
 
   function addClickListener() {
     function loadDesktop() {
-      let navbar = document.querySelector('.navbar')
-      let archives = document.querySelectorAll('.archive')
-      let folders = document.querySelectorAll('.folder')
+      var navbar = document.querySelector('.navbar')
+      
+      if(!FOLDERS || !Array.isArray(FOLDERS)) {
+        throw new Error('Folders array is empty, undefined or not an Array')
+      }
+      if(!ARCHIVES || !Array.isArray(ARCHIVES)) {
+        throw new Error('Archives array is empty, undefined or not an Array')
+      }
 
-      archives.forEach(archive => {
-        archive.style.display = 'block'
+      let desktopElements = FOLDERS.concat(ARCHIVES)
+
+      desktopElements.forEach(element => {
+        navbar.after(element)
+        element.style.display = 'block'
       })
 
-      folders.forEach(folder => {
-        folder.style.display = 'block'
-      })
       navbar.style.display = 'flex'
     }
 
@@ -338,6 +394,7 @@ function update_clock() {
 }
 
 window.onload = function() {
+  loadYggdrasil()
   isMobile()
   startSystem()
   initEvents()
