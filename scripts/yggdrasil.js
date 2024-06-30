@@ -7,10 +7,16 @@ export class CFile {
 }
 
 export class CDirectory {
+
+  #icon
+
   constructor(name) {
     this.name = name
     this.files = []
-    this.id = `folder-${this.name}`
+    this.id = `window-${this.name}`
+
+    this.#icon = document.createElement('span')
+
   }
 
   addFile(file) {
@@ -41,9 +47,16 @@ DND.addFiles(
   new CFile("Characters.txt", 'txt-file', 'TO ADD')
 );
 
+const WORK = new CDirectory("WORK");
+WORK.addFiles(
+  new CFile("Misc.bat", "bat-file", "TO ADD"),
+  new CFile("Amazon.bat", "bat-file", "TO ADD"),
+  new CFile("Teacher.txt", "text-file", "TO ADD"),
+)
+
 const ASTRONOMY = new CArchive('ASTRONOMY.ZIP', `      
 <s>File corrupted! Please download again.</s><br>
 I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil.
 `);
 
-export const YGGDRASIL = [DND, ASTRONOMY];
+export const YGGDRASIL = [DND, WORK, ASTRONOMY];

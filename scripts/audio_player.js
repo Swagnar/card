@@ -36,5 +36,9 @@ export class AudioPlayer {
     this.#currentPlaylist[track_id].play()
   }
 
+  showPlayer(desktopElement) {
+    
+  }
+
   
 }

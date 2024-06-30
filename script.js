@@ -2,6 +2,7 @@ import { Terminal } from "./scripts/terminal.js"
 import { ContextMenu } from "./scripts/context_menu.js"
 import { CDirectory, CArchive, YGGDRASIL } from "./scripts/yggdrasil.js"
 import { AudioPlayer } from "./scripts/audio_player.js"
+import { OsWindow } from "./scripts/os_window.js"
 
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
@@ -25,15 +26,16 @@ const ARCHIVES = []
  * If the iterable element is a CDirectory instance, the DOM elements (the `container` and the `icon`) has different class values than for example the CArchive class
  * 
  * Then, the ready-to-go DOM elements are added to their corresponding arrays, FOLDERS or ARCHIVES.
- * // TODO: InitListeners on Yggdrasil maybe?
+ * 
  */
 
 function loadYggdrasil() {
-  YGGDRASIL.forEach(element => {
+  YGGDRASIL.forEach(element /** @type {CDirectory} */ => {
+    
     var container = document.createElement('button')
     container.classList.add('file')
     container.draggable = true
-    container.id = element.id
+    container.id = `file-${element.name}`
     
     var icon = document.createElement('span')
     icon.classList.add('file-icon')
@@ -46,53 +48,37 @@ function loadYggdrasil() {
     container.append(label)
 
     if(element instanceof CDirectory) {
+      container.addEventListener('pointerdown',  () => { folderClicked(container) })
+      container.addEventListener('pointerup',    () => { resetStyles(container) })
+
       container.classList.add('folder')
       icon.classList.add('folder-icon')
       FOLDERS.push(container)
+
+      // When dblclick, create a new OsWindow instance, append it to the Desktop and show it
+      // Add event listeners for drag & drop
+      container.addEventListener('dblclick', () => {
+        try {
+          let windowClass = new OsWindow(element)
+          DESKTOP.append(windowClass.container)
+          windowClass.showWindow()
+
+          windowClass.container.addEventListener('dragstart', (event) => { fileDragStart(event, windowClass.container)})
+          windowClass.container.addEventListener('drag',      (event) => { fileDrag(event, windowClass.container) })
+          windowClass.container.addEventListener('dragend',   () => { fileDragEnd(windowClass.container) })
+        
+        } catch(er) {
+          console.error("Error while dblclick:", er)
+        }
+      })
     }
     if(element instanceof CArchive) {
       container.classList.add('archive')
       icon.classList.add('archive-icon')
       ARCHIVES.push(container)
     }
+
   })
-}
-
-
-/*---------------------------------------------//
-//     directories functions (open/close)      //
-//---------------------------------------------*/
-
-// TODO: Create window on the fly, don't fetch via getElementById()
-//
-/**
- * Function to show a window with given name
- * @param {string} name - window name to open
- */
-function showWindow(name) {
-  let window = document.getElementById(`window-${name}`)
-
-  setTimeout(() => {
-    window.style.transition = 'none'
-    window.classList.remove('show')
-    window.classList.add('hide')
-    window.offsetHeight
-    window.style.transition = ''
-    window.classList.remove('hide')
-    window.classList.add('show')
-  }, 50)
-}
-
-/**
- * Function closing a window 
- * @param {HTMLElement} btn - button inside window for closing
- */
-function closeWindow(btn) {
-  let header = btn.parentElement
-  let window = header.parentElement
-
-  window.classList.remove('show')
-  window.classList.add('hide')
 }
 
 /*---------------------------------------------//
@@ -168,9 +154,7 @@ function drop(event) {
   draggedElement.style.left = x + "px"
   draggedElement.style.top = y + "px"
 }
-function fileDragStart(event, element) { 
-  event.dataTransfer.setData("text/plain", element.id) 
-}
+function fileDragStart(event, element) { event.dataTransfer.setData("text/plain", element.id) }
 function fileDrag(event, element) {}
 function fileDragEnd(element) { 
   resetStyles(element); 
@@ -185,7 +169,6 @@ function initEvents() {
     showSettings()
   })
   const windows = Array.from(document.querySelectorAll('.window'))
-  const windowsCloseBtns = document.querySelectorAll('.window>header>button')
 
   const navbarItems = Array.from(document.querySelectorAll('.item > button'))
   const navbarParentElements = navbarItems.map((item) => item.parentElement)
@@ -235,10 +218,7 @@ function initEvents() {
   })
 
 
-  FOLDERS.forEach(folder => {
-    folder.addEventListener('pointerdown',  () => { folderClicked(folder) })
-    folder.addEventListener('pointerup',    () => { resetStyles(folder) })
-  })
+
   ARCHIVES.forEach(archive => {
     archive.addEventListener('pointerdown', () => { archiveClicked(archive) })
     archive.addEventListener('pointerup',   () => { resetStyles(archive) })
@@ -274,31 +254,14 @@ function initEvents() {
       archive.addEventListener('drag',      (event) => { fileDrag(event, archive) })
       archive.addEventListener('dragend',   () => { fileDragEnd(archive) })  
     })
-
-    windows.forEach(window => {
-      window.addEventListener('dragstart',  (event) => { fileDragStart(event, window) })
-      window.addEventListener('drag',       (event) => { fileDrag(event, window) })
-      window.addEventListener('dragend',    () => { fileDragEnd(window) })
-    })
   }
   
-  FOLDERS[0].addEventListener('dblclick', () => { showWindow('dnd') })
-  // FOLDERS[1].addEventListener('dblclick', () => { showWindow('work') })
-  
-  ARCHIVES[0].addEventListener('dblclick', () => { showDialog('archive1') })
 
-  
-
-  windowsCloseBtns.forEach(btn => {
-    btn.addEventListener('click', function() { closeWindow(this) })
-  })
-
-  // Binding events from ContextMenuItem class with application functions
-  //
   document.addEventListener('showTerminal', function() { TERMINAL.showTerminal() })
   document.addEventListener('showDialog', function(event) { showDialog(event.detail) })
   document.addEventListener('showSettings', function() { showSettings() })
-  document.addEventListener('showAudioPlayer', function() { AUDIO_PLAYER.playAudio(0)})
+  document.addEventListener('windowClosed', function(event) { event.detail.remove() })
+  document.addEventListener('showAudioPlayer', function() { AUDIO_PLAYER.showPlayer(DESKTOP)})
 }
 function startSystem() {
   var bios = document.getElementById('bios')

@@ -63,7 +63,7 @@
   transform: translateX(-50%);
 }
 
-.text-file::before {
+.txt-file::before {
   background: url(../static/text-file.png);
 }
 
