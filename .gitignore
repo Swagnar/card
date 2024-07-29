@@ -1,6 +1,9 @@
 # .gitignore
 
 TODO.md
+
 styles/variables.*
 styles/*.sass
 styles/*.css.map
+
+static/audio/

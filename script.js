@@ -1,8 +1,10 @@
-import { Terminal } from "./scripts/terminal.js"
-import { ContextMenu } from "./scripts/context_menu.js"
-import { CDirectory, CArchive, YGGDRASIL } from "./scripts/yggdrasil.js"
+import { Terminal } from "./scripts/os_terminal.js"
+import { ContextMenu } from "./scripts/os_context_menu.js"
+import { YGGDRASIL } from "./scripts/yggdrasil.js"
 import { AudioPlayer } from "./scripts/audio_player.js"
 import { OsWindow } from "./scripts/os_window.js"
+import { CDirectory, CArchive } from "./scripts/classes/CDirectory.js"
+
 
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
@@ -30,25 +32,43 @@ const ARCHIVES = []
  */
 
 function loadYggdrasil() {
-  YGGDRASIL.forEach(element /** @type {CDirectory} */ => {
+  YGGDRASIL.forEach(function(element, index) {
     
+    // element /** @type {CDirectory} */, index => {
+    
+    // Create a container for visual representation of the direcotry for the desktop
     var container = document.createElement('button')
     container.classList.add('file')
     container.draggable = true
     container.id = `file-${element.name}`
     
+    // Create the icon element
     var icon = document.createElement('span')
     icon.classList.add('file-icon')
     
+    // Create label element
     var label = document.createElement('span')
     label.classList.add('file-label')
     label.innerHTML = element.name
-    
+
+    // Add icon and label to the container
     container.append(icon)
     container.append(label)
 
+    // Adding listeners for drag & drop events
+    // This allows users to move files on the desktop
+    container.addEventListener('dragstart', (event) => { fileDragStart(event, container)})
+    container.addEventListener('drag',      (event) => { fileDrag(event, container)})
+    container.addEventListener('dragend',   ()      => { fileDragEnd(container)})
+    
+    container.style.top = "40px";
+    
     if(element instanceof CDirectory) {
+
+      // When clicked on the directory, change its colors to visualize 'clicked' effect
       container.addEventListener('pointerdown',  () => { folderClicked(container) })
+
+      // The reverse happends when user let go mouse button, reverse to default colors
       container.addEventListener('pointerup',    () => { resetStyles(container) })
 
       container.classList.add('folder')
@@ -62,11 +82,15 @@ function loadYggdrasil() {
           let windowClass = new OsWindow(element)
           DESKTOP.append(windowClass.container)
           windowClass.showWindow()
-
-          windowClass.container.addEventListener('dragstart', (event) => { fileDragStart(event, windowClass.container)})
-          windowClass.container.addEventListener('drag',      (event) => { fileDrag(event, windowClass.container) })
-          windowClass.container.addEventListener('dragend',   () => { fileDragEnd(windowClass.container) })
-        
+          if(isMobile()) {
+            windowClass.container.addEventListener('touchstart', (event) => { fileDragStart(event, windowClass.container) })
+            windowClass.container.addEventListener('touchmove',  (event) => { fileDrag(event, windowClass.container) })
+            windowClass.container.addEventListener('touchend',   () => { fileDragEnd(windowClass.container) })
+          } else {
+            windowClass.container.addEventListener('dragstart', (event) => { fileDragStart(event, windowClass.container)})
+            windowClass.container.addEventListener('drag',      (event) => { fileDrag(event, windowClass.container) })
+            windowClass.container.addEventListener('dragend',   () => { fileDragEnd(windowClass.container) })
+          }
         } catch(er) {
           console.error("Error while dblclick:", er)
         }
@@ -225,11 +249,7 @@ function initEvents() {
   })
 
   if(isMobile()) {
-    FOLDERS.forEach(folder => {
-      folder.addEventListener('touchstart', (event) => { fileDragStart(event, folder) })
-      folder.addEventListener('touchmove',  (event) => { fileDrag(event, folder) })
-      folder.addEventListener('touchend',   () => { fileDragEnd(folder) })
-    })
+
 
     ARCHIVES.forEach(archive => {
       archive.addEventListener('touchstart', (event) => { fileDragStart(event, archive) })
@@ -243,11 +263,7 @@ function initEvents() {
       window.addEventListener('touchend',    () => { fileDragEnd(window) })
     })
   } else {
-    FOLDERS.forEach(folder => {
-      folder.addEventListener('dragstart',  (event) => { fileDragStart(event, folder) })
-      folder.addEventListener('drag',       (event) => { fileDrag(event, folder) })
-      folder.addEventListener('dragend',    () => { fileDragEnd(folder) })
-    })
+
 
     ARCHIVES.forEach(archive => {
       archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) })
@@ -261,11 +277,14 @@ function initEvents() {
   document.addEventListener('showDialog', function(event) { showDialog(event.detail) })
   document.addEventListener('showSettings', function() { showSettings() })
   document.addEventListener('windowClosed', function(event) { event.detail.remove() })
-  document.addEventListener('showAudioPlayer', function() { AUDIO_PLAYER.showPlayer(DESKTOP)})
+  // document.addEventListener('showAudioPlayer', function() { AUDIO_PLAYER.showPlayer(DESKTOP)})
+  document.addEventListener('showAudioPlayer', function() { AUDIO_PLAYER.playAudio(0)})
 }
+
+// TODO: Change how the system is booted. What the fuck is `loadDesktop()` inside a function inside a function?
 function startSystem() {
   var bios = document.getElementById('bios')
-  bios.innerHTML = "<p>YEG_OS</p><p>Copyright (c) 2023,2024. All Rights Reserved</p><p>BIOS Version: 202347 Release 1</p><br>"
+  bios.innerHTML = "<p>OS_OS</p><p>Copyright (c) 2023,2024. All Rights Reserved</p><p>BIOS Version: 202447 Release 1</p><br>"
 
   function appendToBios(text, lineBreak) {
     let p = document.createElement('p')
@@ -293,7 +312,7 @@ function startSystem() {
 
       desktopElements.forEach(element => {
         navbar.after(element)
-        element.style.display = 'block'
+
       })
 
       navbar.style.display = 'flex'

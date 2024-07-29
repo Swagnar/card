@@ -1,15 +1,24 @@
 const KANYE_2049 = [
-  new Audio("./static/audio/kanye2049/01_INTRO_(CHARLIE_HEAT_VERSION).mp3"),
+  // new Audio("./static/audio/kanye2049/01_INTRO_(CHARLIE_HEAT_VERSION).mp3"),
 ]
 
 const VULTURES_2049 = [
-  new Audio("./static/audio/kanye2049/02_POWER.mp3")
+  // new Audio("./static/audio/kanye2049/02_POWER.mp3")
 ]
-
 
 export class AudioPlayer {
 
+  
+  /**
+   * @type {Audio[]}
+   */
   #currentPlaylist
+
+  #container
+  #headerTag
+  #bodyTag
+
+
   constructor(playlist) {
     switch(playlist) {
       case 0:
@@ -23,6 +32,7 @@ export class AudioPlayer {
       default:
         throw new Error("No playlist found, expected values: 0, 1, 'Kanye' or 'Vultures', got: ", playlist)
     }
+
   }
 
   playAudio(track_id) {
