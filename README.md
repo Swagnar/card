@@ -12,7 +12,7 @@
 
 Inspired by [Kanye2049](https://kanye2049.com/) <br>
 
-![](https://i.imgur.com/2gTqzi7.gif)
+![](static/demo.gif)
 
 ## About
 
