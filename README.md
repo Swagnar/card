@@ -20,10 +20,12 @@ This application serves as my *curriculum vitae*. I took heavy inspiration from 
 
 **OS_OS** has following features:
 
-- boot into a `Windows 3.x`-esque operating system (no login screen for now)
+- boot into a `Windows 3.x`-esque operating system. 
 - explore directories, files and archives
 - look around in the terminal (kinda broken I know)
 - settings! turn on or off the flickering animation, change color scheme to dark mode, and change the resolution
+- client side Floyd–Steinberg dithering for images
+
 
 ## Usage
 

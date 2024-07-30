@@ -1,10 +1,13 @@
-import { Terminal } from "./scripts/os_terminal.js"
-import { ContextMenu } from "./scripts/os_context_menu.js"
-import { YGGDRASIL } from "./scripts/yggdrasil.js"
-import { AudioPlayer } from "./scripts/audio_player.js"
+import { OsTerminal } from "./scripts/os_terminal.js"
+import { OsContextMenu } from "./scripts/os_context_menu.js"
 import { OsWindow } from "./scripts/os_window.js"
-import { CDirectory, CArchive } from "./scripts/classes/CDirectory.js"
+import { AudioPlayer } from "./scripts/audio_player.js"
 
+import { CDirectory, CArchive } from "./scripts/classes/CDirectory.js"
+import { YGGDRASIL } from "./scripts/yggdrasil.js"
+
+import { steinbergFloydDither } from "./scripts/dithering.js";
+import { showDialog, closeDialog } from "./scripts/os_dialog.js"
 
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
@@ -12,8 +15,8 @@ function isMobile() {
 }
 
 const DESKTOP = document.getElementById('desktop')
-const TERMINAL = new Terminal()
-const CONTEXT_MENU = new ContextMenu(DESKTOP)
+const TERMINAL = new OsTerminal()
+const CONTEXT_MENU = new OsContextMenu(DESKTOP)
 
 const AUDIO_PLAYER = new AudioPlayer(0);
 
@@ -209,8 +212,8 @@ function initEvents() {
   document.getElementById('dialog-close-btn').addEventListener('pointerdown', () => closeDialog())
   document.getElementById('settings-close-btn').addEventListener('pointerdown', () => closeSettings())  
 
-  document.getElementById('about').addEventListener('pointerdown', () => showDialog('about') ) 
-  document.getElementById('battery').addEventListener('pointerdown', () => showDialog('battery') )
+  document.getElementById('about').addEventListener('pointerdown', () => showDialog('about', steinbergFloydDither) ) 
+  document.getElementById('battery').addEventListener('pointerdown', () => showDialog('battery', steinbergFloydDither) )
   
   document.getElementById('restart').addEventListener('pointerdown', () => location.reload() )
   
@@ -274,7 +277,7 @@ function initEvents() {
   
 
   document.addEventListener('showTerminal', function() { TERMINAL.showTerminal() })
-  document.addEventListener('showDialog', function(event) { showDialog(event.detail) })
+  document.addEventListener('showDialog', function(event) { showDialog(event.detail, steinbergFloydDither) })
   document.addEventListener('showSettings', function() { showSettings() })
   document.addEventListener('windowClosed', function(event) { event.detail.remove() })
   // document.addEventListener('showAudioPlayer', function() { AUDIO_PLAYER.showPlayer(DESKTOP)})

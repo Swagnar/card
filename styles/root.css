@@ -101,6 +101,14 @@ a {
 .dialog a {
   text-decoration: underline;
 }
+.dialog p {
+  float: left;
+}
+.dialog img {
+/*   float: right; */
+  max-width: 100px;
+  
+}
 .dialog .dialog-head {
   display: flex;
   justify-content: flex-end;
@@ -113,7 +121,13 @@ a {
   width: 1rem;
 }
 .dialog .dialog-body {
-  padding: 0 3rem 1rem 3rem;
+  padding: 0 3rem 1.5rem 3rem;
+}
+.dialog .dialog-img-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0 1rem 0;
 }
 .dialog .dialog-body#settings-body {
   display: grid;

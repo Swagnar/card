@@ -2,7 +2,7 @@
 /**
  * Class representing a terminal
  */
-export class Terminal {
+export class OsTerminal {
   #prefix
   constructor() {
     this.container = document.getElementById(`window-terminal`)
@@ -80,7 +80,7 @@ export class Terminal {
     let output
     this.history.push({name: name, args: args})
     try {
-      output = Terminal.commands[name](args)
+      output = OsTerminal.commands[name](args)
     } catch (TypeError) {
       output = `Command '${name}' was not found. Try 'help' to see available commands`
     }

@@ -1,4 +1,4 @@
-class ContextMenuItem {
+class OsContextMenuItem {
   constructor(innerText, id, ev) {
     this.body = document.createElement('span')
     this.body.classList.add('context-menu-item')
@@ -24,7 +24,7 @@ class ContextMenuItem {
   }
 }
 
-export class ContextMenu {
+export class OsContextMenu {
   /**
    * @type {HTMLDivElement}
    */
@@ -46,11 +46,11 @@ export class ContextMenu {
     this.#header = document.createElement('header')
     this.#header.innerText = "[ OS_OS ]"
     this.#elements = [
-      new ContextMenuItem("Reset desktop", "context-menu-item-reset-desktop"),
-      new ContextMenuItem("Properties", "context-menu-item-properties", "showDialog-properties"),
-      new ContextMenuItem("Settings", "context-menu-item-settings", "showSettings"),
-      new ContextMenuItem("Terminal", "context-menu-item-terminal", "showTerminal"),
-      new ContextMenuItem("EMPI3", "context-menu-item-audio-player", "showAudioPlayer")
+      new OsContextMenuItem("Reset desktop", "context-menu-item-reset-desktop"),
+      new OsContextMenuItem("Properties", "context-menu-item-properties", "showDialog-properties"),
+      new OsContextMenuItem("Settings", "context-menu-item-settings", "showSettings"),
+      new OsContextMenuItem("Terminal", "context-menu-item-terminal", "showTerminal"),
+      new OsContextMenuItem("EMPI3", "context-menu-item-audio-player", "showAudioPlayer")
     ]
 
     this.#body.append(this.#header)

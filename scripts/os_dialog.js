@@ -1,21 +1,13 @@
-/**
- * Shows the dialog window with specific content
- * @param {string} content - type of content to populate the dialog with. Avaiable options are:
- * `about`, `battery`, `properties`, `archive1`
- */
-function showDialog(content) {
-  var clientWidth = 800 
+export async function showDialog(keyword, ditheringFunction) {
+  var clientWidth = 800;
   var clientHeight = 600;
 
-  if(content === 'properties') {
-    var bounds = document.getElementById('desktop').getBoundingClientRect()
-    clientWidth = bounds.width
-    clientHeight = bounds.height
+  if (keyword === 'properties') {
+    var bounds = document.getElementById('desktop').getBoundingClientRect();
+    clientWidth = bounds.width;
+    clientHeight = bounds.height;
   }
-  /**
-   * Object containing predefined dialog contents
-   * @type {Object<string, string>}
-   */
+
   let dialogContents = {
     about: `
       <p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p>
@@ -23,6 +15,7 @@ function showDialog(content) {
     `,
     battery: `
       <p>Battery power provided by YEG Inc. YEG Inc. is not liable for any burns, explosions or airborne carcinogens caused by this battery pack. Battery pack is single (1) use. <u>Do not</u> attempt to recycle</p>
+      <div class='dialog-img-wrapper'><img src="static/battery2.jpg" style="display: none;"></div>
     `,
     properties: `
       <fieldset>
@@ -47,20 +40,64 @@ function showDialog(content) {
       <s>File corrupted! Please download again.</s><br>
       I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil.
     `,
+  };
+
+  let dialog = document.getElementById('dialog');
+  let dialogBody = document.getElementById('dialog-body');
+
+  if (!dialog.classList.contains('dialog-open')) {
+    dialog.classList.remove('dialog-hidden');
+    dialog.classList.add('dialog-open');
   }
 
-  let dialog = document.getElementById('dialog')
-  let dialogBody = document.getElementById('dialog-body')
+  dialogBody.innerHTML = dialogContents[keyword];
 
-  if(!dialog.classList.contains('dialog-open')) {
-    dialog.classList.remove('dialog-hidden')
-    dialog.classList.add('dialog-open')
+  if (dialogContents[keyword].includes("<img")) {
+    try {
+      let images = dialogBody.querySelectorAll('img');
+      if (images.length === 0) {
+        throw new Error('Images not found');
+      }
+      for (let image of images) {
+        await loadImage(image);
+        let canvas = document.createElement('canvas');
+        image.after(canvas);
+        applyDithering(image, canvas, ditheringFunction);
+      }
+    } catch (er) {
+      console.error(er);
+    }
   }
-
-  dialogBody.innerHTML = dialogContents[content]
 }
 
-function closeDialog() {
+function loadImage(image) {
+  return new Promise((resolve, reject) => {
+    if (image.complete) {
+      resolve();
+    } else {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error('Failed to load image'));
+    }
+  });
+}
+
+async function applyDithering(img, cnv, ditheringFunction) {
+  let ctx = cnv.getContext('2d');
+
+  ctx.canvas.width = img.width;
+  ctx.canvas.height = img.height;
+
+  ctx.drawImage(img, 0, 0, img.width, img.height);
+
+  let imageData = ctx.getImageData(0, 0, img.width, img.height);
+  let data = imageData.data;
+
+  await ditheringFunction(data, img.width, img.height);
+  ctx.putImageData(imageData, 0, 0);
+}
+
+
+export function closeDialog() {
   let dialog = document.getElementById('dialog')
 
   dialog.classList.remove('dialog-open')
