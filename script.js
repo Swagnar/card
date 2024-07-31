@@ -1,7 +1,7 @@
 import { OsTerminal } from "./scripts/classes/os_terminal.js"
 import { OsContextMenu } from "./scripts/classes/os_context_menu.js"
 import { OsWindow } from "./scripts/classes/os_window.js"
-import { AudioPlayer } from "./scripts/audio_player.js"
+import { OsAudioPlayer } from "./scripts/classes/os_audio_player.js"
 
 import { CDirectory, CArchive } from "./scripts/classes/CDirectory.js"
 import { YGGDRASIL } from "./scripts/yggdrasil.js"
@@ -15,10 +15,9 @@ function isMobile() {
 }
 
 const DESKTOP = document.getElementById('desktop')
-// const TERMINAL = new OsTerminal(DESKTOP)
 const CONTEXT_MENU = new OsContextMenu(DESKTOP)
 
-const AUDIO_PLAYER = new AudioPlayer(0);
+// const AUDIO_PLAYER = new OsAudioPlayer(DESKTOP);
 
 const FOLDERS = []
 const ARCHIVES = []
@@ -285,8 +284,10 @@ function initEvents() {
   document.addEventListener('showDialog', function(event) { showDialog(event.detail, steinbergFloydDither) })
   document.addEventListener('showSettings', function() { showSettings() })
   document.addEventListener('windowClosed', function(event) { event.detail.remove() })
-  // document.addEventListener('showAudioPlayer', function() { AUDIO_PLAYER.showPlayer(DESKTOP)})
-  document.addEventListener('showAudioPlayer', function() { AUDIO_PLAYER.playAudio(0)})
+  document.addEventListener('showAudioPlayer', function() { 
+    var newAudioPlayer = new OsAudioPlayer(DESKTOP);
+    newAudioPlayer.showPlayer(DESKTOP);
+  })
 }
 
 // TODO: Change how the system is booted. What the fuck is `loadDesktop()` inside a function inside a function?

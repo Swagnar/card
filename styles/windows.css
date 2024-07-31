@@ -10,6 +10,7 @@
   left: 1rem;
   top: 3rem;
   z-index: 1;
+  min-width: 500px;
   transform-origin: left top;
   transform: scale(0);
   transition: transform 0.5s ease, opacity 0.5s ease, visibility 0.5s ease;
@@ -49,7 +50,7 @@
   display: flex;
   align-items: flex-start;
   flex-flow: row wrap;
-  height: calc(100% - 20px);
+  /* height: calc(100% - 20px); */
   overflow: hidden;
 }
 .window-body button::before {
@@ -73,4 +74,4 @@
 
 .bat-file::before {
   background: url(../static/bat-file.png);
-}/*# sourceMappingURL=windows.css.map */
+}

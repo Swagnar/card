@@ -50,7 +50,7 @@ export class OsContextMenu {
       new OsContextMenuItem("Properties", "context-menu-item-properties", "showDialog-properties"),
       new OsContextMenuItem("Settings", "context-menu-item-settings", "showSettings"),
       new OsContextMenuItem("Terminal", "context-menu-item-terminal", "showTerminal"),
-      new OsContextMenuItem("EMPI3", "context-menu-item-audio-player", "showAudioPlayer")
+      new OsContextMenuItem("Music", "context-menu-item-audio-player", "showAudioPlayer")
     ]
 
     this.#body.append(this.#header)

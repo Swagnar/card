@@ -5,6 +5,7 @@ import { OsWindow } from "./os_window.js"
  * 
  */
 export class OsTerminal {
+
   /** @type {OsWindow} */
   #window
 
@@ -34,7 +35,7 @@ export class OsTerminal {
     // ! since we don't have any files to show (it's not a CDirectory)
     // ! OsWindow creates the frame, shape, resizing, dragging and the closing button.
     // !
-    this.#window = new OsWindow('[ OS_OSHELL ]');
+    this.#window = new OsWindow('[ SHELL ]');
     root.append(this.#window.container)
 
     // * Create OsTerminal DOM elements, give them `class` attribiutes, and `type` for `HTMLInput` element

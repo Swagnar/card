@@ -1,13 +1,11 @@
 export class OsWindow {
 
   /** @type {HTMLDivElement} */
-  #container
+  #container = document.createElement('div');
 
-  /** @type {HTMLElement} */
-  #headerTag
+  #headerTag = document.createElement('header');
 
-  /** @type {HTMLDivElement} */
-  #bodyTag
+  #bodyTag = document.createElement('div');
 
   /** @type {string} */
   #windowName
@@ -23,9 +21,23 @@ export class OsWindow {
    */
   constructor(name) {
     this.#windowName = name
-    this.createContainer()
-    this.createHeaderElement()
-    this.createBodyElement()
+
+    this.#container.classList.add('window');
+    this.#container.id = `window-${this.#windowName}`;
+    this.#container.draggable = true;
+
+    this.#headerTag = document.createElement('header')
+
+    let span = document.createElement('span')
+    let closeButton = document.createElement('button')
+
+    span.innerText = this.#windowName
+    closeButton.innerText = "X"
+    closeButton.addEventListener('click', () => { this.closeWindow() })
+    this.#headerTag.append(span, closeButton)
+
+    this.#bodyTag.classList.add('window-body')
+
 
     this.joinElements()
 
@@ -52,6 +64,22 @@ export class OsWindow {
     this.#files = directory.files
     this.populateBodyWithFiles()
   }
+  setWindowID(id) {
+    this.#container.id = id;
+  }
+  appendToWindowBody(...nodes) {
+    this.#bodyTag.append(...nodes);
+  }
+  addClassToWindowBody(...classNames) {
+    this.#bodyTag.classList.add(...classNames);
+  }
+  removeClassFromWindowBody(token) {
+    this.#bodyTag.classList.remove(token);
+  }
+  clearWindowBody() {
+    this.#bodyTag.innerHTML = "";
+  }
+  // TODO: remove and use methods from above
   setAsTerminal(outputContainer, inputContainer) {
     if(!outputContainer) {
       throw new TypeError(`Error while setting window as terminal, outputContainer is ${outputContainer}`)
@@ -65,9 +93,6 @@ export class OsWindow {
 
     this.#bodyTag.append(outputContainer, inputContainer)
   }
-  // !
-  // TODO: setAsFile(contents) / setAsViewer(contents) - set OsWindow.#bodyTag to render CFile.content
-  // !
 
   /**
    * This methods appends the header and body containers to the main HTML tag of the OsWindow - `container`
@@ -79,10 +104,13 @@ export class OsWindow {
 
   // Fill the #bodyTag with visual representation for each file found inside the OsWindow.#files
   populateBodyWithFiles() {
+
     let layout = this.#bodyTag.firstChild
 
     if(!layout) {
-      throw new Error("Couldn't find the window body element")
+      layout = document.createElement('div');
+      layout.classList.add('d-flex', 'flex-wrap');
+      this.#bodyTag.append(layout);
     }
     if(!this.#files || this.#files.length == 0) {
       throw new Error('Files array is empty or not set')
@@ -126,35 +154,5 @@ export class OsWindow {
     }, 50)
   }
 
-
-
-  /*---------------------------------------------//
-  //           creating DOM containers           //
-  //---------------------------------------------*/
-  createContainer() {
-    this.#container = document.createElement('div')
-    this.#container.classList.add('window')
-    this.#container.draggable = true
-    this.#container.id = `window-${this.#windowName}`
-  }
-  createHeaderElement() {
-    this.#headerTag = document.createElement('header')
-
-    let span = document.createElement('span')
-    let closeButton = document.createElement('button')
-
-    span.innerText = this.#windowName
-    closeButton.innerText = "X"
-    closeButton.addEventListener('click', () => { this.closeWindow() })
-    this.#headerTag.append(span, closeButton)
-  }
-  createBodyElement() {
-    this.#bodyTag = document.createElement('div')
-    this.#bodyTag.classList.add('window-body')
-
-    let layout = document.createElement('div') 
-    layout.classList.add('d-flex', 'flex-wrap')
-
-    this.#bodyTag.append(layout)
-  }
+  
 }

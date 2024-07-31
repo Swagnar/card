@@ -25,7 +25,8 @@ This application serves as my *curriculum vitae*. I took heavy inspiration from 
 - terminal (also a bit broken at the moment)
 - settings stored in the browser `localStorage`
 - client side Floyd–Steinberg dithering for images
-- rusty window manager, see [OsWindow](scripts/classes/os_window.js)
+- WIP: audio player - play tracks made by the phenomenal **toasty digital** in crisp Base64 quality
+- rusty window manager used by the *file explorer*, terminal and other *software*, see [OsWindow](scripts/classes/os_window.js)
 
 
 ## Usage
