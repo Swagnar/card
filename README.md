@@ -20,11 +20,12 @@ This application serves as my *curriculum vitae*. I took heavy inspiration from 
 
 **OS_OS** has following features:
 
-- boot into a `Windows 3.x`-esque operating system. 
-- explore directories, files and archives
-- look around in the terminal (kinda broken I know)
-- settings! turn on or off the flickering animation, change color scheme to dark mode, and change the resolution
+- a `Windows 3.x`-esque design. 
+- a broken filesystem - [YGGDRASIL](scripts/yggdrasil.js) (array of objects!)
+- terminal (also a bit broken at the moment)
+- settings stored in the browser `localStorage`
 - client side Floyd–Steinberg dithering for images
+- rusty window manager, see [OsWindow](scripts/classes/os_window.js)
 
 
 ## Usage

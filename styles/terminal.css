@@ -1,11 +1,11 @@
-#window-terminal {
+.window-terminal {
   width: 430px;
   height: 360px;
   font-size: 100%;
   z-index: 3;
 }
 
-#terminal-body {
+.terminal-body {
   background-color: black;
   color: lightgreen;
   height: 100%;
@@ -17,7 +17,7 @@
   font-size: 15px;
 }
 
-#terminal-output {
+.terminal-output {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -28,7 +28,7 @@
   overflow-y: scroll;
 }
 
-#terminal-input-wrapper {
+.terminal-input-wrapper {
   display: flex;
   align-items: center;
   font-size: 16px;
@@ -39,7 +39,7 @@
   z-index: 1;
 }
 
-#terminal-input {
+.terminal-input {
   all: unset;
   width: 100%;
   border: none;

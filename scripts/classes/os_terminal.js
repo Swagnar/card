@@ -1,43 +1,107 @@
+import { OsWindow } from "./os_window.js"
 
 /**
  * Class representing a terminal
+ * 
  */
 export class OsTerminal {
-  #prefix
-  constructor() {
-    this.container = document.getElementById(`window-terminal`)
-    this.outputContainer = document.getElementById(`terminal-output`)
-    this.prefixElement = document.getElementById('terminal-input-prefix')
-    this.inputContainer = document.getElementById(`terminal-input-wrapper`)
-    this.input = document.getElementById('terminal-input')
-    this.history = []
-    this.#prefix = ":~#"
+  /** @type {OsWindow} */
+  #window
+
+  /** @type {HTMLDivElement} */
+  #terminalOutputContainer
+
+  /** @type {HTMLDivElement} */
+  #terminalInputContainer
+
+  /** @type {HTMLSpanElement} */
+  #terminalInputPrefixElement
+
+  /** @type {HTMLInputElement} with `type="text"` */
+  #terminalInputElement
+  
+  /** @type {string} */
+  #prefix = "~:";
+  
+  /**
+   * Creates new `OsTerminal` window and shows it on the screen. Window frame is created via `OsWindow` class 
+   * @param {HTMLElement} root Application root HTML element
+   */
+  constructor(root) {
+
+    // ! Create new OsWindow with given name and append it to the root HTML element. 
+    // ! In this case, OsWindow body contents is created strictly via `OsTerminal` class,
+    // ! since we don't have any files to show (it's not a CDirectory)
+    // ! OsWindow creates the frame, shape, resizing, dragging and the closing button.
+    // !
+    this.#window = new OsWindow('[ OS_OSHELL ]');
+    root.append(this.#window.container)
+
+    // * Create OsTerminal DOM elements, give them `class` attribiutes, and `type` for `HTMLInput` element
+    // *
+    // *
+    // * Output container
+    // *
+    this.#terminalOutputContainer = document.createElement('div');
+    this.#terminalOutputContainer.classList.add('terminal-output');
+
+    this.#terminalOutputContainer.addEventListener('click', () => {
+      this.input.focus()
+    })
+    
+    // * Input container
+    // *
+    this.#terminalInputContainer = document.createElement('div');
+    this.#terminalInputContainer.classList.add('terminal-input-wrapper');
+
+    // * Command input element
+    // *
+    this.#terminalInputElement = document.createElement('input')
+    this.#terminalInputElement.type = "text";
+    this.#terminalInputElement.classList.add('terminal-input')
+    this.#terminalInputElement.value = "neofetch";
+
+    this.#terminalInputElement.addEventListener('keypress', (event) => {
+      if(event.key == 'Enter') {
+        this.handleInput(event.target.value)
+      }
+    })
+    
+    // * Command input prefix (~:)
+    // *
+    this.#terminalInputPrefixElement = document.createElement('span')
+    this.#terminalInputPrefixElement.innerText = this.#prefix
+    
+    // ! Append command input element and prefix element to the input container
+    // !
+    this.#terminalInputContainer.append(this.#terminalInputPrefixElement, this.#terminalInputElement)
+    
+    // ? Invoke `OsWindow` method `setAsTerminal` which populates OsWindow.#bodyTag with OsTerminal DOM elements 
+    // ? instead of CDirectory.files array that would result in rendering files of a given directory
+    // ?
+    this.#window.setAsTerminal(this.#terminalOutputContainer, this.#terminalInputContainer)
+
+    this.history = [];
     this.init()
-    this.displayMOTD("Welcome to OS_SHELL. Type `help` to get list of avaiable commands")
+    this.displayMOTD("Welcome to OS_OSHELL. Type `help` to get the list of avaiable commands")
   }
 
   /**
    * Sets the terminal instance prefix
-   * @param {string} prefix - prefix to set
+   * @param {string} prefix - prefix to set. For now it doesn't react in any way to commands ran by the user.
    */
   set prefix(prefix) {
     this.#prefix = prefix
     this.prefixElement.innerText = prefix
   }
-
-  /**
-   * Gets the current terminal instance prefix
-   * @returns {string} - the current prefix
-   */
+  /** Prefix string getter */
   get prefix() { return this.#prefix }
 
   /**
-   * Display the terminal MOTD
-   * @param {string} motd - the message to display
+   * Display the terminal MOTD, invokes `appendToLog`
+   * @param {string} motd - message string to display
    */
-  displayMOTD(motd) {
-    this.appendToLog(motd, '', false)
-  }
+  displayMOTD(motd) { this.appendToLog(motd, '', false) }
 
   /**
    * Append content to the terminal log
@@ -66,7 +130,7 @@ export class OsTerminal {
     logElement.append(logElementCommandSpan)
     logElement.append(logElementText)
 
-    this.outputContainer.append(logElement)
+    this.#terminalOutputContainer.append(logElement)
   }
 
   /**
@@ -97,38 +161,12 @@ export class OsTerminal {
 
     this.appendToLog(output, command, true)
 
-    this.input.value = ''
-    this.input.focus()
+    this.#terminalInputElement.value = ''
+    this.#terminalInputElement.focus()
   }
 
-  showTerminal() {
-
-
-    setTimeout(() => {
-      this.container.style.transition = 'none'
-      this.container.classList.remove('show')
-      this.container.classList.add('hide')
-      this.container.offsetHeight // Trigger reflow
-      this.container.style.transition = '' // Re-enable transitions
-      this.container.classList.remove('hide')
-      this.container.classList.add('show')
-    }, 50)
-  }
-
-  /**
-   * Initializes the terminal and adds a listener
-   */
-  init() {
-    this.prefixElement.innerText = this.#prefix
-    this.input.addEventListener('keypress', (event) => {
-      if(event.key == 'Enter') {
-        this.handleInput(event.target.value)
-      }
-    })
-    this.outputContainer.addEventListener('click', () => {
-      this.input.focus()
-    })
-  }
+  // ! Do i really need to do this?
+  showTerminal() { this.#window.showWindow(); }
 
 
   /**

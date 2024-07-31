@@ -1,12 +1,12 @@
-import { OsTerminal } from "./scripts/os_terminal.js"
-import { OsContextMenu } from "./scripts/os_context_menu.js"
-import { OsWindow } from "./scripts/os_window.js"
+import { OsTerminal } from "./scripts/classes/os_terminal.js"
+import { OsContextMenu } from "./scripts/classes/os_context_menu.js"
+import { OsWindow } from "./scripts/classes/os_window.js"
 import { AudioPlayer } from "./scripts/audio_player.js"
 
 import { CDirectory, CArchive } from "./scripts/classes/CDirectory.js"
 import { YGGDRASIL } from "./scripts/yggdrasil.js"
 
-import { steinbergFloydDither } from "./scripts/dithering.js";
+import { steinbergFloydDither } from "./scripts/utils/dithering.js";
 import { showDialog, closeDialog } from "./scripts/os_dialog.js"
 
 function isMobile() {
@@ -15,7 +15,7 @@ function isMobile() {
 }
 
 const DESKTOP = document.getElementById('desktop')
-const TERMINAL = new OsTerminal()
+// const TERMINAL = new OsTerminal(DESKTOP)
 const CONTEXT_MENU = new OsContextMenu(DESKTOP)
 
 const AUDIO_PLAYER = new AudioPlayer(0);
@@ -82,7 +82,9 @@ function loadYggdrasil() {
       // Add event listeners for drag & drop
       container.addEventListener('dblclick', () => {
         try {
-          let windowClass = new OsWindow(element)
+          let windowClass = new OsWindow(element.name)
+          windowClass.setAsDirectory(element)
+
           DESKTOP.append(windowClass.container)
           windowClass.showWindow()
           if(isMobile()) {
@@ -276,7 +278,10 @@ function initEvents() {
   }
   
 
-  document.addEventListener('showTerminal', function() { TERMINAL.showTerminal() })
+  document.addEventListener('showTerminal', function() { 
+    let terminal = new OsTerminal(DESKTOP) 
+    terminal.showTerminal();
+  })
   document.addEventListener('showDialog', function(event) { showDialog(event.detail, steinbergFloydDither) })
   document.addEventListener('showSettings', function() { showSettings() })
   document.addEventListener('windowClosed', function(event) { event.detail.remove() })
