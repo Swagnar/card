@@ -1,13 +1,15 @@
-import { OsTerminal } from "./scripts/classes/os_terminal.js"
-import { OsContextMenu } from "./scripts/classes/os_context_menu.js"
-import { OsWindow } from "./scripts/classes/os_window.js"
-import { OsAudioPlayer } from "./scripts/classes/os_audio_player.js"
+import OsWindow from "./scripts/classes/os/OsWindow.js"
+import OsTerminal from "./scripts/classes/os/OsTerminal.js"
+import { OsContextMenu } from "./scripts/classes/os/OsContextMenu.js"
 
-import { CDirectory, CArchive } from "./scripts/classes/CDirectory.js"
-import { YGGDRASIL } from "./scripts/yggdrasil.js"
+
+import { YGGDRASIL } from "./scripts/classes/yggdrasil/Yggdrasil.js"
+import { CDirectory, CArchive } from "./scripts/classes/yggdrasil/CDirectory.js"
+
 
 import { steinbergFloydDither } from "./scripts/utils/dithering.js";
 import { showDialog, closeDialog } from "./scripts/os_dialog.js"
+import Choir from "./scripts/classes/Choir/Choir.js"
 
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
@@ -64,7 +66,7 @@ function loadYggdrasil() {
     container.addEventListener('dragend',   ()      => { fileDragEnd(container)})
     
     container.style.top = "40px";
-    
+
     if(element instanceof CDirectory) {
 
       // When clicked on the directory, change its colors to visualize 'clicked' effect
@@ -96,7 +98,7 @@ function loadYggdrasil() {
             windowClass.container.addEventListener('dragend',   () => { fileDragEnd(windowClass.container) })
           }
         } catch(er) {
-          console.error("Error while dblclick:", er)
+          console.error("Error while dblclick:", er, typeof element)
         }
       })
     }
@@ -285,7 +287,7 @@ function initEvents() {
   document.addEventListener('showSettings', function() { showSettings() })
   document.addEventListener('windowClosed', function(event) { event.detail.remove() })
   document.addEventListener('showAudioPlayer', function() { 
-    var newAudioPlayer = new OsAudioPlayer(DESKTOP);
+    var newAudioPlayer = new Choir(DESKTOP);
     newAudioPlayer.showPlayer(DESKTOP);
   })
 }

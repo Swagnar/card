@@ -1,6 +1,7 @@
 # .gitignore
 
 TODO.md
+.htaccess
 
 styles/variables.*
 styles/*.sass
