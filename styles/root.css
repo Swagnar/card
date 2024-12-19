@@ -102,7 +102,7 @@ a {
   text-decoration: underline;
 }
 .dialog p {
-  float: left;
+  /* float: left; */
 }
 .dialog img {
 /*   float: right; */

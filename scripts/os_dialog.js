@@ -1,4 +1,6 @@
-export async function showDialog(keyword, ditheringFunction) {
+import { applyDithering } from "./utils/dithering.js";
+
+export async function showDialog(keyword) {
   var clientWidth = 800;
   var clientHeight = 600;
 
@@ -59,43 +61,15 @@ export async function showDialog(keyword, ditheringFunction) {
         throw new Error('Images not found');
       }
       for (let image of images) {
-        await loadImage(image);
         let canvas = document.createElement('canvas');
         image.after(canvas);
-        applyDithering(image, canvas, ditheringFunction);
+        applyDithering(image, canvas);
       }
     } catch (er) {
       console.error(er);
     }
   }
 }
-
-function loadImage(image) {
-  return new Promise((resolve, reject) => {
-    if (image.complete) {
-      resolve();
-    } else {
-      image.onload = () => resolve();
-      image.onerror = () => reject(new Error('Failed to load image'));
-    }
-  });
-}
-
-async function applyDithering(img, cnv, ditheringFunction) {
-  let ctx = cnv.getContext('2d');
-
-  ctx.canvas.width = img.width;
-  ctx.canvas.height = img.height;
-
-  ctx.drawImage(img, 0, 0, img.width, img.height);
-
-  let imageData = ctx.getImageData(0, 0, img.width, img.height);
-  let data = imageData.data;
-
-  await ditheringFunction(data, img.width, img.height);
-  ctx.putImageData(imageData, 0, 0);
-}
-
 
 export function closeDialog() {
   let dialog = document.getElementById('dialog')

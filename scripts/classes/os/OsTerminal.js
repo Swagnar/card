@@ -195,7 +195,7 @@ export default class OsTerminal {
     | |                             | |
     | |            OS_OS            | |
     | |      VERSION:  :0.6.7       | |
-    | |  LAST UPDATE:  :10.XII.23   | |     CPU: 0.66MHz Apophis
+    | |  LAST UPDATE:  :02.XII.24   | |     CPU: 0.66MHz Apophis
     | |                             | |     RAM: 32MB DDR1 
     | |                             | |    GPU1: MISSING
     | |.............................| |    GPU2: 16MB VRAM

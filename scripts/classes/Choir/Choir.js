@@ -4,6 +4,8 @@ import CMusicAlbum from './CMusicAlbum.js';
 import CMusicTrack from './CMusicTrack.js';
 import OsWindow from '../os/OsWindow.js';
 
+import { applyDithering } from '../../utils/dithering.js';
+
 const UI_SYMBOLS = {
   play: "►",
   nextSong: "⏭",
@@ -31,14 +33,19 @@ function returnAlbumHTML(album) {
   let coverContainer = document.createElement('div');
   coverContainer.classList.add('choir-album-cover');
 
+  let coverDitheringCanvas = document.createElement('canvas')
+
   let cover = document.createElement('img');
   cover.src = `static/${album.cover}`;
+
+  applyDithering(cover, coverDitheringCanvas)
 
   let label = document.createElement('span');
   label.innerHTML = `${album.author} - ${album.name}`;
 
-  coverContainer.append(cover, label)
+  coverContainer.append(cover, coverDitheringCanvas, label)
 
+  cover.style.display = "none"
   return coverContainer
 }
 

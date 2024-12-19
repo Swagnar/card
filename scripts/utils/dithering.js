@@ -1,3 +1,9 @@
+/**
+ * 
+ * @param {Uint8ClampedArray} imageData - `data` property of the ImageData. Returned from `ctx.getImageData()`
+ * @param {number} width - image width
+ * @param {number} height - image height
+ */
 export function steinbergFloydDither(imageData, width, height) {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -34,3 +40,40 @@ export function steinbergFloydDither(imageData, width, height) {
     }
 }
 }
+/**
+ * 
+ * @param {HTMLImageElement} img 
+ * @param {HTMLCanvasElement} cnv 
+ * @param {steinbergFloydDither} ditheringFunction 
+ */
+export async function applyDithering(img, cnv, ditheringFunction = steinbergFloydDither) {
+    async function loadImage(image) {
+        return new Promise((resolve, reject) => {
+          if (image.complete) {
+            resolve();
+          } else {
+            image.onload = () => resolve();
+            image.onerror = () => reject(new Error('Failed to load image'));
+          }
+        });
+      }
+
+    await loadImage(img)
+
+    /** @type {CanvasRenderingContext2D} */
+    let ctx = cnv.getContext('2d');
+  
+    ctx.canvas.width = img.width;
+    ctx.canvas.height = img.height;
+  
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+  
+    /** @type {ImageData} */
+    let imageData = ctx.getImageData(0, 0, img.width, img.height);
+    
+    /** @type {Uint8ClampedArray} */
+    let data = imageData.data;
+  
+    await ditheringFunction(data, img.width, img.height);
+    ctx.putImageData(imageData, 0, 0);
+  }

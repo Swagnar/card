@@ -16,6 +16,10 @@ Inspired by [Kanye2049](https://kanye2049.com/) <br>
 
 ## About
 
+> [!NOTE]
+> This project is still work in progress
+
+
 This application serves as my *curriculum vitae*. I took heavy inspiration from above mentioned Kanye2049, which is a media player/visualizer made for [toasy digital](https://toastydigital.com/). I wanted to make something simillar, a very crude simulation of a operating system, where each directory would tell a different story from my life.
 
 **OS_OS** has following features:

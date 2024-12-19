@@ -215,12 +215,12 @@ function initEvents() {
   document.getElementById('dialog-close-btn').addEventListener('pointerdown', () => closeDialog())
   document.getElementById('settings-close-btn').addEventListener('pointerdown', () => closeSettings())  
 
-  document.getElementById('about').addEventListener('pointerdown', () => showDialog('about', steinbergFloydDither) ) 
-  document.getElementById('battery').addEventListener('pointerdown', () => showDialog('battery', steinbergFloydDither) )
+  document.getElementById('navbar-submenu-item-about').addEventListener('pointerdown', () => showDialog('about') ) 
+  document.getElementById('navbar-submenu-item-battery').addEventListener('pointerdown', () => showDialog('battery') )
+  document.getElementById('navbar-submenu-item-properties').addEventListener('pointerdown', () => showDialog('properties'))
+  document.getElementById('navbar-submenu-item-restart').addEventListener('pointerdown', () => location.reload() )
   
-  document.getElementById('restart').addEventListener('pointerdown', () => location.reload() )
-  
-  document.getElementById('toggle-fullscreen').addEventListener('pointerdown', () => {
+  document.getElementById('navbar-submenu-item-toggle-fullscreen').addEventListener('pointerdown', () => {
     if(!document.fullscreenElement) {
       document.documentElement.requestFullscreen()
     }
