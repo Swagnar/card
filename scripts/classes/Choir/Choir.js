@@ -66,7 +66,8 @@ export default class Choir {
   /** @type {CMusicAlbum} */
   currentAlbum;
 
-  #isPlaying = false;
+
+  // #isPlaying = false;
 
   #nextTrackButton = document.createElement('button');
   #prevTrackButton = document.createElement('button');
@@ -95,10 +96,16 @@ export default class Choir {
   }
 
   #stateChanged() {
-    if(this.#isPlaying) {
-      this.#playTrackButton.innerHTML = UI_SYMBOLS.pause
-    } else {
+    if(this.#currentTrackAudio.paused) {
       this.#playTrackButton.innerHTML = UI_SYMBOLS.play
+      this.#playTrackButton.dataset.playing = 'false'
+      // this.#playTrackButton.onclick = this.handlePlayAudio(this.#currentTrackAudio)
+      // this.#playTrackButton.onclick = this.handleResumeAudio
+    } else {
+      this.#playTrackButton.innerHTML = UI_SYMBOLS.pause
+      this.#playTrackButton.dataset.playing = 'true'
+
+      // this.#playTrackButton.onclick = this.handlePauseAudio
     }
   }
 
@@ -154,9 +161,11 @@ export default class Choir {
 
       let trackContainer = returnTrackHTML(track, i)
 
-      // Handle clicking on a listed track
+      // Handle clicking on a listed track and
+      // enable control buttons
       trackContainer.addEventListener('click', () => {
         this.handlePlayAudio(track)
+        [this.#nextTrackButton, this.#prevTrackButton, this.#playTrackButton].forEach(btn => btn.disabled=false)
       })
 
       trackContainer.addEventListener('mouseenter', () => {
@@ -182,12 +191,28 @@ export default class Choir {
 
     this.#playTrackButton.innerHTML = UI_SYMBOLS.play;
     this.#playTrackButton.disabled = true;
+    this.#playTrackButton.dataset.playing = 'false'
+    this.#playTrackButton.role = 'switch'
 
     this.#soundRangeInput.type = "range"
     this.#soundRangeInput.step = "0.1"
     this.#soundRangeInput.min = 0
     this.#soundRangeInput.max = 1
-    this.#soundRangeInput.class = "choir-volume-range"
+    this.#soundRangeInput.setAttribute('orient', 'vertical')
+    this.#soundRangeInput.classList.add("choir-volume-range")
+
+    this.#playTrackButton.addEventListener('click', () => {
+      if(this.#audioCtx.state === 'suspended') {
+        this.#audioCtx.resume()
+      }
+
+      if(this.#playTrackButton.dataset.playing === 'false') {
+        this.#currentTrackAudio.play();
+      } else if(this.#playTrackButton.dataset.playing === 'true') {
+        this.#currentTrackAudio.pause();
+      }
+      this.#stateChanged()
+    })
 
     // the debt has started to call from the void
     //
@@ -211,13 +236,31 @@ export default class Choir {
     let btnWrapper = document.createElement('div')
     btnWrapper.classList.add('choir-buttons')
 
+    let volumeControlWrapper = document.createElement('div')
+    volumeControlWrapper.classList.add("choir-volume-wrapper")
+
+    let volumeControlBtn = document.createElement('button')
+    volumeControlBtn.id = "choir-volume-btn"
+    volumeControlBtn.innerText = "🔈"
+    volumeControlBtn.addEventListener('click', () => {
+      volumeControlInputWrapper.classList.toggle('hidden')
+    })
+
+    let volumeControlInputWrapper = document.createElement('div')
+    volumeControlInputWrapper.id = "choir-volume-input-wrapper"
+    volumeControlInputWrapper.classList.add('hidden')
+
+    volumeControlInputWrapper.append(this.#soundRangeInput)
+    volumeControlWrapper.append(volumeControlBtn, volumeControlInputWrapper)
+
     btnWrapper.append(
       this.#prevTrackButton,
       this.#playTrackButton,
       this.#nextTrackButton,
+
       // leaving you here for now
       // TODO: range input CSS
-      this.#soundRangeInput
+      volumeControlWrapper
     )
 
     this.#window.appendToWindowBody(btnWrapper);
@@ -244,26 +287,18 @@ export default class Choir {
     this.playAudio()
   }
 
+  playAudio() {
+    this.#currentTrackAudio.play()
+    this.#stateChanged()
+  }
+
+
   setVolume(volume) {
     if (this.#gainNode) {
       this.#gainNode.gain.value = Math.max(0, Math.min(1, volume)); // Clamp value between 0 and 1
     } else {
       console.warn('Gain node is not initialized.');
     }
-  }
-
-  playAudio() {
-    this.#currentTrackAudio.play()
-    this.#isPlaying = true
-    this.#stateChanged()
-  }
-
-  handlePauseAudio() {
-
-  }
-
-  pauseAudio() {
-
   }
 
   showPlayer() { this.#window.showWindow() }

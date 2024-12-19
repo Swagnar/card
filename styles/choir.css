@@ -88,3 +88,32 @@
     text-shadow: 1px 1px 2px #fff;
   }
 }
+
+.choir-volume-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+#choir-volume-btn {
+  font-size: 20px;
+  cursor: pointer;
+  /* background: none; */
+  /* border: none; */
+}
+
+#choir-volume-input-wrapper {
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+#choir-volume-input-wrapper.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
