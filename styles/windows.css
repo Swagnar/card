@@ -31,7 +31,6 @@
   font-size: 1.25rem;
   border-bottom: 1px solid #000;
   height: 26px;
-  position: relative;
 }
 .window header span {
   margin-left: 0.5rem;
@@ -46,7 +45,9 @@
   height: 100%;
 }
 .window:has(.file-viewer) {
+  width: 500px;
   max-width: 600px;
+  max-height: 500px;
 }
 .window-body {
   display: flex;
@@ -59,6 +60,8 @@
   display: block;
   padding-left: .5rem;
   padding-right: .5rem;
+  max-height: 450px;
+  overflow: scroll;
 }
 .window-body.file-viewer canvas {
   max-width: 300px;
@@ -68,6 +71,7 @@
 .window-body.file-viewer h3,
 .window-body.file-viewer h1 {
   margin: .5rem;
+  text-align: center;
 }
 .window-body button::before {
   content: "";

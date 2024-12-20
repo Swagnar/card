@@ -162,9 +162,12 @@ export default class OsTerminal {
 
     this.#terminalInputElement.value = ''
     this.#terminalInputElement.focus()
+    this.#terminalOutputContainer.scrollTop = this.#terminalOutputContainer.scrollHeight
   }
 
   // ! Do i really need to do this?
+  // ! No u idiot, but i'll do it later
+  // TODO: just invoke the `showWindow` 
   showTerminal() { this.#window.showWindow(); }
 
 

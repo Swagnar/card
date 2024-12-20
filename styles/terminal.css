@@ -6,7 +6,7 @@
 }
 
 .terminal-body {
-  background-color: black;
+  background-color: #202020;
   color: lightgreen;
   height: 100%;
   width: 100%;
@@ -18,14 +18,14 @@
 }
 
 .terminal-output {
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   width: 100%;
   max-height: calc(100% - 26px);
   justify-content: flex-end;
   flex-grow: 1;
   margin-bottom: 45px;
-  overflow-y: scroll;
+  overflow: scroll;
 }
 
 .terminal-input-wrapper {

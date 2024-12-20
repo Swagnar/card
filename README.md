@@ -24,7 +24,7 @@ This application serves as my *curriculum vitae*. I took heavy inspiration from 
 
 **OS_OS** has following features:
 
-- a `Windows 3.x`-esque design. 
+- a `MacOS.1`-esque design. 
 - a broken filesystem - [YGGDRASIL](scripts/yggdrasil.js) (array of objects!)
 - terminal (also a bit broken at the moment)
 - settings stored in the browser `localStorage`

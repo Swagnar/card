@@ -5,12 +5,9 @@ import { applyDithering } from "../../utils/dithering.js";
 
 export default class OsWindow {
 
-  /** @type {HTMLDivElement} */
   #container = document.createElement('div');
-
-  #headerTag = document.createElement('header');
-
-  #bodyTag = document.createElement('div');
+    #headerTag = document.createElement('header');
+    #bodyTag = document.createElement('div');
 
   /** @type {string} */
   #windowName
@@ -23,14 +20,15 @@ export default class OsWindow {
   /**
    * 
    * @param {string} name Window name, shown in the header tag
+   * @param {string?} id If you want to have a custom window ID, pass this parameter
    */
-  constructor(name, blob = "") {
+  constructor(name, id = "") {
     this.#windowName = name
 
     this.#container.classList.add('window');
 
-    if(blob !== "") {
-      this.#container.id = `window-${blob}`;
+    if(id !== "") {
+      this.#container.id = `window-${id}`;
     } else {
       this.#container.id = `window-${name}`
     }
@@ -62,7 +60,7 @@ export default class OsWindow {
   }
 
   /**
-   * @returns
+   * @returns {CFile[]}
    */
   get files() {
     if(!this.#files) {
@@ -123,6 +121,12 @@ export default class OsWindow {
     this.#bodyTag.classList.remove(token);
   }
   
+  /**
+   * Used by OsTerminal to set up the window to look like a terminal screen
+   * 
+   * @param {HTMLDivElement} outputContainer - HTML <div> element that shows all runned commands and their outputs
+   * @param {HTMLDivElement} inputContainer - HTML <div> element that contains the <input> tag
+   */
   setAsTerminal(outputContainer, inputContainer) {
     if(!outputContainer) {
       throw new TypeError(`Error while setting window as terminal, outputContainer is ${outputContainer}`)
@@ -137,6 +141,12 @@ export default class OsWindow {
     this.#bodyTag.append(outputContainer, inputContainer)
   }
 
+  /**
+   * Used when double clicked on a file to open it up
+   * @param {string} fileContent A string containing all of the file contents. The string can have HTML tags inside since its injected into `innerHTML` of the window
+   * @throws An error if there is a mismatch between the number of `<img>` tags and `<canvas>` tags
+   * 
+   */
   setAsFileViewer(fileContent) {
     this.#bodyTag.classList.add('file-viewer')
     this.#bodyTag.innerHTML = fileContent

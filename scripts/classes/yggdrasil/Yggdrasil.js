@@ -13,11 +13,14 @@ WORK.addFiles(
   new CFile("Misc.bat", "bat", "TO ADD"),
   new CFile("Amazon.bat", "bat", "TO ADD"),
   new CFile("Teacher.txt", "txt", `
-    <h1 style="text-align: center;">I was a teacher</h1>
-    <h3 style="text-align: center;">2022 - 2025</h3>
+    <h1>I was a teacher</h1>
+    <h3>2022 - 2025</h3>
     <img src="static/rolnik.jpg">
     <canvas></canvas>
     <p>My place of work was a beautiful school located in the very old monastery with adjacent church. Because of it's sheer size, numerous stairways and even <strong>hidden passageways</strong>, the school is often called <em>"The Hogwarts of Nysa"</em></p>
+    <h3>School History</h3>
+    <p>The school was founded in 1892 by <a href="https://en.wikipedia.org/wiki/Society_of_the_Divine_Word">Society of the Divine Word</a>, populary called the <strong>Verbites</strong>. Four brothers bought a 125 Morgen farmstead with only one building, a sheephouse.</p>
+    <p>Fortunately, the cost of the undertaking has been reduced thanks to adjacent clay pits used to fire the bricks for the building. In 1894, two new wings with characteristic towers have been construced </p>
   `),
 )
 
