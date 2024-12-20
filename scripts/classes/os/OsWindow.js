@@ -1,5 +1,8 @@
 import { CDirectory } from "../yggdrasil/CDirectory.js";
 
+import { DESKTOP } from "../../../script.js";
+import { applyDithering } from "../../utils/dithering.js";
+
 export default class OsWindow {
 
   /** @type {HTMLDivElement} */
@@ -134,6 +137,27 @@ export default class OsWindow {
     this.#bodyTag.append(outputContainer, inputContainer)
   }
 
+  setAsFileViewer(fileContent) {
+    this.#bodyTag.classList.add('file-viewer')
+    this.#bodyTag.innerHTML = fileContent
+
+    const imgs = this.#bodyTag.querySelectorAll('img')
+    const cnvs = this.#bodyTag.querySelectorAll('canvas')
+
+    if(imgs.length !== cnvs.length) {
+      throw new Error('Mismatch between <img> and <canvas> counts, while setting the window up as a file viewer')
+    }
+
+    imgs.forEach((img, i) => {
+      const canvas = cnvs[i]
+      if(!canvas) {
+        throw new Error(`Canvas element missing for image number ${i+1} with src: ${img.src}`)
+      }
+      applyDithering(img, canvas)
+      img.style.display = 'none'
+    })
+  }
+
   /**
    * This methods appends the header and body containers to the main HTML tag of the OsWindow - `container`
    */
@@ -157,16 +181,7 @@ export default class OsWindow {
     }
 
     this.#files.forEach(file /** @type {CFile} */ => {
-
-      // Each file is a button with span element inside that acts as a label
-      //
-      let fileTag = document.createElement('button')
-      
-      fileTag.classList.add('file', file.type)
-      fileTag.innerHTML = `
-        <span>${file.name}</span>
-      `
-      layout.append(fileTag)
+      layout.append(file.fileContainer)
     })
   }
 
@@ -181,8 +196,10 @@ export default class OsWindow {
     })
 
     document.dispatchEvent(closeWindowEvent)
+    this.#container.remove()
   }
   showWindow() {
+    DESKTOP.append(this.#container)
     setTimeout(() => {
       this.#container.style.transition = 'none'
       this.#container.classList.remove('show')

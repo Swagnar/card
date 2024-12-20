@@ -16,7 +16,7 @@ function isMobile() {
   return /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
 }
 
-const DESKTOP = document.getElementById('desktop')
+export const DESKTOP = document.getElementById('desktop')
 const CONTEXT_MENU = new OsContextMenu(DESKTOP)
 
 // const AUDIO_PLAYER = new OsAudioPlayer(DESKTOP);
@@ -86,7 +86,7 @@ function loadYggdrasil() {
           let windowClass = new OsWindow(element.name)
           windowClass.setAsDirectory(element)
 
-          DESKTOP.append(windowClass.container)
+          // DESKTOP.append(windowClass.container)
           windowClass.showWindow()
           if(isMobile()) {
             windowClass.container.addEventListener('touchstart', (event) => { fileDragStart(event, windowClass.container) })

@@ -45,13 +45,29 @@
   float: right;
   height: 100%;
 }
-
+.window:has(.file-viewer) {
+  max-width: 600px;
+}
 .window-body {
   display: flex;
   align-items: flex-start;
   flex-flow: row wrap;
   /* height: calc(100% - 20px); */
   overflow: hidden;
+}
+.window-body.file-viewer {
+  display: block;
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+.window-body.file-viewer canvas {
+  max-width: 300px;
+  float: left;
+  padding-right: .5rem;
+}
+.window-body.file-viewer h3,
+.window-body.file-viewer h1 {
+  margin: .5rem;
 }
 .window-body button::before {
   content: "";
@@ -69,7 +85,7 @@
 }
 
 .md-file::before {
-  background: url(../static/markdown-file.png);
+  background: url(../static/md-file.png);
 }
 
 .bat-file::before {
