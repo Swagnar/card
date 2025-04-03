@@ -11,6 +11,8 @@ import { steinbergFloydDither } from "./scripts/utils/dithering.js";
 import { showDialog, closeDialog } from "./scripts/os_dialog.js"
 import Choir from "./scripts/classes/Choir/Choir.js"
 
+import logWithColors from "./scripts/utils/logs.js"
+
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
   return /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
@@ -37,75 +39,43 @@ const ARCHIVES = []
 
 function loadYggdrasil() {
   YGGDRASIL.forEach(function(element, index) {
-    
-    // element /** @type {CDirectory} */, index => {
-    
-    // Create a container for visual representation of the direcotry for the desktop
-    var container = document.createElement('button')
-    container.classList.add('file')
-    container.draggable = true
-    container.id = `file-${element.name}`
-    
-    // Create the icon element
-    var icon = document.createElement('span')
-    icon.classList.add('file-icon')
-    
-    // Create label element
-    var label = document.createElement('span')
-    label.classList.add('file-label')
-    label.innerHTML = element.name
 
-    // Add icon and label to the container
-    container.append(icon)
-    container.append(label)
-
-    // Adding listeners for drag & drop events
-    // This allows users to move files on the desktop
-    container.addEventListener('dragstart', (event) => { fileDragStart(event, container)})
-    container.addEventListener('drag',      (event) => { fileDrag(event, container)})
-    container.addEventListener('dragend',   ()      => { fileDragEnd(container)})
+    // TODO: fix that fucking drag & drop
+    //container.addEventListener('dragstart', (event) => { fileDragStart(event, container)})
+    //container.addEventListener('drag',      (event) => { fileDrag(event, container)})
+    //container.addEventListener('dragend',   ()      => { fileDragEnd(container)})
     
-    container.style.top = "40px";
 
     if(element instanceof CDirectory) {
+      element.init()
 
-      // When clicked on the directory, change its colors to visualize 'clicked' effect
-      container.addEventListener('pointerdown',  () => { folderClicked(container) })
+      FOLDERS.push(element)
 
-      // The reverse happends when user let go mouse button, reverse to default colors
-      container.addEventListener('pointerup',    () => { resetStyles(container) })
-
-      container.classList.add('folder')
-      icon.classList.add('folder-icon')
-      FOLDERS.push(container)
-
-      // When dblclick, create a new OsWindow instance, append it to the Desktop and show it
       // Add event listeners for drag & drop
-      container.addEventListener('dblclick', () => {
-        try {
-          let windowClass = new OsWindow(element.name)
-          windowClass.setAsDirectory(element)
+      //container.addEventListener('dblclick', () => {
+      //  try {
+      //    let windowClass = new OsWindow(element.name)
+      //    windowClass.setAsDirectory(element)
 
-          // DESKTOP.append(windowClass.container)
-          windowClass.showWindow()
-          if(isMobile()) {
-            windowClass.container.addEventListener('touchstart', (event) => { fileDragStart(event, windowClass.container) })
-            windowClass.container.addEventListener('touchmove',  (event) => { fileDrag(event, windowClass.container) })
-            windowClass.container.addEventListener('touchend',   () => { fileDragEnd(windowClass.container) })
-          } else {
-            windowClass.container.addEventListener('dragstart', (event) => { fileDragStart(event, windowClass.container)})
-            windowClass.container.addEventListener('drag',      (event) => { fileDrag(event, windowClass.container) })
-            windowClass.container.addEventListener('dragend',   () => { fileDragEnd(windowClass.container) })
-          }
-        } catch(er) {
-          console.error("Error while dblclick:", er, typeof element)
-        }
-      })
+      //    windowClass.showWindow()
+      //    if(isMobile()) {
+      //      //windowClass.container.addEventListener('touchstart', (event) => { fileDragStart(event, windowClass.container) })
+      //      //windowClass.container.addEventListener('touchmove',  (event) => { fileDrag(event, windowClass.container) })
+      //      //windowClass.container.addEventListener('touchend',   () => { fileDragEnd(windowClass.container) })
+      //    } else {
+      //      //windowClass.container.addEventListener('dragstart', (event) => { fileDragStart(event, windowClass.container)})
+      //      //windowClass.container.addEventListener('drag',      (event) => { fileDrag(event, windowClass.container) })
+      //      //windowClass.container.addEventListener('dragend',   () => { fileDragEnd(windowClass.container) })
+      //    }
+      //  } catch(er) {
+      //    console.error("Error while dblclick:", er, typeof element)
+      //  }
+      // })
     }
     if(element instanceof CArchive) {
-      container.classList.add('archive')
-      icon.classList.add('archive-icon')
-      ARCHIVES.push(container)
+      element.container.classList.add('archive')
+      element.icon.classList.add('archive-icon')
+      ARCHIVES.push(element.container)
     }
 
   })
@@ -119,33 +89,20 @@ function loadYggdrasil() {
  * Resets the styles of a desktop icon element to default values 
  * @param {HTMLElement} element - the element to reset styles for
  */
-function resetStyles(element) {
-  var icon = element.firstElementChild
-  var label = element.lastElementChild
+// function resetStyles(element) {
+//   var icon = element.firstElementChild
+//   var label = element.lastElementChild
 
-  if (element.classList.contains('folder')) {
-    icon.style.backgroundImage = "url('static/dir.png')"
-  } else if (element.classList.contains('archive')) {
-    icon.style.backgroundImage = "url('static/archive.png')"
-  }
+//   if (element.classList.contains('folder')) {
+//     icon.style.backgroundImage = "url('static/dir.png')"
+//   } else if (element.classList.contains('archive')) {
+//     icon.style.backgroundImage = "url('static/archive.png')"
+//   }
 
-  label.style.backgroundColor = "#fff"
-  label.style.color = "#000"
-}
+//   label.style.backgroundColor = "#fff"
+//   label.style.color = "#000"
+// }
 
-/**
- * Handles the click event for a folder element, updating its styles
- * @param {HTMLElement} folder - the folder element that was clicked
- */
-function folderClicked(folder) {
-  resetStyles(folder)
-  var icon = folder.firstElementChild
-  var label = folder.lastElementChild
-
-  icon.style.backgroundImage = "url('static/dir-clicked.png')"
-  label.style.backgroundColor = "#000"
-  label.style.color = "#fff"
-}
 
 /**
  * Handles the click event for an archive element, updating its styles
@@ -321,9 +278,16 @@ function startSystem() {
 
       let desktopElements = FOLDERS.concat(ARCHIVES)
 
+      //
+      // ! PUSHING OBJECT TO RENDER ON SCREEN
+      //
       desktopElements.forEach(element => {
-        navbar.after(element)
-
+        if(element instanceof CDirectory) {
+          navbar.after(element.container)
+          logWithColors("Appending CDirectory {} to DESKTOP element", element.name)
+        } else {
+          navbar.after(element)
+        }
       })
 
       navbar.style.display = 'flex'

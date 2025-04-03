@@ -5,7 +5,7 @@ body {
   font-size: 1.125rem;
   font-weight: 400;
   line-height: 1.2;
-  background-color: #000;
+  background-color: #202020;
 }
 
 ul, pre, a, p {
@@ -100,9 +100,6 @@ a {
 }
 .dialog a {
   text-decoration: underline;
-}
-.dialog p {
-  /* float: left; */
 }
 .dialog img {
 /*   float: right; */

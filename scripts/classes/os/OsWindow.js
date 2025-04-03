@@ -2,6 +2,7 @@ import { CDirectory } from "../yggdrasil/CDirectory.js";
 
 import { DESKTOP } from "../../../script.js";
 import { applyDithering } from "../../utils/dithering.js";
+import logWithColors from "../../utils/logs.js";
 
 export default class OsWindow {
 
@@ -50,9 +51,10 @@ export default class OsWindow {
 
     this.#bodyTag.classList.add('window-body')
 
+    this.#container.append(this.#headerTag)
+    this.#container.append(this.#bodyTag)
 
-    this.joinElements()
-
+    logWithColors("Successfully created OsWindow with name {}", name)
   }
   
   get container() {
@@ -168,31 +170,29 @@ export default class OsWindow {
     })
   }
 
-  /**
-   * This methods appends the header and body containers to the main HTML tag of the OsWindow - `container`
-   */
-  joinElements() {
-    this.#container.append(this.#headerTag)
-    this.#container.append(this.#bodyTag)
-  }
 
   // Fill the #bodyTag with visual representation for each file found inside the OsWindow.#files
   populateBodyWithFiles() {
+    try {
 
-    let layout = this.#bodyTag.firstChild
-
-    if(!layout) {
-      layout = document.createElement('div');
-      layout.classList.add('d-flex', 'flex-wrap');
-      this.#bodyTag.append(layout);
+      let layout = this.#bodyTag.firstChild
+      
+      if(!layout) {
+        layout = document.createElement('div');
+        layout.classList.add('d-flex', 'flex-wrap');
+        this.#bodyTag.append(layout);
+      }
+      if(!this.#files || this.#files.length == 0) {
+        throw new Error('Files array is empty or not set')
+      }
+      
+      this.#files.forEach(file /** @type {CFile} */ => {
+        layout.append(file.fileContainer)
+      })
+      logWithColors("Finished populating {} with {} files", this.#windowName, this.#files.length)
+    } catch(e) {
+      console.error(`Something went wrong while populating OsWindow with name ${this.#windowName}`, e)
     }
-    if(!this.#files || this.#files.length == 0) {
-      throw new Error('Files array is empty or not set')
-    }
-
-    this.#files.forEach(file /** @type {CFile} */ => {
-      layout.append(file.fileContainer)
-    })
   }
 
   closeWindow() {

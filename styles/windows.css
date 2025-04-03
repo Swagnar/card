@@ -65,12 +65,17 @@
 }
 .window-body.file-viewer canvas {
   max-width: 300px;
-  float: left;
-  padding-right: .5rem;
+  border: thin solid #202020;
+  padding: .2rem;
+
+  &.cfile-fl { float: left; margin-right: .5rem; }
+  &.cfile-fr { float: right; margin-left: .5rem; }
 }
+
 .window-body.file-viewer h3,
 .window-body.file-viewer h1 {
-  margin: .5rem;
+  clear: both;
+  margin: 1rem .5rem;
   text-align: center;
 }
 .window-body button::before {

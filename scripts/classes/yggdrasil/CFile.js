@@ -37,7 +37,6 @@ export class CFile {
     // When double clicked, create a new OsWindow and show the file contents inside
     //
     this.fileContainer.addEventListener('dblclick', () => {
-      console.log('test')
       const viewer = new OsWindow(this.name)
       viewer.setAsFileViewer(this.content)
       viewer.showWindow()
