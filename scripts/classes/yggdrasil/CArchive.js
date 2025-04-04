@@ -1,6 +1,6 @@
-export class CArchive {
+export default class CArchive {
   constructor(name, content) {
-    super(name)
+    this.name = name
     this.content = content
   }
 }

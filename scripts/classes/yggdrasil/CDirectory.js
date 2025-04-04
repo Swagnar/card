@@ -2,7 +2,7 @@ import { CFile } from "./CFile.js"
 import logWithColors from "../../utils/logs.js"
 import OsWindow from "../os/OsWindow.js"
 
-export class CDirectory {
+export default class CDirectory {
 
   /** @type {HTMLButtonElement} */
   #container

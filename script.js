@@ -4,8 +4,8 @@ import { OsContextMenu } from "./scripts/classes/os/OsContextMenu.js"
 
 
 import { YGGDRASIL } from "./scripts/classes/yggdrasil/Yggdrasil.js"
-import { CDirectory, CArchive } from "./scripts/classes/yggdrasil/CDirectory.js"
-
+import CDirectory from "./scripts/classes/yggdrasil/CDirectory.js"
+import CArchive from "./scripts/classes/yggdrasil/CArchive.js"
 
 import { steinbergFloydDither } from "./scripts/utils/dithering.js";
 import { showDialog, closeDialog } from "./scripts/os_dialog.js"
@@ -72,11 +72,12 @@ function loadYggdrasil() {
       //  }
       // })
     }
-    if(element instanceof CArchive) {
-      element.container.classList.add('archive')
-      element.icon.classList.add('archive-icon')
-      ARCHIVES.push(element.container)
-    }
+    // TODO: fix populate CArchive class
+    // if(element instanceof CArchive) {
+    //   element.container.classList.add('archive')
+    //   element.icon.classList.add('archive-icon')
+    //   ARCHIVES.push(element.container)
+    // }
 
   })
 }

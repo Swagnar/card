@@ -1,4 +1,4 @@
-import { CDirectory } from "../yggdrasil/CDirectory.js";
+import CDirectory from "../yggdrasil/CDirectory.js";
 
 import { DESKTOP } from "../../../script.js";
 import { applyDithering } from "../../utils/dithering.js";
