@@ -1,4 +1,4 @@
-import { CFile } from "./CFile.js"
+import CFile from "./CFile.js"
 import logWithColors from "../../utils/logs.js"
 import OsWindow from "../os/OsWindow.js"
 

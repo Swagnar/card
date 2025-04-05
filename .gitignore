@@ -2,9 +2,6 @@
 
 TODO.md
 .htaccess
-
-styles/variables.*
-styles/*.sass
-styles/*.css.map
+*.tar
 
 static/audio/

@@ -6,7 +6,7 @@ import OsWindow from "../os/OsWindow.js"
  * Class representing a single file that can be contained inside a folder. 
  * The file icon is created via `::before` pseudoelement, based on the `type` property of the file
  */
-export class CFile {
+export default class CFile {
   fileContainer = document.createElement('button')
   nameElement = document.createElement('span')
 

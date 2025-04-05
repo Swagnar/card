@@ -7,8 +7,8 @@ import logWithColors from "../../utils/logs.js";
 export default class OsWindow {
 
   #container = document.createElement('div');
-    #headerTag = document.createElement('header');
-    #bodyTag = document.createElement('div');
+  #headerTag = document.createElement('header');
+  #bodyTag = document.createElement('div');
 
   /** @type {string} */
   #windowName
@@ -16,7 +16,14 @@ export default class OsWindow {
   /** @type {CFile[]} */
   #files
 
-  // TODO: Change to #directory and use #directory.files?
+  /**
+   * @type {boolean}
+   * A flag used to detect if the window is moving or still in place
+   */
+  isDragging = false;
+  offsetX;
+  offsetY;
+
   
   /**
    * 
@@ -37,7 +44,7 @@ export default class OsWindow {
     // why
     //
     // TODO: change to a class method - setDraggable
-    this.#container.draggable = true;
+    // this.#container.draggable = true;
 
     this.#headerTag = document.createElement('header')
 
@@ -53,6 +60,10 @@ export default class OsWindow {
 
     this.#container.append(this.#headerTag)
     this.#container.append(this.#bodyTag)
+
+    this.#container.addEventListener('pointerdown', (ev) => { this.startMovingWindow(ev) })
+    this.#container.addEventListener('pointermove', (ev) => { this.moveWindow(ev) })
+    this.#container.addEventListener('pointerup', (ev) => { this.stopMovingWindow(ev)})
 
     logWithColors("Successfully created OsWindow with name {}", name)
   }
@@ -219,6 +230,31 @@ export default class OsWindow {
       this.#container.classList.remove('hide')
       this.#container.classList.add('show')
     }, 50)
+  }
+
+  /**
+   * @param {PointerEvent} e
+   */
+  startMovingWindow(e) {
+    this.isDragging = true
+    this.offsetX = e.clientX - this.#container.offsetLeft
+    this.offsetY = e.clientY - this.container.offsetTop
+    this.#container.style.cursor = 'grabbing'
+  }
+  /**
+   * @param {PointerEvent} e 
+   */
+  moveWindow(e) {
+    if(!this.isDragging) return;
+    this.#container.style.left = (e.clientX - this.offsetX) + 'px'
+    this.#container.style.top = (e.clientY - this.offsetY) + 'px'
+  }
+  /**
+   * @param {PointerEvent} e 
+   */
+  stopMovingWindow(e) {
+    this.isDragging = false;
+    this.#container.style.cursor = 'grab'
   }
 
   

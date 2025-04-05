@@ -7,7 +7,9 @@ import { YGGDRASIL } from "./scripts/classes/yggdrasil/Yggdrasil.js"
 import CDirectory from "./scripts/classes/yggdrasil/CDirectory.js"
 import CArchive from "./scripts/classes/yggdrasil/CArchive.js"
 
-import { steinbergFloydDither } from "./scripts/utils/dithering.js";
+import steinbergFloydDither from "./scripts/utils/dithering.js";
+import update_clock from "./scripts/utils/clock.js"
+
 import { showDialog, closeDialog } from "./scripts/os_dialog.js"
 import Choir from "./scripts/classes/Choir/Choir.js"
 
@@ -38,39 +40,10 @@ const ARCHIVES = []
  */
 
 function loadYggdrasil() {
-  YGGDRASIL.forEach(function(element, index) {
-
-    // TODO: fix that fucking drag & drop
-    //container.addEventListener('dragstart', (event) => { fileDragStart(event, container)})
-    //container.addEventListener('drag',      (event) => { fileDrag(event, container)})
-    //container.addEventListener('dragend',   ()      => { fileDragEnd(container)})
-    
-
+  YGGDRASIL.forEach(function(element, index) {    
     if(element instanceof CDirectory) {
       element.init()
-
       FOLDERS.push(element)
-
-      // Add event listeners for drag & drop
-      //container.addEventListener('dblclick', () => {
-      //  try {
-      //    let windowClass = new OsWindow(element.name)
-      //    windowClass.setAsDirectory(element)
-
-      //    windowClass.showWindow()
-      //    if(isMobile()) {
-      //      //windowClass.container.addEventListener('touchstart', (event) => { fileDragStart(event, windowClass.container) })
-      //      //windowClass.container.addEventListener('touchmove',  (event) => { fileDrag(event, windowClass.container) })
-      //      //windowClass.container.addEventListener('touchend',   () => { fileDragEnd(windowClass.container) })
-      //    } else {
-      //      //windowClass.container.addEventListener('dragstart', (event) => { fileDragStart(event, windowClass.container)})
-      //      //windowClass.container.addEventListener('drag',      (event) => { fileDrag(event, windowClass.container) })
-      //      //windowClass.container.addEventListener('dragend',   () => { fileDragEnd(windowClass.container) })
-      //    }
-      //  } catch(er) {
-      //    console.error("Error while dblclick:", er, typeof element)
-      //  }
-      // })
     }
     // TODO: fix populate CArchive class
     // if(element instanceof CArchive) {
@@ -78,31 +51,8 @@ function loadYggdrasil() {
     //   element.icon.classList.add('archive-icon')
     //   ARCHIVES.push(element.container)
     // }
-
   })
 }
-
-/*---------------------------------------------//
-//     changing icons for desktop elements     //
-//---------------------------------------------*/
-
-/**
- * Resets the styles of a desktop icon element to default values 
- * @param {HTMLElement} element - the element to reset styles for
- */
-// function resetStyles(element) {
-//   var icon = element.firstElementChild
-//   var label = element.lastElementChild
-
-//   if (element.classList.contains('folder')) {
-//     icon.style.backgroundImage = "url('static/dir.png')"
-//   } else if (element.classList.contains('archive')) {
-//     icon.style.backgroundImage = "url('static/archive.png')"
-//   }
-
-//   label.style.backgroundColor = "#fff"
-//   label.style.color = "#000"
-// }
 
 
 /**
@@ -120,42 +70,10 @@ function archiveClicked(archive) {
 }
 
 /*---------------------------------------------//
-//        drag and drop functionality          //
-//---------------------------------------------*/
-function allowDrop(event) { 
-  event.preventDefault() 
-}
-function drop(event) {
-  event.preventDefault()
-
-  var data = event.dataTransfer.getData("text/plain")
-  var draggedElement = document.getElementById(data)
-
-  var desktopRect = DESKTOP.getBoundingClientRect()
-
-  var elementWidth = draggedElement.offsetWidth
-  var elementHeight = draggedElement.offsetHeight
-
-  var x = event.clientX - desktopRect.left - elementWidth / 2
-  var y = event.clientY - desktopRect.top - elementHeight / 2
-
-  draggedElement.style.left = x + "px"
-  draggedElement.style.top = y + "px"
-}
-function fileDragStart(event, element) { event.dataTransfer.setData("text/plain", element.id) }
-function fileDrag(event, element) {}
-function fileDragEnd(element) { 
-  resetStyles(element); 
-}
-
-/*---------------------------------------------//
 //            adding EventListeners            //
 //---------------------------------------------*/
 
 function initEvents() {
-  Mousetrap.bind('ctrl+s', function(e) {
-    showSettings()
-  })
   const windows = Array.from(document.querySelectorAll('.window'))
 
   const navbarItems = Array.from(document.querySelectorAll('.item > button'))
@@ -332,24 +250,7 @@ function startSystem() {
     }, 500 * (i + 1))
   }
 }
-function update_clock() {
 
-  const date = document.getElementById('date')
-  const time = document.getElementById('time')
-
-  var now = new Date()
-  var month = now.toLocaleString('en-us', {month: 'long'})
-  var day = now.getDate()
-
-  var hours = now.getHours()
-  var minutes = now.getMinutes()
-
-  hours = hours < 10 ? '0' + hours : hours
-  minutes = minutes < 10 ? '0' + minutes : minutes
-  
-  date.innerText = `\xa0- ${month.slice(0,3)}. ${day}, ${now.getFullYear()}`
-  time.innerText = `${hours}:${minutes}`
-}
 
 window.onload = function() {
   loadYggdrasil()
@@ -358,6 +259,8 @@ window.onload = function() {
   initEvents()
   loadSettings()
 
-  setInterval(update_clock, 1000)
-  update_clock()
+  let dateTag = document.getElementById('date')
+  let timeTag = document.getElementById('time')
+
+  setInterval(() => {update_clock(dateTag,timeTag)}, 1000)
 }

@@ -1,4 +1,4 @@
-import { CFile } from "./CFile.js"
+import CFile from "./CFile.js"
 import CDirectory from "./CDirectory.js"
 import CArchive from "./CArchive.js"
 

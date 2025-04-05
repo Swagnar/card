@@ -4,7 +4,7 @@
  * @param {number} width - image width
  * @param {number} height - image height
  */
-export function steinbergFloydDither(imageData, width, height) {
+export default function steinbergFloydDither(imageData, width, height) {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
         let index = (y * width + x) * 4;
