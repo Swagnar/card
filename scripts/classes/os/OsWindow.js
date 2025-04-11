@@ -114,14 +114,7 @@ export default class OsWindow {
   }
 
   /**
-   * Clear the OsWindow body, leave only the header bar
-   */
-  clearWindowBody() {
-    this.#bodyTag.innerHTML = "";
-  }
-
-  /**
-   * Append parameter values as class names to the OsWindow body element. This
+   * Append parameter values as class names to the OsWindow body element.
    * @param {string} classNames class names to be added to the OsWindow body
    */
   addClassToWindowBody(...classNames) {
@@ -136,7 +129,7 @@ export default class OsWindow {
   
   /**
    * Used by OsTerminal to set up the window to look like a terminal screen
-   * 
+   * TODO: move this to OsTerminal.js
    * @param {HTMLDivElement} outputContainer - HTML <div> element that shows all runned commands and their outputs
    * @param {HTMLDivElement} inputContainer - HTML <div> element that contains the <input> tag
    */
@@ -182,10 +175,15 @@ export default class OsWindow {
   }
 
 
-  // Fill the #bodyTag with visual representation for each file found inside the OsWindow.#files
+  /**
+   * Fill the first child of the #bodyTag with visual representation for each file
+   * found in the OsWindow.#files
+   */
   populateBodyWithFiles() {
     try {
-
+      /**
+       * @type {HTMLDivElement} `<div>` tag with `d-flex` and `flex-wrap` CSS classes
+       */
       let layout = this.#bodyTag.firstChild
       
       if(!layout) {
@@ -202,9 +200,13 @@ export default class OsWindow {
       })
       logWithColors("Finished populating {} with {} files", this.#windowName, this.#files.length)
     } catch(e) {
-      console.error(`Something went wrong while populating OsWindow with name ${this.#windowName}`, e)
+      console.error(`Error while populating ${this.#windowName} window body:`, e)
     }
   }
+
+  /*---------------------------------------------//
+  //       Opening and Closing the Window        //
+  //---------------------------------------------*/
 
   closeWindow() {
     setTimeout(() => {
@@ -232,13 +234,31 @@ export default class OsWindow {
     }, 50)
   }
 
+  /*---------------------------------------------//
+  //             Moving the Window               //
+  //---------------------------------------------*/
+
+  /**
+   * This method is called inside `startMovingWindow`, to detect 
+   * if the mouse pointer is near the resize button in the bottom right corner, 
+   * so to stop the window moving
+   * @param {PointerEvent} e 
+   */
+  isNearResizeArea(e) {
+    const rect = this.#container.getBoundingClientRect();
+    const buffer = 10
+    return e.clientX > rect.right - buffer && e.clientY > rect.bottom - buffer
+  }
   /**
    * @param {PointerEvent} e
    */
   startMovingWindow(e) {
+    if(this.isNearResizeArea(e)) {
+      return
+    }
     this.isDragging = true
     this.offsetX = e.clientX - this.#container.offsetLeft
-    this.offsetY = e.clientY - this.container.offsetTop
+    this.offsetY = e.clientY - this.#container.offsetTop
     this.#container.style.cursor = 'grabbing'
   }
   /**
@@ -256,6 +276,4 @@ export default class OsWindow {
     this.isDragging = false;
     this.#container.style.cursor = 'grab'
   }
-
-  
 }
