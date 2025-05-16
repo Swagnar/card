@@ -27,11 +27,9 @@ export default class CDirectory {
   init() {
     try {
       this.#container.classList.add('file', 'folder')
-      this.#container.draggable = true
       this.#container.style.top = "40px"
 
       this.#icon.classList.add('file-icon', 'folder-icon')
-      this.#icon.style.backgroundImage = "url('static/dir.png')"
 
       this.#label.classList.add('file-label')
       this.#label.innerText = this.name

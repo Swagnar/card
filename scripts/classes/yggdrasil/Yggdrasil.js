@@ -27,6 +27,12 @@ WORK.addFiles(
     <p>I've also began my joruney with Computer Science in this building. I was a student of a technical class with an IT profile where I was taught in the dark arts of Hardware, Networking and Web Development. This journey laid foundations for my knowlage, and even though the lessons were outdated and sometimes even cruelly tedious, those were one of the best year of my life</p>
     <p>After getting my engineering degree in Computer Science I was given an offer to work there as a teacher and I thought <em>Why not?</em></p>
   `),
+  new CFile("Hosting.txt", "txt",`
+  <h1>Hosting</h1>
+  <h3>Since 2025</h3>
+  <img src="static/hosting.jpg">
+  <canvas class="cfile-fl"></canvas>
+  `)
 )
 
 const ASTRONOMY = new CArchive('ASTRONOMY.ZIP', `      

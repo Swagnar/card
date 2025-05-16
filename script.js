@@ -46,11 +46,10 @@ function loadYggdrasil() {
       FOLDERS.push(element)
     }
     // TODO: fix populate CArchive class
-    // if(element instanceof CArchive) {
-    //   element.container.classList.add('archive')
-    //   element.icon.classList.add('archive-icon')
-    //   ARCHIVES.push(element.container)
-    // }
+    if(element instanceof CArchive) {
+      element.init()
+      ARCHIVES.push(element)
+    }
   })
 }
 
@@ -125,10 +124,10 @@ function initEvents() {
 
 
 
-  ARCHIVES.forEach(archive => {
-    archive.addEventListener('pointerdown', () => { archiveClicked(archive) })
-    archive.addEventListener('pointerup',   () => { resetStyles(archive) })
-  })
+  // ARCHIVES.forEach(archive => {
+  //   archive.addEventListener('pointerdown', () => { archiveClicked(archive) })
+  //   archive.addEventListener('pointerup',   () => { resetStyles(archive) })
+  // })
 
   if(isMobile()) {
 
@@ -147,11 +146,11 @@ function initEvents() {
   } else {
 
 
-    ARCHIVES.forEach(archive => {
-      archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) })
-      archive.addEventListener('drag',      (event) => { fileDrag(event, archive) })
-      archive.addEventListener('dragend',   () => { fileDragEnd(archive) })  
-    })
+    // ARCHIVES.forEach(archive => {
+    //   archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) })
+    //   archive.addEventListener('drag',      (event) => { fileDrag(event, archive) })
+    //   archive.addEventListener('dragend',   () => { fileDragEnd(archive) })  
+    // })
   }
   
 
@@ -204,9 +203,13 @@ function startSystem() {
         if(element instanceof CDirectory) {
           navbar.after(element.container)
           logWithColors("Appending CDirectory {} to DESKTOP element", element.name)
-        } else {
+        } else if(element instanceof CArchive) {
           navbar.after(element)
+          logWithColors("Appending CArchive {} to DESKTOP element", typeof element, element.name)
+        } else {
+          throw Error('Trying to add a not-OS object to a desktop')
         }
+
       })
 
       navbar.style.display = 'flex'

@@ -1,4 +1,8 @@
+const DEBUG = true
 export default function logWithColors(message, ...args) {
+    if(!DEBUG) {
+        return
+    }
     const colors = [
         'color: skyblue; font-weight: bold;',
         'color: green; font-weight: bold;',

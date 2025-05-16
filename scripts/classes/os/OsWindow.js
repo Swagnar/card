@@ -61,10 +61,10 @@ export default class OsWindow {
     this.#container.append(this.#headerTag)
     this.#container.append(this.#bodyTag)
 
-    this.#container.addEventListener('pointerdown', (ev) => { this.startMovingWindow(ev) })
+    this.#container.addEventListener('pointerdown', (ev) => { this.startMovingWindow(ev), this.focusWindow() })
     this.#container.addEventListener('pointermove', (ev) => { this.moveWindow(ev) })
     this.#container.addEventListener('pointerup', (ev) => { this.stopMovingWindow(ev)})
-
+    
     logWithColors("Successfully created OsWindow with name {}", name)
   }
   
@@ -204,6 +204,12 @@ export default class OsWindow {
     }
   }
 
+  focusWindow() {
+    const allWindows = document.querySelectorAll('.window.show')
+    allWindows.forEach(window => window.style.zIndex = 1)
+    this.#container.style.zIndex = 3
+  }
+
   /*---------------------------------------------//
   //       Opening and Closing the Window        //
   //---------------------------------------------*/
@@ -214,11 +220,12 @@ export default class OsWindow {
       this.#container.classList.add('hide')
     }, 50)
 
-    const closeWindowEvent = new CustomEvent("windowClosed", {
-      detail: this.#container
-    })
+    // Why this was here? WHAT WAS YOUR PURPOSE?!
+    // const closeWindowEvent = new CustomEvent("windowClosed", {
+    //   detail: this.#container
+    // })
 
-    document.dispatchEvent(closeWindowEvent)
+    // document.dispatchEvent(closeWindowEvent)
     this.#container.remove()
   }
   showWindow() {
@@ -232,6 +239,8 @@ export default class OsWindow {
       this.#container.classList.remove('hide')
       this.#container.classList.add('show')
     }, 50)
+    this.#container.style.zIndex = 3
+    
   }
 
   /*---------------------------------------------//
@@ -251,11 +260,16 @@ export default class OsWindow {
   }
   /**
    * @param {PointerEvent} e
+   * 
+   * @returns {undefined} if called via range input element or `near` the resize button in the lower right corner of the OsWindow container
    */
   startMovingWindow(e) {
-    if(this.isNearResizeArea(e)) {
-      return
-    }
+
+
+    if(e.target.closest('input[type="range"]')) return
+
+    if(this.isNearResizeArea(e)) return
+    
     this.isDragging = true
     this.offsetX = e.clientX - this.#container.offsetLeft
     this.offsetY = e.clientY - this.#container.offsetTop
