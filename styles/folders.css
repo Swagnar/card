@@ -15,6 +15,11 @@
 .file.archive, .file.folder {
   padding-top: 40px;
 }
+.file.app {
+  right: 0;
+  bottom: 0;
+  position: absolute;
+}
 
 .file-icon {
   position: absolute;
@@ -31,6 +36,7 @@
 .file-icon.archive-icon {
   background: transparent url(../static/archive.png);
 }
+
 
 .file-label {
   background-color: #fff;

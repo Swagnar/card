@@ -60,10 +60,13 @@ export default class OsWindow {
 
     this.#container.append(this.#headerTag)
     this.#container.append(this.#bodyTag)
+    
+    this.#container.addEventListener('pointerdown', (ev) => { this.focusWindow(ev) })
 
-    this.#container.addEventListener('pointerdown', (ev) => { this.startMovingWindow(ev), this.focusWindow() })
-    this.#container.addEventListener('pointermove', (ev) => { this.moveWindow(ev) })
-    this.#container.addEventListener('pointerup', (ev) => { this.stopMovingWindow(ev)})
+    this.#headerTag.addEventListener('pointerdown', (ev) => { this.startMovingWindow(ev) }) 
+    this.#headerTag.addEventListener('pointermove', (ev) => { this.moveWindow(ev) })
+    this.#headerTag.addEventListener('pointerup', (ev) => { this.stopMovingWindow(ev)})
+
     
     logWithColors("Successfully created OsWindow with name {}", name)
   }
@@ -219,13 +222,6 @@ export default class OsWindow {
       this.#container.classList.remove('show')
       this.#container.classList.add('hide')
     }, 50)
-
-    // Why this was here? WHAT WAS YOUR PURPOSE?!
-    // const closeWindowEvent = new CustomEvent("windowClosed", {
-    //   detail: this.#container
-    // })
-
-    // document.dispatchEvent(closeWindowEvent)
     this.#container.remove()
   }
   showWindow() {
@@ -248,28 +244,10 @@ export default class OsWindow {
   //---------------------------------------------*/
 
   /**
-   * This method is called inside `startMovingWindow`, to detect 
-   * if the mouse pointer is near the resize button in the bottom right corner, 
-   * so to stop the window moving
-   * @param {PointerEvent} e 
-   */
-  isNearResizeArea(e) {
-    const rect = this.#container.getBoundingClientRect();
-    const buffer = 10
-    return e.clientX > rect.right - buffer && e.clientY > rect.bottom - buffer
-  }
-  /**
    * @param {PointerEvent} e
    * 
-   * @returns {undefined} if called via range input element or `near` the resize button in the lower right corner of the OsWindow container
    */
   startMovingWindow(e) {
-
-
-    if(e.target.closest('input[type="range"]')) return
-
-    if(this.isNearResizeArea(e)) return
-    
     this.isDragging = true
     this.offsetX = e.clientX - this.#container.offsetLeft
     this.offsetY = e.clientY - this.#container.offsetTop

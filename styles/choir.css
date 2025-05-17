@@ -2,6 +2,10 @@
   max-width: 150px;
 }
 
+.file-icon.choir-icon {
+  background: transparent url(../static/choir.png);
+}
+
 .choir-body {
   width: 100%;
   padding: .75rem;
@@ -29,6 +33,10 @@
   & .choir-playback-tracks-container {
     grid-column: 1 / 2;
     grid-row: 2 / 3;
+
+    overflow: scroll;
+    height: 300px;
+    padding-right: 14px;
   }
 }
 
@@ -64,10 +72,10 @@
   max-width: 100%;
 }
 
-.choir-playback-track-container:hover {
+/* .choir-playback-track-container:hover {
   font-weight: bold;
   cursor: pointer;
-}
+} */
 
 .choir-playback-track-container {
   display: grid;

@@ -1,6 +1,7 @@
 import CFile from "./CFile.js"
 import CDirectory from "./CDirectory.js"
 import CArchive from "./CArchive.js"
+import CApp from "./CApp.js";
 
 const DND = new CDirectory("D&D");
 DND.addFiles(
@@ -40,4 +41,15 @@ const ASTRONOMY = new CArchive('ASTRONOMY.ZIP', `
 I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil.
 `);
 
-export const YGGDRASIL = [DND, WORK, ASTRONOMY];
+const CHOIR = new CApp('Choir', 'showAudioPlayer')
+
+
+// Directories
+// Archives
+// Apps
+
+export const YGGDRASIL = [
+  DND, WORK, 
+  ASTRONOMY, 
+  CHOIR
+];

@@ -25,10 +25,10 @@ export default class CFile {
     //
     this.content = content
 
-    this.initContainer()
+    this.init()
   }
 
-  initContainer() {
+  init() {
     this.fileContainer.classList.add('file', `${this.type}-file`)
     this.fileContainer.draggable = true
     this.fileContainer.id = `file-${this.name}`

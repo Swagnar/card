@@ -14,6 +14,8 @@ import { showDialog, closeDialog } from "./scripts/os_dialog.js"
 import Choir from "./scripts/classes/Choir/Choir.js"
 
 import logWithColors from "./scripts/utils/logs.js"
+import CApp from "./scripts/classes/yggdrasil/CApp.js"
+import CFile from "./scripts/classes/yggdrasil/CFile.js"
 
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
@@ -27,6 +29,7 @@ const CONTEXT_MENU = new OsContextMenu(DESKTOP)
 
 const FOLDERS = []
 const ARCHIVES = []
+const APPS = []
 
 /**
  * Yggdrasil is a array that contains all objects representing directories and archives found on the application desktop.
@@ -49,6 +52,11 @@ function loadYggdrasil() {
     if(element instanceof CArchive) {
       element.init()
       ARCHIVES.push(element)
+    }
+
+    if(element instanceof CApp) {
+      element.init()
+      APPS.push(element)
     }
   })
 }
@@ -194,24 +202,36 @@ function startSystem() {
         throw new Error('Archives array is empty, undefined or not an Array')
       }
 
-      let desktopElements = FOLDERS.concat(ARCHIVES)
+      let desktopElements = FOLDERS.concat(ARCHIVES, APPS)
 
       //
       // ! PUSHING OBJECT TO RENDER ON SCREEN
       //
       desktopElements.forEach(element => {
+        if(!element.container) {
+          console.log(element.container)
+          throw new Error(`${element.name} desktop element container is not a button`)
+        }
         if(element instanceof CDirectory) {
-          navbar.after(element.container)
+          // console.log("CDIRECTORY", element)
+          // console.log("CDIRECTORY", element.container)
           logWithColors("Appending CDirectory {} to DESKTOP element", element.name)
         } else if(element instanceof CArchive) {
-          navbar.after(element)
-          logWithColors("Appending CArchive {} to DESKTOP element", typeof element, element.name)
-        } else {
-          throw Error('Trying to add a not-OS object to a desktop')
+          logWithColors("Appending CArchive {} to DESKTOP element", element.name)
+        } else if(element instanceof CApp) {
+          // console.log("CAPP", element)
+          // console.log("CAPP", element.container)
+          logWithColors("Appending CApp {} to DESKTOP element", element.name)
+        }
+        else {
+          throw Error('Trying to add a not-OS object to desktop')
         }
 
+        
+        navbar.after(element.container)        
       })
-
+      
+      console.log(DESKTOP)
       navbar.style.display = 'flex'
     }
 

@@ -13,36 +13,7 @@ const UI_SYMBOLS = {
   pause: "⏸"
 }
 
-/**
- * 
- * @param {CMusicTrack} track 
- * @param {number} index 
- * @returns 
- */
-function returnTrackHTML(track, index) {
-  const trackContainer = document.createElement('div');
-  trackContainer.classList.add('choir-playback-track-container');
 
-  const trackIdElement = document.createElement('span');
-  const trackNameElement = document.createElement('span');
-  const trackDuration = document.createElement('span')
-
-  trackIdElement.innerHTML = `${track.number}`;
-  trackNameElement.innerHTML = track.name;
-
-  let audio = new Audio("data:audio/mpeg;base64," + track.data)
-  audio.addEventListener('loadedmetadata', () => {
-    let duration = audio.duration
-    let minutes = Math.floor(duration / 60)
-    let secs = Math.floor(duration % 60)
-    trackDuration.innerHTML = `${minutes}:${secs.toString().padStart(2, '0')}`
-  })
-    
-
-  trackContainer.append(trackIdElement, trackNameElement, trackDuration);
-
-  return trackContainer
-}
 
 
 
@@ -93,145 +64,6 @@ export default class Choir {
 
   }
 
-  #stateChanged() {
-    if(this.#currentTrackAudio.paused) {
-      this.#pauseUnpauseTrackButton.innerHTML = UI_SYMBOLS.unpause
-
-      this.#pauseUnpauseTrackButton.dataset.playing = 'false'
-      // this.#pauseUnpauseTrackButton.onclick = this.handlePlayAudio(this.#currentTrackAudio)
-      // this.#pauseUnpauseTrackButton.onclick = this.handleResumeAudio
-    } else {
-      this.#pauseUnpauseTrackButton.innerHTML = UI_SYMBOLS.pause
-      this.#pauseUnpauseTrackButton.dataset.playing = 'true'
-
-      // this.#pauseUnpauseTrackButton.onclick = this.handlePauseAudio
-    }
-  }
-
-
-  startVisualizer() {
-    const ctx = this.#visualiserCanvas.getContext('2d')
-
-    const analyser = this.#analyser; // <-- use the existing one
-    if (!analyser) {
-      console.warn('Analyser not initialized!');
-      return;
-    }
-
-    analyser.fftSize = 256
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-  
-    const width = this.#visualiserCanvas.width;
-    const height = this.#visualiserCanvas.height;
-    const barWidth = (width / bufferLength) * 2.5;
-
-    const renderFrame = () => {
-      requestAnimationFrame(renderFrame);
-  
-      analyser.getByteFrequencyData(dataArray);
-  
-      ctx.clearRect(0, 0, width, height);
-  
-      let x = 0;
-      for (let i = 0; i < bufferLength; i++) {
-        const barHeight = dataArray[i] - 50;
-        const red = barHeight + 25;
-        const green = 250 * ((i / bufferLength) + 25);
-        const blue = 50;
-  
-        ctx.fillStyle = `rgb(${red},${green},${blue})`;
-        ctx.fillRect(x, height - barHeight, barWidth, barHeight);
-  
-        x += barWidth + 1;
-      }
-    };
-  
-    renderFrame();
-  }
-
-  createAlbumSelectionScreen() {
-    MUSIC_ALBUMS.forEach(album => {
-      if(!album instanceof CMusicAlbum) {
-        throw new TypeError("Can't read as album")
-      } 
-
-      let albumSelection = this.returnAlbumHTML(album)
-
-      this.#window.appendToWindowBody(albumSelection);
-
-      albumSelection.addEventListener('click', () => {
-        this.selectAlbum(album);
-      })
-    })
-  }
-
-  selectAlbum(album) {
-    if(!album instanceof CMusicAlbum) {
-      throw new TypeError("Selected album index is not an album");
-    }
-    try {
-      this.currentAlbum = album;
-      
-      let covers = document.querySelectorAll("div[class='choir-album-cover']");
-      covers.forEach(cover => { cover.remove() })
-      
-      this.#window.removeClassFromWindowBody('choir-selection-layout');
-      this.#window.addClassToWindowBody('choir-playback-layout');
-      
-      this.createPlaybackLayout()
-    } catch(er) {
-      console.error(er);
-    }
-  }
-
-  createPlaybackLayout() {
-    
-    if(!this.currentAlbum || !this.currentAlbum instanceof CMusicAlbum) {
-      throw new TypeError('Selected album is undefined or not MusicAlbum, got:', this.currentAlbum)
-    }
-    var tracksContainer = document.createElement('div')
-    tracksContainer.classList.add('choir-playback-tracks-container')
-    console.log(this.currentAlbum)
-    this.currentAlbum.tracks.forEach((track,i) => {
-
-      if(!track || !track instanceof CMusicTrack ) {
-        throw new TypeError('Error while rendering tracks, got:', track);
-      }
-
-      const trackContainer = returnTrackHTML(track, i)
-
-      // Handle clicking on a listed track and
-      // enable control buttons
-      trackContainer.addEventListener('click', () => {
-        console.log(trackContainer)
-        this.handlePlayAudio(track, trackContainer)
-        
-        
-        
-        
-        // [this.#nextTrackButton, this.#prevTrackButton, this.#pauseUnpauseTrackButton].forEach(btn => btn.disabled=false)
-      
-      
-      
-      
-      
-      })
-
-      trackContainer.addEventListener('mouseenter', () => {
-        trackContainer.children[0].innerHTML = "►";
-      })
-
-      trackContainer.addEventListener('mouseleave', () => {
-        trackContainer.children[0].innerHTML = track.number;
-      })
-      
-      tracksContainer.append(trackContainer);
-    })
-
-    this.#window.appendToWindowBody(this.#visualiserCanvas, tracksContainer);
-  }
-
   initElements() {
 
     /*---------------------------------------------//
@@ -271,7 +103,7 @@ export default class Choir {
       }
 
       if(this.#pauseUnpauseTrackButton.dataset.playing === 'false') {
-        this.playAudio()
+        this.unpauseAudio()
       } else if(this.#pauseUnpauseTrackButton.dataset.playing === 'true') {
         this.#currentTrackAudio.pause();
       }
@@ -318,14 +150,96 @@ export default class Choir {
     this.#window.appendToWindowBody(btnWrapper);
   }
 
+  #stateChanged() {
+    if(this.#currentTrackAudio.paused) {
+      this.#pauseUnpauseTrackButton.innerHTML = UI_SYMBOLS.unpause
+
+      this.#pauseUnpauseTrackButton.dataset.playing = 'false'
+      // this.#pauseUnpauseTrackButton.onclick = this.handlePlayAudio(this.#currentTrackAudio)
+      // this.#pauseUnpauseTrackButton.onclick = this.handleResumeAudio
+    } else {
+      this.#pauseUnpauseTrackButton.innerHTML = UI_SYMBOLS.pause
+      this.#pauseUnpauseTrackButton.dataset.playing = 'true'
+
+      // this.#pauseUnpauseTrackButton.onclick = this.handlePauseAudio
+    }
+  }
+
+  createAlbumSelectionScreen() {
+    MUSIC_ALBUMS.forEach(album => {
+      if(!album instanceof CMusicAlbum) {
+        throw new TypeError("Can't read as album")
+      } 
+
+      let albumSelection = this.returnAlbumHTML(album)
+
+      this.#window.appendToWindowBody(albumSelection);
+
+      albumSelection.addEventListener('click', () => {
+        this.selectAlbum(album);
+      })
+    })
+  }
+
+  selectAlbum(album) {
+    if(!album instanceof CMusicAlbum) {
+      throw new TypeError("Selected album index is not an album");
+    }
+    try {
+      this.currentAlbum = album;
+      
+      let covers = document.querySelectorAll("div[class='choir-album-cover']");
+      covers.forEach(cover => { cover.remove() })
+      
+      this.#window.removeClassFromWindowBody('choir-selection-layout');
+      this.#window.addClassToWindowBody('choir-playback-layout');
+      
+      this.createPlaybackLayout()
+    } catch(er) {
+      console.error(er);
+    }
+  }
+
+  createPlaybackLayout() {
+    if(!this.currentAlbum || !this.currentAlbum instanceof CMusicAlbum) {
+      throw new TypeError('Selected album is undefined or not MusicAlbum, got:', this.currentAlbum)
+    }
+    var tracksContainer = document.createElement('div')
+    tracksContainer.classList.add('choir-playback-tracks-container')
+    this.currentAlbum.tracks.forEach((track,i) => {
+
+      if(!track || !track instanceof CMusicTrack ) {
+        throw new TypeError('Error while rendering tracks, got:', track);
+      }
+
+      const trackContainer = this.returnTrackHTML(track, i)
+
+      // Handle clicking on a listed track and
+      // enable control buttons
+      trackContainer.addEventListener('click', () => {
+        this.handlePlayAudio(track, trackContainer)
+      })
+      
+      
+      tracksContainer.append(trackContainer);
+    })
+
+    this.#window.appendToWindowBody(this.#visualiserCanvas, tracksContainer);
+  }
+
+
   /**
    * Starts playing a new song when selected from numbered list of all music tracks in an album
    * @param {CMusicTrack} track 
    * @param {HTMLDivElement} trackContainer
+   * @returns {null} returns null if CMusicTrack data is not defined, this is expected for most tracks
    */
   handlePlayAudio(track, trackContainer) {
     if(!track || !track instanceof CMusicTrack) {
       throw new TypeError('Error while playing audio track, got:', track)
+    }
+    if(!track.data) {
+      return
     }
     if(this.#currentTrackAudio) {
       this.#currentTrackAudio.pause()
@@ -349,23 +263,10 @@ export default class Choir {
     trackSrc.connect(this.#audioCtx.destination)
     
     this.setVolume(1)
-    this.playAudio()
+    this.unpauseAudio()
     this.startVisualizer()
     trackContainer.style.fontWeight = "bold"
-  }
 
-  playAudio() {
-    this.#currentTrackAudio.play()
-    this.#stateChanged()
-  }
-
-
-  setVolume(volume) {
-    if (this.#gainNode) {
-      this.#gainNode.gain.value = Math.max(0, Math.min(1, volume)); // Clamp value between 0 and 1
-    } else {
-      console.warn('Gain node is not initialized.');
-    }
   }
 
   returnAlbumHTML(album) {
@@ -388,7 +289,109 @@ export default class Choir {
     return coverContainer
   }
 
+  /**
+ * 
+ * @param {CMusicTrack} track 
+ * @param {number} index 
+ * @returns 
+ */
+  returnTrackHTML(track, index) {
+    const trackContainer = document.createElement('div');
+    trackContainer.classList.add('choir-playback-track-container');
 
+    const trackIdElement = document.createElement('span');
+    const trackNameElement = document.createElement('span');
+    const trackDuration = document.createElement('span')
+
+    trackIdElement.innerHTML = `${track.number}`;
+    trackNameElement.innerHTML = track.name;
+
+    if(track.data) {
+      const audio = new Audio("data:audio/mpeg;base64," + track.data)
+
+      trackContainer.addEventListener('mouseenter', () => {
+        trackContainer.children[0].innerHTML = "►";
+        trackContainer.style.fontWeight = 'bold'
+        trackContainer.style.cursor = 'pointer'
+      })
+
+      trackContainer.addEventListener('mouseleave', () => {
+        trackContainer.children[0].innerHTML = track.number;
+        trackContainer.style.fontWeight = 'normal'
+      })
+
+      audio.addEventListener('loadedmetadata', () => {
+        let duration = audio.duration
+        let minutes = Math.floor(duration / 60)
+        let secs = Math.floor(duration % 60)
+        trackDuration.innerHTML = `${minutes}:${secs.toString().padStart(2, '0')}`
+      })
+    } else {
+      trackContainer.style.color = 'gray'
+      trackContainer.style.textDecoration = 'line-through'
+
+    }
+
+    trackContainer.append(trackIdElement, trackNameElement, trackDuration);
+
+    return trackContainer
+  }
+
+  startVisualizer() {
+    const ctx = this.#visualiserCanvas.getContext('2d')
+
+    const analyser = this.#analyser; // <-- use the existing one
+    if (!analyser) {
+      console.warn('Analyser not initialized!');
+      return;
+    }
+
+    analyser.fftSize = 128; // Lowered for retro vibe
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+
+const width = this.#visualiserCanvas.width;
+const height = this.#visualiserCanvas.height;
+const barWidth = width / bufferLength;
+
+ctx.fillStyle = 'white';
+ctx.fillRect(0, 0, width, height); // simulate white canvas like old Mac
+
+const renderFrame = () => {
+  requestAnimationFrame(renderFrame);
+
+  analyser.getByteFrequencyData(dataArray);
+
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, width, height); // clear in white again
+
+  ctx.fillStyle = 'black'; // "black pixels" for bars
+  let x = 0;
+
+  for (let i = 0; i < bufferLength; i++) {
+    const barHeight = (dataArray[i] / 255) * height;
+    const barPixelHeight = Math.floor(barHeight / 4) * 4; // make it blocky/pixelated
+
+    ctx.fillRect(x, height - barPixelHeight, barWidth - 1, barPixelHeight);
+    x += barWidth;
+  }
+};
+
+renderFrame();
+  }
+
+  setVolume(volume) {
+    if (this.#gainNode) {
+      this.#gainNode.gain.value = Math.max(0, Math.min(1, volume)); // Clamp value between 0 and 1
+    } else {
+      console.warn('Gain node is not initialized.');
+    }
+  }
+
+  unpauseAudio() {
+    this.#currentTrackAudio.play()
+    this.#stateChanged()
+  }
 
   showPlayer() { this.#window.showWindow() }
 
