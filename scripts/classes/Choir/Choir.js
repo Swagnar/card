@@ -5,6 +5,7 @@ import CMusicTrack from './CMusicTrack.js';
 import OsWindow from '../os/OsWindow.js';
 
 import { applyDithering } from '../../utils/dithering.js';
+import CApp from '../yggdrasil/CApp.js';
 
 const UI_SYMBOLS = {
   unpause: "►",
@@ -61,8 +62,11 @@ export default class Choir {
     
     this.initElements();
     this.createAlbumSelectionScreen();
-
   }
+
+  
+
+
 
   initElements() {
 
@@ -258,11 +262,10 @@ export default class Choir {
     this.#gainNode = this.#audioCtx.createGain()
 
 
-    trackSrc.connect(this.#gainNode)
+    trackSrc.connect(this.#gainNode).connect(this.#audioCtx.destination)
     trackSrc.connect(this.#analyser)
-    trackSrc.connect(this.#audioCtx.destination)
     
-    this.setVolume(1)
+    this.setVolume(0.3)
     this.unpauseAudio()
     this.startVisualizer()
     trackContainer.style.fontWeight = "bold"
@@ -346,37 +349,44 @@ export default class Choir {
       return;
     }
 
-    analyser.fftSize = 128; // Lowered for retro vibe
+    analyser.fftSize = 128; // MASSIVELY reduced fidelity
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
-
+this.#visualiserCanvas.width = 500
 const width = this.#visualiserCanvas.width;
 const height = this.#visualiserCanvas.height;
-const barWidth = width / bufferLength;
+const barWidth = Math.floor(width / bufferLength);
 
-ctx.fillStyle = 'white';
-ctx.fillRect(0, 0, width, height); // simulate white canvas like old Mac
+ctx.imageSmoothingEnabled = false; // no anti-aliasing allowed
+
+let glitchOffset = 0;
 
 const renderFrame = () => {
-  requestAnimationFrame(renderFrame);
+  setTimeout(() => requestAnimationFrame(renderFrame), 24); // 10 FPS MAX, like it's running on a toaster
 
   analyser.getByteFrequencyData(dataArray);
 
   ctx.fillStyle = 'white';
-  ctx.fillRect(0, 0, width, height); // clear in white again
+  ctx.fillRect(0, 0, width, height);
 
-  ctx.fillStyle = 'black'; // "black pixels" for bars
-  let x = 0;
+  ctx.fillStyle = 'black';
+
+  let x = glitchOffset; // make the whole thing jitter for "glitch" feel
 
   for (let i = 0; i < bufferLength; i++) {
-    const barHeight = (dataArray[i] / 255) * height;
-    const barPixelHeight = Math.floor(barHeight / 4) * 4; // make it blocky/pixelated
+    let value = dataArray[i];
 
-    ctx.fillRect(x, height - barPixelHeight, barWidth - 1, barPixelHeight);
-    x += barWidth;
+    if (Math.random() < 0.1) {
+      value = value * 0.3; // simulate shitty signal by randomly weakening bars
+    }
+
+    const barHeight = Math.floor((value / 255) * height / 8) * 8; // big chunky pixel blocks
+    ctx.fillRect(x, height - barHeight, barWidth + 10, barHeight);
+    x += barWidth + 10;
   }
-};
 
+  glitchOffset = (glitchOffset + (Math.random() > 0.9 ? 1 : 0)) % 3; // slight horizontal jitter
+};
 renderFrame();
   }
 

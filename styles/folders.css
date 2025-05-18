@@ -18,7 +18,8 @@
 .file.app {
   right: 0;
   bottom: 0;
-  position: absolute;
+  position: relative;
+  grid-row: 9;
 }
 
 .file-icon {
@@ -42,7 +43,8 @@
   background-color: #fff;
   color: #000;
   display: inline;
-  padding: 0 3px;
+  padding: 0 .2rem;
+  height: 1.25rem;
 }
 
 #folder-dnd,

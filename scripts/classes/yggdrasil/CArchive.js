@@ -1,56 +1,36 @@
+import OsDesktopIcon from "../os/OsDesktopIcon.js";
+import logWithColors from "../../utils/logs.js";
+
 export default class CArchive {
 
-  /** @type {HTMLButtonElement} */
-  container = document.createElement('button')
+  // /** @type {HTMLButtonElement} */
+  // container = document.createElement('button')
 
-  /** @type {HTMLSpanElement} */
-  #icon
+  // /** @type {HTMLSpanElement} */
+  // #icon
 
-  /** @type {HTMLSpanElement} */
-  #label
+  // /** @type {HTMLSpanElement} */
+  // #label
+
+  desktopIcon;
+
+  /**
+   * @type {boolean}
+   * A flag used to detect if the window is moving or still in place
+   */
+  isDragging = false;
+  offsetX;
+  offsetY;
 
   constructor(name, content) {
     this.name = name
     this.content = content
 
     this.id = `window-${this.name}`
+    this.desktopIcon = new OsDesktopIcon(name, 'archive')
+    logWithColors("CArchive {} successfully initialized", this.name)
 
-    this.#icon = document.createElement('span')
-    this.#label = document.createElement('span')
-  }
-
-  init() {
-    try {
-      this.container.classList.add('file', 'archive')
-
-      this.#icon.classList.add('file-icon', 'archive-icon')
-
-      this.#label.classList.add('file-label')
-      this.#label.innerText = this.name
-
-      this.container.append(this.#icon)
-      this.container.append(this.#label)
-
-      // When clicked on the directory, change its colors to visualize 'clicked' effect
-      this.container.addEventListener('pointerdown', () => this.handlePointerDown())
-
-      // The reverse happends when user let go mouse button, reverse to default colors
-      this.container.addEventListener('pointerup', () => this.handlePointerUp())
-      return true
-    } catch(e) {
-      console.error(`Error while initializing CArchive with name ${this.name}:`, e)
-    }
-  }
-
-
-  handlePointerDown() {
-    this.#icon.style.backgroundImage = "url('static/archive-clicked.png')"
-    this.#label.style.backgroundColor = "#111"
-    this.#label.style.color = "#fff"
-  }
-  handlePointerUp() {
-    this.#icon.style.backgroundImage = "url('static/archive.png')"
-    this.#label.style.backgroundColor = "#fff"
-    this.#label.style.color = "#111"
+    // this.#icon = document.createElement('span')
+    // this.#label = document.createElement('span')
   }
 }

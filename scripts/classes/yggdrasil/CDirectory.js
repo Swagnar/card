@@ -1,55 +1,29 @@
 import CFile from "./CFile.js"
 import logWithColors from "../../utils/logs.js"
 import OsWindow from "../os/OsWindow.js"
+import OsDesktopIcon from "../os/OsDesktopIcon.js"
 
 export default class CDirectory {
 
-  /** @type {HTMLButtonElement} */
-  #container
+  /** @type {OsDesktopIcon} */
+  desktopIcon;
 
-  /** @type {HTMLSpanElement} */
-  #icon
-
-  /** @type {HTMLSpanElement} */
-  #label
+  /**
+   * @type {boolean}
+   * A flag used to detect if the window is moving or still in place
+   */
+  isDragging = false;
+  offsetX;
+  offsetY;
 
 
   constructor(name) {
     this.name = name
     this.files = []
     this.id = `window-${this.name}`
-
-    this.#icon = document.createElement('span')
-    this.#label = document.createElement('span')
-    this.#container = document.createElement('button')
-  }
-
-  init() {
-    try {
-      this.#container.classList.add('file', 'folder')
-      this.#container.style.top = "40px"
-
-      this.#icon.classList.add('file-icon', 'folder-icon')
-
-      this.#label.classList.add('file-label')
-      this.#label.innerText = this.name
-
-      this.#container.append(this.#icon)
-      this.#container.append(this.#label)
-
-      // When clicked on the directory, change its colors to visualize 'clicked' effect
-      this.#container.addEventListener('pointerdown', () => this.handlePointerDown())
-
-      // The reverse happends when user let go mouse button, reverse to default colors
-      this.#container.addEventListener('pointerup', () => this.handlePointerUp())
-
-      // When dblclick, create a new OsWindow instance, populate it with this CDirectory and show it on DESKTOP element
-      this.#container.addEventListener('dblclick', () => this.open() )
-
-      logWithColors("CDirectory {} successfully initialized", this.name)
-    } catch(e) {
-      console.error(`Error while initializing CDirectory with name ${this.name}:`, e)
-    }
+    this.desktopIcon = new OsDesktopIcon(name, 'dir')
+    this.desktopIcon.container.addEventListener('dblclick', () => this.open() )
+    logWithColors("CDirectory {} successfully initialized", this.name)
   }
 
   open() {
@@ -88,22 +62,49 @@ export default class CDirectory {
   }
 
   handlePointerDown() {
-    this.#icon.style.backgroundImage = "url('static/dir-clicked.png')"
-    this.#label.style.backgroundColor = "#111"
-    this.#label.style.color = "#fff"
+    this.desktopIcon.icon.style.backgroundImage = "url('static/dir-clicked.png')"
+    this.desktopIcon.label.style.backgroundColor = "#111"
+    this.desktopIcon.label.style.color = "#fff"
   }
   handlePointerUp() {
-    this.#icon.style.backgroundImage = "url('static/dir.png')"
-    this.#label.style.backgroundColor = "#fff"
-    this.#label.style.color = "#111"
+    this.desktopIcon.icon.style.backgroundImage = "url('static/dir.png')"
+    this.desktopIcon.label.style.backgroundColor = "#fff"
+    this.desktopIcon.label.style.color = "#111"
+  }
+
+  /*---------------------------------------------//
+  //             Moving the Window               //
+  //---------------------------------------------*/
+
+  /**
+   * @param {PointerEvent} e
+   * 
+   */
+  startMovingDirectory(e) {
+    this.isDragging = true
+    this.offsetX = e.clientX - this.desktopIcon.container.offsetLeft
+    this.offsetY = e.clientY - this.desktopIcon.container.offsetTop
+    this.desktopIcon.container.style.cursor = 'grabbing'
+  }
+  /**
+   * @param {PointerEvent} e 
+   */
+  moveDirectory(e) {
+    if(!this.isDragging) return;
+    this.desktopIcon.container.style.left = (e.clientX - this.offsetX) + 'px'
+    this.desktopIcon.container.style.top = (e.clientY - this.offsetY) + 'px'
+  }
+  /**
+   * @param {PointerEvent} e 
+   */
+  stopMovingDirectory(e) {
+    this.isDragging = false;
+    this.desktopIcon.container.style.cursor = 'grab'
   }
 
 
-  get container() {
-    return this.#container
-  }
   get icon() {
-    return this.#icon
+    return this.desktopIcon.icon
   }
 
 }

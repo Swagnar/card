@@ -4,6 +4,7 @@
 
 .file-icon.choir-icon {
   background: transparent url(../static/choir.png);
+  background-size: 32px;
 }
 
 .choir-body {

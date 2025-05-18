@@ -1,5 +1,7 @@
+import { CHOIR } from "../yggdrasil/Yggdrasil.js";
+
 class OsContextMenuItem {
-  constructor(innerText, id, ev) {
+  constructor(innerText, id, ev, app=null) {
     this.body = document.createElement('span')
     this.body.classList.add('context-menu-item')
     this.body.id = id
@@ -17,7 +19,11 @@ class OsContextMenuItem {
         throw new Error("Couldn't create event for ContextMenuItem with params: ", innerText, id, ev)
       }
       this.body.addEventListener('click', function() {
-        document.dispatchEvent(event)
+        if(app) {
+          app.run()
+        } else {
+          document.dispatchEvent(event)
+        }
       })
       
     }
@@ -50,7 +56,8 @@ export class OsContextMenu {
       new OsContextMenuItem("Properties", "context-menu-item-properties", "showDialog-properties"),
       new OsContextMenuItem("Settings", "context-menu-item-settings", "showSettings"),
       new OsContextMenuItem("Terminal", "context-menu-item-terminal", "showTerminal"),
-      new OsContextMenuItem("Choir", "context-menu-item-audio-player", "showAudioPlayer")
+      new OsContextMenuItem(
+        CHOIR.name, "context-menu-item-audio-player", CHOIR.command, CHOIR)
     ]
 
     this.#body.append(this.#header)

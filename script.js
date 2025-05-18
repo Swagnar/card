@@ -45,17 +45,14 @@ const APPS = []
 function loadYggdrasil() {
   YGGDRASIL.forEach(function(element, index) {    
     if(element instanceof CDirectory) {
-      element.init()
       FOLDERS.push(element)
     }
     // TODO: fix populate CArchive class
     if(element instanceof CArchive) {
-      element.init()
       ARCHIVES.push(element)
     }
 
     if(element instanceof CApp) {
-      element.init()
       APPS.push(element)
     }
   })
@@ -130,16 +127,7 @@ function initEvents() {
     })
   })
 
-
-
-  // ARCHIVES.forEach(archive => {
-  //   archive.addEventListener('pointerdown', () => { archiveClicked(archive) })
-  //   archive.addEventListener('pointerup',   () => { resetStyles(archive) })
-  // })
-
   if(isMobile()) {
-
-
     ARCHIVES.forEach(archive => {
       archive.addEventListener('touchstart', (event) => { fileDragStart(event, archive) })
       archive.addEventListener('touchmove',  (event) => { fileDrag(event, archive) })
@@ -151,16 +139,7 @@ function initEvents() {
       window.addEventListener('touchmove',   (event) => { fileDrag(event, window) })
       window.addEventListener('touchend',    () => { fileDragEnd(window) })
     })
-  } else {
-
-
-    // ARCHIVES.forEach(archive => {
-    //   archive.addEventListener('dragstart', (event) => { fileDragStart(event, archive) })
-    //   archive.addEventListener('drag',      (event) => { fileDrag(event, archive) })
-    //   archive.addEventListener('dragend',   () => { fileDragEnd(archive) })  
-    // })
-  }
-  
+  } 
 
   document.addEventListener('showTerminal', function() { 
     let terminal = new OsTerminal(DESKTOP) 
@@ -208,8 +187,8 @@ function startSystem() {
       // ! PUSHING OBJECT TO RENDER ON SCREEN
       //
       desktopElements.forEach(element => {
-        if(!element.container) {
-          console.log(element.container)
+        if(!element.desktopIcon.container) {
+          console.log(element.desktopIcon.container)
           throw new Error(`${element.name} desktop element container is not a button`)
         }
         if(element instanceof CDirectory) {
@@ -228,7 +207,7 @@ function startSystem() {
         }
 
         
-        navbar.after(element.container)        
+        navbar.after(element.desktopIcon.container)        
       })
       
       console.log(DESKTOP)
