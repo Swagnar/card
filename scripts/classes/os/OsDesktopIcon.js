@@ -75,14 +75,10 @@ export default class OsDesktopIcon {
     }
 
     handlePointerDown() {
-      this.label.style.backgroundColor = "#111"
-      this.label.style.color = "#fff"
       this.container.style.filter = 'invert(100%)'
     }
 
     handlePointerUp() {
       this.container.style.filter = 'invert(0%)'
-      this.label.style.backgroundColor = "#fff"
-      this.label.style.color = "#111"
     }
 }

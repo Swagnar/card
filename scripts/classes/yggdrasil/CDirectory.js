@@ -27,7 +27,7 @@ export default class CDirectory {
   }
 
   open() {
-    let window = new OsWindow(this.name)
+    let window = new OsWindow(this.name, null, true)
     window.setAsDirectory(this)
     window.showWindow()
   }

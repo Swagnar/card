@@ -1,9 +1,8 @@
-import OsWindow from "./scripts/classes/os/OsWindow.js"
 import OsTerminal from "./scripts/classes/os/OsTerminal.js"
 import { OsContextMenu } from "./scripts/classes/os/OsContextMenu.js"
 
 
-import { YGGDRASIL } from "./scripts/classes/yggdrasil/Yggdrasil.js"
+import { SNAKE, YGGDRASIL } from "./scripts/classes/yggdrasil/Yggdrasil.js"
 import CDirectory from "./scripts/classes/yggdrasil/CDirectory.js"
 import CArchive from "./scripts/classes/yggdrasil/CArchive.js"
 
@@ -15,7 +14,7 @@ import Choir from "./scripts/classes/Choir/Choir.js"
 
 import logWithColors from "./scripts/utils/logs.js"
 import CApp from "./scripts/classes/yggdrasil/CApp.js"
-import CFile from "./scripts/classes/yggdrasil/CFile.js"
+import Snake from "./scripts/classes/Snake/Snake.js"
 
 function isMobile() {
   let userAgent = navigator.userAgent.toLowerCase()
@@ -24,8 +23,6 @@ function isMobile() {
 
 export const DESKTOP = document.getElementById('desktop')
 const CONTEXT_MENU = new OsContextMenu(DESKTOP)
-
-// const AUDIO_PLAYER = new OsAudioPlayer(DESKTOP);
 
 const FOLDERS = []
 const ARCHIVES = []
@@ -142,15 +139,19 @@ function initEvents() {
   } 
 
   document.addEventListener('showTerminal', function() { 
-    let terminal = new OsTerminal(DESKTOP) 
+    const terminal = new OsTerminal() 
     terminal.showTerminal();
   })
   document.addEventListener('showDialog', function(event) { showDialog(event.detail, steinbergFloydDither) })
   document.addEventListener('showSettings', function() { showSettings() })
   document.addEventListener('windowClosed', function(event) { event.detail.remove() })
   document.addEventListener('showAudioPlayer', function() { 
-    var newAudioPlayer = new Choir(DESKTOP);
-    newAudioPlayer.showPlayer(DESKTOP);
+    const newAudioPlayer = new Choir();
+    newAudioPlayer.showPlayer();
+  })
+  document.addEventListener('showSnake', function() {
+    const newSnake = new Snake();
+    newSnake.window.showWindow()
   })
 }
 

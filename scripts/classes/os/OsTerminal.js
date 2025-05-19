@@ -1,12 +1,10 @@
+import CApp from "../yggdrasil/CApp.js"
 import OsWindow from "./OsWindow.js"
 /**
  * Class representing a terminal
  * 
  */
-export default class OsTerminal {
-
-  /** @type {OsWindow} */
-  #window
+export default class OsTerminal extends CApp {
 
   /** @type {HTMLDivElement} */
   #terminalOutputContainer
@@ -27,21 +25,9 @@ export default class OsTerminal {
    * Creates new `OsTerminal` window and shows it on the screen. Window frame is created via `OsWindow` class 
    * @param {HTMLElement} root Application root HTML element
    */
-  constructor(root) {
+  constructor() {
+    super('Terminal', 'showTerminal')
 
-    // ! Create new OsWindow with given name and append it to the root HTML element. 
-    // ! In this case, OsWindow body contents is created strictly via `OsTerminal` class,
-    // ! since we don't have any files to show (it's not a CDirectory)
-    // ! OsWindow creates the frame, shape, resizing, dragging and the closing button.
-    // !
-    this.#window = new OsWindow('[ SHELL ]', );
-    root.append(this.#window.container)
-
-    // * Create OsTerminal DOM elements, give them `class` attribiutes, and `type` for `HTMLInput` element
-    // *
-    // *
-    // * Output container
-    // *
     this.#terminalOutputContainer = document.createElement('div');
     this.#terminalOutputContainer.classList.add('terminal-output');
 
@@ -49,13 +35,11 @@ export default class OsTerminal {
       this.input.focus()
     })
     
-    // * Input container
-    // *
+
     this.#terminalInputContainer = document.createElement('div');
     this.#terminalInputContainer.classList.add('terminal-input-wrapper');
 
-    // * Command input element
-    // *
+
     this.#terminalInputElement = document.createElement('input')
     this.#terminalInputElement.type = "text";
     this.#terminalInputElement.classList.add('terminal-input')
@@ -79,7 +63,7 @@ export default class OsTerminal {
     // ? Invoke `OsWindow` method `setAsTerminal` which populates OsWindow.#bodyTag with OsTerminal DOM elements 
     // ? instead of CDirectory.files array that would result in rendering files of a given directory
     // ?
-    this.#window.setAsTerminal(this.#terminalOutputContainer, this.#terminalInputContainer)
+    this.window.setAsTerminal(this.#terminalOutputContainer, this.#terminalInputContainer)
 
     this.history = [];
     this.displayMOTD("Welcome to OS_OSHELL. Type `help` to get the list of avaiable commands")
@@ -168,7 +152,7 @@ export default class OsTerminal {
   // ! Do i really need to do this?
   // ! No u idiot, but i'll do it later
   // TODO: just invoke the `showWindow` 
-  showTerminal() { this.#window.showWindow(); }
+  showTerminal() { this.window.showWindow(); }
 
 
   /**

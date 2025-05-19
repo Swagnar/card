@@ -42,6 +42,7 @@ I love astronomy. In the future I want to buy a telescope and look into the void
 `);
 
 export const CHOIR = new CApp('Choir', 'showAudioPlayer')
+export const SNAKE = new CApp('Snake', 'showSnake')
 export const OS_TERMINAL = new CApp('Terminal', 'showTerminal')
 
 // Directories
@@ -51,5 +52,5 @@ export const OS_TERMINAL = new CApp('Terminal', 'showTerminal')
 export const YGGDRASIL = [
   DND, WORK, 
   ASTRONOMY,
-  CHOIR, OS_TERMINAL
+  CHOIR, SNAKE, OS_TERMINAL
 ];

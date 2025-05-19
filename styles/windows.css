@@ -1,7 +1,7 @@
 .window {
   visibility: hidden;
   overflow: hidden;
-  resize: both;
+  /* resize: both; */
   opacity: 0;
   background-color: #fff;
   border: 1px solid #000;
@@ -20,6 +20,7 @@
   opacity: 1;
   transform: scale(1);
 }
+
 .window.hide {
   visibility: hidden;
   opacity: 0;
@@ -31,6 +32,7 @@
   font-size: 1.25rem;
   border-bottom: 1px solid #000;
   height: 26px;
+  cursor: grab;
 }
 .window header span {
   margin-left: 0.5rem;

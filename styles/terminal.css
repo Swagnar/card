@@ -5,10 +5,7 @@
   z-index: 3;
 }
 
-.file-icon.terminal-icon {
-  background: transparent url(../static/terminal.png);
-  background-size: 32px;
-}
+
 
 .terminal-body {
   background-color: #202020;

@@ -2,13 +2,15 @@
   max-width: 150px;
 }
 
-.file-icon.choir-icon {
-  background: transparent url(../static/choir.png);
-  background-size: 32px;
+#window-choir {
+  width: 500px;
+  resize: none;
+
 }
 
+
+
 .choir-body {
-  width: 100%;
   padding: .75rem;
 }
 
@@ -24,11 +26,14 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   grid-template-rows: .5fr 1fr;
+  row-gap: .75rem;
 
   & canvas {
-    grid-column: 1 / 3;
-    grid-row: 1 / 2;
-    /* outline: 5px solid black; */
+    grid-column: 1/3;
+    grid-row: 1;
+    width: 100%;
+    height: 150px;
+    outline: 2px solid #2a2724;
   }
   
   & .choir-playback-tracks-container {
@@ -51,6 +56,7 @@
   order: 1;
   width: 100%;
   margin-left: -.75rem;
+  margin-top: .75rem;
 }
 .choir-buttons {
   display: flex;

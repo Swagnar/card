@@ -1,4 +1,4 @@
-import { CHOIR } from "../yggdrasil/Yggdrasil.js";
+import { CHOIR, OS_TERMINAL } from "../yggdrasil/Yggdrasil.js";
 
 class OsContextMenuItem {
   constructor(innerText, id, ev, app=null) {
@@ -20,7 +20,7 @@ class OsContextMenuItem {
       }
       this.body.addEventListener('click', function() {
         if(app) {
-          app.run()
+          app.dispatchEvent()
         } else {
           document.dispatchEvent(event)
         }
@@ -55,7 +55,8 @@ export class OsContextMenu {
       new OsContextMenuItem("Reset desktop", "context-menu-item-reset-desktop"),
       new OsContextMenuItem("Properties", "context-menu-item-properties", "showDialog-properties"),
       new OsContextMenuItem("Settings", "context-menu-item-settings", "showSettings"),
-      new OsContextMenuItem("Terminal", "context-menu-item-terminal", "showTerminal"),
+      new OsContextMenuItem(
+        OS_TERMINAL.name, "context-menu-item-terminal", OS_TERMINAL.command, OS_TERMINAL),
       new OsContextMenuItem(
         CHOIR.name, "context-menu-item-audio-player", CHOIR.command, CHOIR)
     ]

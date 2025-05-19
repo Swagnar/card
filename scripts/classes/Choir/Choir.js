@@ -2,7 +2,6 @@ import { MUSIC_ALBUMS } from '../../resources/MusicAlbums.js';
 
 import CMusicAlbum from './CMusicAlbum.js';
 import CMusicTrack from './CMusicTrack.js';
-import OsWindow from '../os/OsWindow.js';
 
 import { applyDithering } from '../../utils/dithering.js';
 import CApp from '../yggdrasil/CApp.js';
@@ -14,14 +13,7 @@ const UI_SYMBOLS = {
   pause: "⏸"
 }
 
-
-
-
-
-export default class Choir {
-
-  /** @type {OsWindow} */
-  #window
+export default class Choir extends CApp {
 
   /** @type {CMusicTrack} */
   currentTrack;
@@ -38,28 +30,22 @@ export default class Choir {
   /** @type {HTMLCanvasElement} */
   #visualiserCanvas = document.createElement('canvas')
 
+  infoContainer = document.createElement('div')
 
-  // #isPlaying = false;
 
   #nextTrackButton = document.createElement('button');
   #prevTrackButton = document.createElement('button');
   #pauseUnpauseTrackButton = document.createElement('button');
 
-  // TODO: CSS
   #soundRangeInput = document.createElement('input')
-
 
   /** @type {AudioContext} */
   #audioCtx = new window.AudioContext()
   #analyser;
 
-  constructor(root) {
-
-    this.#window = new OsWindow('[ CHOIR ]', 'choir');
-    this.#window.addClassToWindowBody('choir-body', 'choir-selection-layout');
-
-    root.append(this.#window.container);
-    
+  constructor() {
+    super('Choir', 'showAudioPlayer')
+    this.window.addClassToWindowBody('choir-body', 'choir-selection-layout');
     this.initElements();
     this.createAlbumSelectionScreen();
   }
@@ -149,9 +135,9 @@ export default class Choir {
       volumeControlWrapper
     )
 
-    this.#visualiserCanvas.width = this.#window.container.clientWidth
+    this.#visualiserCanvas.width = this.window.container.clientWidth
 
-    this.#window.appendToWindowBody(btnWrapper);
+    this.window.appendToWindowBody(btnWrapper);
   }
 
   #stateChanged() {
@@ -159,13 +145,10 @@ export default class Choir {
       this.#pauseUnpauseTrackButton.innerHTML = UI_SYMBOLS.unpause
 
       this.#pauseUnpauseTrackButton.dataset.playing = 'false'
-      // this.#pauseUnpauseTrackButton.onclick = this.handlePlayAudio(this.#currentTrackAudio)
-      // this.#pauseUnpauseTrackButton.onclick = this.handleResumeAudio
     } else {
       this.#pauseUnpauseTrackButton.innerHTML = UI_SYMBOLS.pause
       this.#pauseUnpauseTrackButton.dataset.playing = 'true'
 
-      // this.#pauseUnpauseTrackButton.onclick = this.handlePauseAudio
     }
   }
 
@@ -175,9 +158,9 @@ export default class Choir {
         throw new TypeError("Can't read as album")
       } 
 
-      let albumSelection = this.returnAlbumHTML(album)
+      let albumSelection = this.returnAlbumHTML(album, false)
 
-      this.#window.appendToWindowBody(albumSelection);
+      this.window.appendToWindowBody(albumSelection);
 
       albumSelection.addEventListener('click', () => {
         this.selectAlbum(album);
@@ -195,8 +178,8 @@ export default class Choir {
       let covers = document.querySelectorAll("div[class='choir-album-cover']");
       covers.forEach(cover => { cover.remove() })
       
-      this.#window.removeClassFromWindowBody('choir-selection-layout');
-      this.#window.addClassToWindowBody('choir-playback-layout');
+      this.window.removeClassFromWindowBody('choir-selection-layout');
+      this.window.addClassToWindowBody('choir-playback-layout');
       
       this.createPlaybackLayout()
     } catch(er) {
@@ -228,7 +211,18 @@ export default class Choir {
       tracksContainer.append(trackContainer);
     })
 
-    this.#window.appendToWindowBody(this.#visualiserCanvas, tracksContainer);
+    const infoImg = this.returnAlbumHTML(this.currentAlbum, true)
+    const infoTitle = document.createElement('h2')
+    const infoAuthor = document.createElement('h3')
+
+    infoTitle.innerText = this.currentAlbum.name
+    infoAuthor.innerText = this.currentAlbum.author
+
+    infoAuthor.style.margin = 0
+
+    this.infoContainer.append(infoImg, infoTitle, infoAuthor)
+
+    this.window.appendToWindowBody(this.#visualiserCanvas, tracksContainer, this.infoContainer);
   }
 
 
@@ -272,7 +266,7 @@ export default class Choir {
 
   }
 
-  returnAlbumHTML(album) {
+  returnAlbumHTML(album, onlyImg) {
     let coverContainer = document.createElement('div');
     coverContainer.classList.add('choir-album-cover');
   
@@ -283,10 +277,14 @@ export default class Choir {
   
     applyDithering(cover, coverDitheringCanvas)
   
-    let label = document.createElement('span');
-    label.innerHTML = `${album.author} - ${album.name}`;
+    if(!onlyImg) {
+      let label = document.createElement('span');
+      label.innerHTML = `${album.author} - ${album.name}`;
+      coverContainer.append(cover, coverDitheringCanvas, label)
+    } else {
+      coverContainer.append(cover, coverDitheringCanvas)
+    }
   
-    coverContainer.append(cover, coverDitheringCanvas, label)
   
     cover.style.display = "none"
     return coverContainer
@@ -403,6 +401,6 @@ renderFrame();
     this.#stateChanged()
   }
 
-  showPlayer() { this.#window.showWindow() }
+  showPlayer() { this.window.showWindow() }
 
 }
