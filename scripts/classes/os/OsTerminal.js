@@ -18,8 +18,7 @@ export default class OsTerminal extends CApp {
   /** @type {HTMLInputElement} with `type="text"` */
   #terminalInputElement
   
-  /** @type {string} */
-  #prefix = "~:";
+  prefix = "~:";
   
   /**
    * Creates new `OsTerminal` window and shows it on the screen. Window frame is created via `OsWindow` class 
@@ -51,34 +50,16 @@ export default class OsTerminal extends CApp {
       }
     })
     
-    // * Command input prefix (~:)
-    // *
     this.#terminalInputPrefixElement = document.createElement('span')
-    this.#terminalInputPrefixElement.innerText = this.#prefix
+    this.#terminalInputPrefixElement.innerText = this.prefix
     
-    // ! Append command input element and prefix element to the input container
-    // !
     this.#terminalInputContainer.append(this.#terminalInputPrefixElement, this.#terminalInputElement)
     
-    // ? Invoke `OsWindow` method `setAsTerminal` which populates OsWindow.#bodyTag with OsTerminal DOM elements 
-    // ? instead of CDirectory.files array that would result in rendering files of a given directory
-    // ?
     this.window.setAsTerminal(this.#terminalOutputContainer, this.#terminalInputContainer)
 
     this.history = [];
     this.displayMOTD("Welcome to OS_OSHELL. Type `help` to get the list of avaiable commands")
   }
-
-  /**
-   * Sets the terminal instance prefix
-   * @param {string} prefix - prefix to set. For now it doesn't react in any way to commands ran by the user.
-   */
-  set prefix(prefix) {
-    this.#prefix = prefix
-    this.prefixElement.innerText = prefix
-  }
-  /** Prefix string getter */
-  get prefix() { return this.#prefix }
 
   /**
    * Display the terminal MOTD, invokes `appendToLog`
@@ -102,7 +83,7 @@ export default class OsTerminal extends CApp {
     
     if(isPrefix) {
       const logElementPrefixSpan = document.createElement('span')
-      logElementPrefixSpan.innerText = this.#prefix
+      logElementPrefixSpan.innerText = this.prefix
       logElement.append(logElementPrefixSpan)
     }
     

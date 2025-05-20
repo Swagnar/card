@@ -45,6 +45,8 @@ export const CHOIR = new CApp('Choir', 'showAudioPlayer')
 export const SNAKE = new CApp('Snake', 'showSnake')
 export const OS_TERMINAL = new CApp('Terminal', 'showTerminal')
 
+// Just for looks
+//
 // Directories
 // Archives
 // Apps

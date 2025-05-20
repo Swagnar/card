@@ -1,7 +1,6 @@
 import OsTerminal from "./scripts/classes/os/OsTerminal.js"
 import { OsContextMenu } from "./scripts/classes/os/OsContextMenu.js"
 
-
 import { SNAKE, YGGDRASIL } from "./scripts/classes/yggdrasil/Yggdrasil.js"
 import CDirectory from "./scripts/classes/yggdrasil/CDirectory.js"
 import CArchive from "./scripts/classes/yggdrasil/CArchive.js"
@@ -23,38 +22,6 @@ function isMobile() {
 
 export const DESKTOP = document.getElementById('desktop')
 const CONTEXT_MENU = new OsContextMenu(DESKTOP)
-
-const FOLDERS = []
-const ARCHIVES = []
-const APPS = []
-
-/**
- * Yggdrasil is a array that contains all objects representing directories and archives found on the application desktop.
- * Im not crazy enough to add a propper file explorer, come on.
- * 
- * This functions loops through the array and creates DOM elements.
- * If the iterable element is a CDirectory instance, the DOM elements (the `container` and the `icon`) has different class values than for example the CArchive class
- * 
- * Then, the ready-to-go DOM elements are added to their corresponding arrays, FOLDERS or ARCHIVES.
- * 
- */
-
-function loadYggdrasil() {
-  YGGDRASIL.forEach(function(element, index) {    
-    if(element instanceof CDirectory) {
-      FOLDERS.push(element)
-    }
-    // TODO: fix populate CArchive class
-    if(element instanceof CArchive) {
-      ARCHIVES.push(element)
-    }
-
-    if(element instanceof CApp) {
-      APPS.push(element)
-    }
-  })
-}
-
 
 /**
  * Handles the click event for an archive element, updating its styles
@@ -174,40 +141,24 @@ function startSystem() {
   function addClickListener() {
     function loadDesktop() {
       var navbar = document.querySelector('.navbar')
-      
-      if(!FOLDERS || !Array.isArray(FOLDERS)) {
-        throw new Error('Folders array is empty, undefined or not an Array')
-      }
-      if(!ARCHIVES || !Array.isArray(ARCHIVES)) {
-        throw new Error('Archives array is empty, undefined or not an Array')
-      }
-
-      let desktopElements = FOLDERS.concat(ARCHIVES, APPS)
-
-      //
-      // ! PUSHING OBJECT TO RENDER ON SCREEN
-      //
-      desktopElements.forEach(element => {
+      YGGDRASIL.forEach(element => {
+        if(!element instanceof CDirectory || !element instanceof CArchive || !element instanceof CApp) {
+          throw new TypeError(`Yggdrasil element does not have OS recognizable type`)
+        }
         if(!element.desktopIcon.container) {
           console.log(element.desktopIcon.container)
           throw new Error(`${element.name} desktop element container is not a button`)
         }
         if(element instanceof CDirectory) {
-          // console.log("CDIRECTORY", element)
-          // console.log("CDIRECTORY", element.container)
           logWithColors("Appending CDirectory {} to DESKTOP element", element.name)
         } else if(element instanceof CArchive) {
           logWithColors("Appending CArchive {} to DESKTOP element", element.name)
         } else if(element instanceof CApp) {
-          // console.log("CAPP", element)
-          // console.log("CAPP", element.container)
           logWithColors("Appending CApp {} to DESKTOP element", element.name)
-        }
-        else {
+        } else {
           throw Error('Trying to add a not-OS object to desktop')
         }
 
-        
         navbar.after(element.desktopIcon.container)        
       })
       
@@ -256,7 +207,6 @@ function startSystem() {
 
 
 window.onload = function() {
-  loadYggdrasil()
   isMobile()
   startSystem()
   initEvents()

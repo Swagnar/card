@@ -158,6 +158,7 @@ export default class OsWindow {
     canvas.height = height
 
     this.bodyTag.append(canvas)
+    return canvas
   }
 
 
@@ -206,6 +207,8 @@ export default class OsWindow {
       this.container.classList.add('hide')
     }, 50)
     this.container.remove()
+    const event = new CustomEvent('closeWindow')
+    document.dispatchEvent(event)
   }
   showWindow() {
     DESKTOP.append(this.container)

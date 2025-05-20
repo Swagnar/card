@@ -48,11 +48,11 @@ export default class Choir extends CApp {
     this.window.addClassToWindowBody('choir-body', 'choir-selection-layout');
     this.initElements();
     this.createAlbumSelectionScreen();
+
+    document.addEventListener('closeWindow', () => {
+      this.#currentTrackAudio.pause()
+    })
   }
-
-  
-
-
 
   initElements() {
 
@@ -348,44 +348,45 @@ export default class Choir extends CApp {
     }
 
     analyser.fftSize = 128; // MASSIVELY reduced fidelity
-const bufferLength = analyser.frequencyBinCount;
-const dataArray = new Uint8Array(bufferLength);
-this.#visualiserCanvas.width = 500
-const width = this.#visualiserCanvas.width;
-const height = this.#visualiserCanvas.height;
-const barWidth = Math.floor(width / bufferLength);
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    this.#visualiserCanvas.width = 500
+    const width = this.#visualiserCanvas.width;
+    const height = this.#visualiserCanvas.height;
+    const barWidth = Math.floor(width / bufferLength);
 
-ctx.imageSmoothingEnabled = false; // no anti-aliasing allowed
+    ctx.imageSmoothingEnabled = false; // no anti-aliasing allowed
 
-let glitchOffset = 0;
+    let glitchOffset = 0;
 
-const renderFrame = () => {
-  setTimeout(() => requestAnimationFrame(renderFrame), 24); // 10 FPS MAX, like it's running on a toaster
+    const renderFrame = () => {
+      setTimeout(() => requestAnimationFrame(renderFrame), 24); // 10 FPS MAX, like it's running on a toaster
 
-  analyser.getByteFrequencyData(dataArray);
+      analyser.getByteFrequencyData(dataArray);
 
-  ctx.fillStyle = 'white';
-  ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, width, height);
 
-  ctx.fillStyle = 'black';
+      ctx.fillStyle = 'black';
 
-  let x = glitchOffset; // make the whole thing jitter for "glitch" feel
+      let x = glitchOffset; // make the whole thing jitter for "glitch" feel
 
-  for (let i = 0; i < bufferLength; i++) {
-    let value = dataArray[i];
+      for (let i = 0; i < bufferLength; i++) {
+        let value = dataArray[i];
 
-    if (Math.random() < 0.1) {
-      value = value * 0.3; // simulate shitty signal by randomly weakening bars
-    }
+        if (Math.random() < 0.1) {
+          value = value * 0.3; // simulate shitty signal by randomly weakening bars
+        }
 
-    const barHeight = Math.floor((value / 255) * height / 8) * 8; // big chunky pixel blocks
-    ctx.fillRect(x, height - barHeight, barWidth + 10, barHeight);
-    x += barWidth + 10;
-  }
+        const barHeight = Math.floor((value / 255) * height / 8) * 8; // big chunky pixel blocks
+        ctx.fillRect(x, height - barHeight, barWidth + 10, barHeight);
+        x += barWidth + 10;
+      }
 
-  glitchOffset = (glitchOffset + (Math.random() > 0.9 ? 1 : 0)) % 3; // slight horizontal jitter
-};
-renderFrame();
+      glitchOffset = (glitchOffset + (Math.random() > 0.9 ? 1 : 0)) % 3; // slight horizontal jitter
+    };
+    
+    renderFrame();
   }
 
   setVolume(volume) {
