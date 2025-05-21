@@ -20,7 +20,6 @@ export default class CDirectory {
   constructor(name) {
     this.name = name
     this.files = []
-    this.id = `window-${this.name}`
     this.desktopIcon = new OsDesktopIcon(name, 'dir')
     this.desktopIcon.container.addEventListener('dblclick', () => this.open() )
     logWithColors("CDirectory {} successfully initialized", this.name)

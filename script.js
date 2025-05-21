@@ -15,42 +15,19 @@ import logWithColors from "./scripts/utils/logs.js"
 import CApp from "./scripts/classes/yggdrasil/CApp.js"
 import Snake from "./scripts/classes/Snake/Snake.js"
 
-function isMobile() {
-  let userAgent = navigator.userAgent.toLowerCase()
-  return /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
-}
-
 export const DESKTOP = document.getElementById('desktop')
 const CONTEXT_MENU = new OsContextMenu(DESKTOP)
-
-/**
- * Handles the click event for an archive element, updating its styles
- * @param {HTMLElement} archive - the archive element that was clicked
- */
-function archiveClicked(archive) {
-  resetStyles(archive)
-  var icon = archive.firstElementChild
-  var label = archive.lastElementChild
-
-  icon.style.backgroundImage = "url('static/archive-clicked.png')"
-  label.style.backgroundColor = "#000"
-  label.style.color = "#fff"
-}
 
 /*---------------------------------------------//
 //            adding EventListeners            //
 //---------------------------------------------*/
 
 function initEvents() {
-  const windows = Array.from(document.querySelectorAll('.window'))
-
   const navbarItems = Array.from(document.querySelectorAll('.item > button'))
   const navbarParentElements = navbarItems.map((item) => item.parentElement)
   const navbarDropLists = navbarItems.map((item) => item.nextElementSibling)
   
 
-  DESKTOP.addEventListener('dragover', function(event) { allowDrop(event) })
-  DESKTOP.addEventListener('drop', function(event) { drop(event) })
   DESKTOP.addEventListener('contextmenu', function(event) { CONTEXT_MENU.showContextMenu(event) });
   
   DESKTOP.addEventListener('click', () => { document.getElementById('context-menu').style.display = 'none' })
@@ -90,28 +67,17 @@ function initEvents() {
       }
     })
   })
-
-  if(isMobile()) {
-    ARCHIVES.forEach(archive => {
-      archive.addEventListener('touchstart', (event) => { fileDragStart(event, archive) })
-      archive.addEventListener('touchmove',  (event) => { fileDrag(event, archive) })
-      archive.addEventListener('touchend',   () => { fileDragEnd(archive) })  
-    })
-
-    windows.forEach(window => {
-      window.addEventListener('touchstart',  (event) => { fileDragStart(event, window) })
-      window.addEventListener('touchmove',   (event) => { fileDrag(event, window) })
-      window.addEventListener('touchend',    () => { fileDragEnd(window) })
-    })
-  } 
-
+  
+  document.addEventListener('showDialog', function(event) { 
+    showDialog(event.detail, steinbergFloydDither) 
+  })
+  document.addEventListener('showSettings', function() { 
+    showSettings() 
+  })
   document.addEventListener('showTerminal', function() { 
     const terminal = new OsTerminal() 
     terminal.showTerminal();
   })
-  document.addEventListener('showDialog', function(event) { showDialog(event.detail, steinbergFloydDither) })
-  document.addEventListener('showSettings', function() { showSettings() })
-  document.addEventListener('windowClosed', function(event) { event.detail.remove() })
   document.addEventListener('showAudioPlayer', function() { 
     const newAudioPlayer = new Choir();
     newAudioPlayer.showPlayer();
@@ -140,6 +106,9 @@ function startSystem() {
 
   function addClickListener() {
     function loadDesktop() {
+
+
+
       var navbar = document.querySelector('.navbar')
       YGGDRASIL.forEach(element => {
         if(!element instanceof CDirectory || !element instanceof CArchive || !element instanceof CApp) {
@@ -165,6 +134,9 @@ function startSystem() {
       console.log(DESKTOP)
       navbar.style.display = 'flex'
     }
+
+
+    
 
     document.addEventListener('click', handleUserInteraction)
     document.addEventListener('keydown', handleUserInteraction)
@@ -207,7 +179,6 @@ function startSystem() {
 
 
 window.onload = function() {
-  isMobile()
   startSystem()
   initEvents()
   loadSettings()

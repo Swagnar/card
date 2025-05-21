@@ -18,7 +18,7 @@ export default class CApp {
     this.name = name
     this.desktopIcon = new OsDesktopIcon(name, 'app', command)
     this.command = command
-    this.window = new OsWindow(`[ ${this.name.toUpperCase()} ]`, this.name.toLowerCase(), false)
+    this.window = new OsWindow(this.name.toUpperCase(), this.name.toLowerCase(), false)
     logWithColors("CApp {} successfully initialized", this.name)
   }
 
