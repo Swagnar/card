@@ -21,6 +21,14 @@
   transform: scale(1);
 }
 
+.window code {
+  font-size: smaller;
+  background: #dedede;
+  padding: .125rem;
+  border-radius: 15%;
+  font-weight: bold;
+}
+
 .window.hide {
   visibility: hidden;
   opacity: 0;

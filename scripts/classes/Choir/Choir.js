@@ -50,6 +50,9 @@ export default class Choir extends CApp {
     this.createAlbumSelectionScreen();
 
     document.addEventListener('closeWindow', () => {
+      if(!this.#currentTrackAudio) {
+        return
+      }
       this.#currentTrackAudio.pause()
     })
   }

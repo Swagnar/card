@@ -20,7 +20,6 @@ export default class CApp {
     this.command = command
     this.window = new OsWindow(`[ ${this.name.toUpperCase()} ]`, this.name.toLowerCase(), false)
     logWithColors("CApp {} successfully initialized", this.name)
-    document.getElementById('desktop').append(this.window.container)
   }
 
   dispatchEvent() {

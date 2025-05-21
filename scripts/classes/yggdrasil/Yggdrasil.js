@@ -33,6 +33,7 @@ WORK.addFiles(
   <h3>Since 2025</h3>
   <img src="static/hosting.jpg">
   <canvas class="cfile-fl"></canvas>
+  <p>Right now I'm working as a Support Specialist for a hosting provider group <strong>Domenomania</strong>, that has two large services for domain registration, VPS and shared hosting. My daily work consists of talking with clients, migrating their services from different providers to us and fixing bugs. You can check them out here - <a href='https://domenomania.pl' target='_blank'>domenomania.pl</a> and here - <a href='https://vh.pl' target='_blank'>vh.pl</a>. Our company got accepted as a verified partner of national Research and Academic Computer Network (<em>pl. NASK</em>) and now, when doing <code>whois</code> on some domains you might see <strong>Prociv</strong> as a Registrar.
   `)
 )
 

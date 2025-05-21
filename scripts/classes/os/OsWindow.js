@@ -50,7 +50,7 @@ export default class OsWindow {
       this.container.style.resize = 'both'
     }
 
-    this.headerWindowName.innerText = this.#windowName
+    this.headerWindowName.innerText = `[ ${this.#windowName} ]`
     this.closeButton.innerText = "X"
     this.closeButton.addEventListener('click', () => { this.closeWindow() })
     this.headerTag.append(this.headerWindowName, this.closeButton)
