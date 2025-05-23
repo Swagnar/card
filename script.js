@@ -1,7 +1,6 @@
-import OsTerminal from "./scripts/classes/os/OsTerminal.js"
 import { OsContextMenu } from "./scripts/classes/os/OsContextMenu.js"
 
-import { SNAKE, YGGDRASIL } from "./scripts/classes/yggdrasil/Yggdrasil.js"
+import { SNAKE, CHOIR, OS_TERMINAL, COMPOSER, YGGDRASIL } from "./scripts/classes/yggdrasil/Yggdrasil.js"
 import CDirectory from "./scripts/classes/yggdrasil/CDirectory.js"
 import CArchive from "./scripts/classes/yggdrasil/CArchive.js"
 
@@ -9,11 +8,9 @@ import steinbergFloydDither from "./scripts/utils/dithering.js";
 import update_clock from "./scripts/utils/clock.js"
 
 import { showDialog, closeDialog } from "./scripts/os_dialog.js"
-import Choir from "./scripts/classes/Choir/Choir.js"
 
 import logWithColors from "./scripts/utils/logs.js"
 import CApp from "./scripts/classes/yggdrasil/CApp.js"
-import Snake from "./scripts/classes/Snake/Snake.js"
 
 export const DESKTOP = document.getElementById('desktop')
 const CONTEXT_MENU = new OsContextMenu(DESKTOP)
@@ -47,6 +44,9 @@ function initEvents() {
     }
   })
 
+
+
+
   navbarItems.forEach((item, i) => {
     item.addEventListener('click', () => {
 
@@ -74,18 +74,7 @@ function initEvents() {
   document.addEventListener('showSettings', function() { 
     showSettings() 
   })
-  document.addEventListener('showTerminal', function() { 
-    const terminal = new OsTerminal() 
-    terminal.showTerminal();
-  })
-  document.addEventListener('showAudioPlayer', function() { 
-    const newAudioPlayer = new Choir();
-    newAudioPlayer.showPlayer();
-  })
-  document.addEventListener('showSnake', function() {
-    const newSnake = new Snake();
-    newSnake.window.showWindow()
-  })
+  
 }
 
 // TODO: Change how the system is booted. What the fuck is `loadDesktop()` inside a function inside a function?
@@ -114,10 +103,6 @@ function startSystem() {
         if(!element instanceof CDirectory || !element instanceof CArchive || !element instanceof CApp) {
           throw new TypeError(`Yggdrasil element does not have OS recognizable type`)
         }
-        if(!element.desktopIcon.container) {
-          console.log(element.desktopIcon.container)
-          throw new Error(`${element.name} desktop element container is not a button`)
-        }
         if(element instanceof CDirectory) {
           logWithColors("Appending CDirectory {} to DESKTOP element", element.name)
         } else if(element instanceof CArchive) {
@@ -136,7 +121,7 @@ function startSystem() {
     }
 
 
-    
+
 
     document.addEventListener('click', handleUserInteraction)
     document.addEventListener('keydown', handleUserInteraction)

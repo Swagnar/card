@@ -15,6 +15,7 @@ export default class CApp {
 
 
   constructor(name, command) {
+    
     this.name = name
     this.desktopIcon = new OsDesktopIcon(name, 'app', command)
     this.command = command

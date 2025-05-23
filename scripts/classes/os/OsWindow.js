@@ -63,8 +63,8 @@ export default class OsWindow {
     this.container.addEventListener('pointerdown', (ev) => { this.focusWindow(ev) })
 
     this.headerTag.addEventListener('pointerdown', (ev) => { this.startMovingWindow(ev) }) 
-    this.headerTag.addEventListener('pointermove', (ev) => { this.moveWindow(ev) })
-    this.headerTag.addEventListener('pointerup', (ev) => { this.stopMovingWindow(ev)})
+    document.addEventListener('pointermove', (ev) => { this.moveWindow(ev) })
+    document.addEventListener('pointerup', (ev) => { this.stopMovingWindow(ev)})
 
     
     logWithColors("Successfully created OsWindow with name {}", name)
@@ -159,6 +159,10 @@ export default class OsWindow {
 
     this.bodyTag.append(canvas)
     return canvas
+  }
+
+  setAsBlank() {
+    this.bodyTag.innerHTML = ''
   }
 
 

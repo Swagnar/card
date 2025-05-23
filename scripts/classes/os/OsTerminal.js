@@ -50,7 +50,6 @@ export default class OsTerminal extends CApp {
       }
     })
 
-    
     this.#terminalInputPrefixElement = document.createElement('span')
     this.#terminalInputPrefixElement.innerText = this.prefix
     

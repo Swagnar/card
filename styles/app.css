@@ -15,3 +15,8 @@
   background-size: 32px;
   margin-bottom: 6px;
 }
+.file-icon.composer-icon {
+  background: transparent url(../static/composer.png);
+  background-size: 32px;
+  margin-bottom: 6px;
+}

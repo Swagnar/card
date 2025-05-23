@@ -2,6 +2,10 @@ import CFile from "./CFile.js"
 import CDirectory from "./CDirectory.js"
 import CArchive from "./CArchive.js"
 import CApp from "./CApp.js";
+import Composer from "../Composer/Composer.js";
+import Choir from "../Choir/Choir.js";
+import OsTerminal from "../os/OsTerminal.js";
+import Snake from "../Snake/Snake.js";
 
 const DND = new CDirectory("D&D");
 DND.addFiles(
@@ -42,9 +46,11 @@ const ASTRONOMY = new CArchive('ASTRONOMY.ZIP', `
 I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil.
 `);
 
-export const CHOIR = new CApp('Choir', 'showAudioPlayer')
-export const SNAKE = new CApp('Snake', 'showSnake')
-export const OS_TERMINAL = new CApp('Terminal', 'showTerminal')
+// export const CHOIR = new CApp('Choir', 'showAudioPlayer')
+export const CHOIR = new Choir()
+export const COMPOSER = new Composer()
+export const SNAKE = new Snake()
+export const OS_TERMINAL = new OsTerminal()
 
 // Just for looks
 //
@@ -52,8 +58,23 @@ export const OS_TERMINAL = new CApp('Terminal', 'showTerminal')
 // Archives
 // Apps
 
+// Apps can be only be run one instance of at a tine, so no 2 terminals at once, windows overwrite
+document.addEventListener('showSnake', () => {
+  SNAKE.window.showWindow()
+})
+document.addEventListener('showChoir', () => {
+  CHOIR.window.showWindow()
+})
+document.addEventListener('showComposer', () => {
+  COMPOSER.window.showWindow()
+})
+document.addEventListener('showTerminal', () => {
+  OS_TERMINAL.showTerminal()
+})
+
+
 export const YGGDRASIL = [
   DND, WORK, 
   ASTRONOMY,
-  CHOIR, SNAKE, OS_TERMINAL
+  CHOIR, COMPOSER, SNAKE, OS_TERMINAL
 ];

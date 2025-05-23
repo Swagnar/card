@@ -44,7 +44,7 @@ export default class Choir extends CApp {
   #analyser;
 
   constructor() {
-    super('Choir', 'showAudioPlayer')
+    super('Choir', 'showChoir')
     this.window.addClassToWindowBody('choir-body', 'choir-selection-layout');
     this.initElements();
     this.createAlbumSelectionScreen();
@@ -55,6 +55,7 @@ export default class Choir extends CApp {
       }
       this.#currentTrackAudio.pause()
     })
+    
   }
 
   initElements() {
