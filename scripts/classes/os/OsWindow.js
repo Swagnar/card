@@ -116,7 +116,6 @@ export default class OsWindow {
     if(!inputContainer) {
       throw new TypeError(`Error while setting window as terminal, inputContainer is ${inputContainer}`)
     }
-    this.container.classList.add('window-terminal');
     this.addClassToWindowBody('terminal-body');
     this.removeClassFromWindowBody('window-body');
 

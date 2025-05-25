@@ -1,0 +1,255 @@
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~         CHOIR        ~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+/* OsDesktopIcon */
+.file-icon.choir-icon {
+  background: transparent url(../static/choir.png);
+  background-size: 32px;
+  margin-bottom: 6px;
+}
+
+/* OsWindow */
+#window-choir {
+  width: 500px;
+  resize: none;
+
+  img {
+    max-width: 150px;
+  }
+}
+
+.choir-body {
+  padding: .75rem;
+  & > .choir-buttons {
+    order: 1;
+    width: 100%;
+    margin-left: -.75rem;
+    margin-top: .75rem;
+  }
+  & > div:not(.choir-buttons):not(.choir-playback-tracks-container) {
+    display: grid;
+    grid-template-rows: 100% 3rem;
+    align-items: center;
+    width: fit-content;
+  }
+  &.choir-selection-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    align-items: center;
+    justify-items: center;
+    column-gap: 1rem;
+  }
+  &.choir-playback-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: .5fr 1fr;
+    row-gap: .75rem;
+  
+    & canvas {
+      grid-column: 1/3;
+      grid-row: 1;
+      width: 100%;
+      height: 150px;
+      outline: 2px solid #2a2724;
+    }
+    
+    & .choir-playback-tracks-container {
+      grid-column: 1 / 2;
+      grid-row: 2 / 3;
+  
+      overflow: scroll;
+      height: 300px;
+      padding-right: 14px;
+    }
+  }
+
+}
+
+.choir-buttons {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: center;
+
+  button {
+    min-width: 4rem;
+  }
+}
+
+.choir-album-cover span {
+  border-left: 2px solid #333;
+  padding-left: 3px;
+  text-overflow: clip;
+  overflow: scroll;
+  max-width: 150px;
+  max-height: 40px;
+}
+.choir-album-cover canvas {
+  max-width: 100%;
+}
+.choir-album-cover:hover {
+  cursor: pointer;
+  
+  & > canvas {
+    outline: 1px solid white;
+  }
+  
+  & > span {
+    color: #666;
+    text-shadow: 1px 1px 2px #fff;
+  }
+}
+
+.choir-playback-track-container {
+  display: grid;
+  grid-template-columns: 10% auto 20%;
+  border-bottom: 2px solid #000;
+  
+  & span:first-child {
+    width: 1.5rem;
+    text-align: center;
+  }
+
+  & span:last-child {
+    justify-self: end;
+  }
+}
+
+.choir-volume-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+#choir-volume-btn {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+#choir-volume-input-wrapper {
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+#choir-volume-input-wrapper.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~       TERMINAL       ~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+/* OsDesktopIcon */
+.file-icon.terminal-icon {
+  background: transparent url(../static/terminal.png);
+  background-size: 32px;
+  margin-bottom: 6px;
+}
+
+/* OsWindow */
+#window-terminal {
+  width: 430px;
+  height: 360px;
+  font-size: 100%;
+  z-index: 3;
+}
+
+
+.terminal-body {
+  background-color: #202020;
+  color: lightgreen;
+  height: 100%;
+  width: 100%;
+  font-family: var(--font-main);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+}
+
+.terminal-output {
+  /* display: flex; */
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100% - 26px);
+  justify-content: flex-end;
+  flex-grow: 1;
+  margin-bottom: 45px;
+  overflow: scroll;
+}
+
+.terminal-input-wrapper {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.terminal-input {
+  all: unset;
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 0;
+  height: 20px;
+  margin: 0 0 0 0.5rem;
+  background: transparent;
+  font-family: var(--font-main);
+  color: #fff;
+  font-size: 100%;
+  caret-color: #90ee90;
+}
+
+.terminal-log-element pre {
+  display: inline;
+  font-family: "VT323", monospace;
+}
+
+.terminal-log-element span:nth-of-type(2) {
+  color: #fff;
+  margin-left: 0.6rem;
+}
+
+
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~         SNAKE        ~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+/* OsDesktopIcon */
+.file-icon.snake-icon {
+  background: transparent url(../static/snake.png);
+  background-size: 32px;
+  margin-bottom: 6px;
+}
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~       COMPOSER       ~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+/* OsDesktopIcon */
+.file-icon.composer-icon {
+  background: transparent url(../static/composer.png);
+  background-size: 32px;
+  margin-bottom: 6px;
+}
+
+/* OsWindow */
+#window-composer {
+  min-height: 200px;
+}

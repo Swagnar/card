@@ -173,3 +173,66 @@ window.onload = function() {
 
   setInterval(() => {update_clock(dateTag,timeTag)}, 1000)
 }
+
+window.prompt = function (msg, defaultValue = '') {
+  return new Promise((resolve) => {
+    
+    const overlay = document.createElement('div')
+    overlay.id = 'prompt-overlay'
+
+    // Okienko
+    const dialog = document.createElement('div')
+    dialog.id = 'prompt-body'
+
+
+    const label = document.createElement('div')
+    label.textContent = msg
+    label.style.fontSize = '28px'
+
+    const input = document.createElement('input')
+    input.type = 'text'
+    input.value = defaultValue
+    input.style.padding = '4px'
+    input.style.border = '1px solid black'
+    input.style.fontFamily = 'monospace'
+    input.style.fontSize = '14px'
+
+    const buttons = document.createElement('div')
+    buttons.style.display = 'flex'
+    buttons.style.justifyContent = 'flex-end'
+    buttons.style.gap = '6px'
+
+    const ok = document.createElement('button')
+    ok.textContent = 'OK'
+    ok.id = 'prompt-ok-btn'
+    ok.style.padding = '4px 12px'
+    ok.style.border = '1px solid black'
+    ok.style.cursor = 'pointer'
+    ok.onclick = () => {
+      document.body.removeChild(overlay)
+      resolve(input.value)
+    }
+
+    const cancel = document.createElement('button')
+    cancel.textContent = 'Cancel'
+    cancel.id = 'prompt-cancel-btn'
+    cancel.style.padding = '4px 12px'
+    cancel.style.border = '1px solid black'
+    cancel.style.cursor = 'pointer'
+    cancel.onclick = () => {
+      document.body.removeChild(overlay)
+      resolve(null)
+    }
+
+    buttons.appendChild(cancel)
+    buttons.appendChild(ok)
+
+    dialog.appendChild(label)
+    dialog.appendChild(input)
+    dialog.appendChild(buttons)
+    overlay.appendChild(dialog)
+    document.body.appendChild(overlay)
+
+    input.focus()
+  })
+}
