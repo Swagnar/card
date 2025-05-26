@@ -31,7 +31,7 @@ export default class OsTerminal extends CApp {
     this.#terminalOutputContainer.classList.add('terminal-output');
 
     this.#terminalOutputContainer.addEventListener('click', () => {
-      this.input.focus()
+      this.#terminalInputElement.focus()
     })
     
 
@@ -103,16 +103,46 @@ export default class OsTerminal extends CApp {
    * @returns {string} - command result
    */
   runCommand(command) {
-    let args = command.split(' ')
+    let args = command.trim().split(/\s+/)
     let name = args.shift()
     let output
-    this.history.push({name: name, args: args})
-    try {
-      output = OsTerminal.commands[name](args)
-    } catch (TypeError) {
-      output = `Command '${name}' was not found. Try 'help' to see available commands`
+  
+    this.history.push({ name: name, rawArgs: args })
+  
+    const parsedArgs = this.parseArgs(args)
+  
+    if (!OsTerminal.commands[name]) {
+      return `Command '${name}' was not found. Try 'help' to see available commands`
     }
+  
+    output = OsTerminal.commands[name](parsedArgs)
     return output
+  }
+
+  /**
+ * Parses command arguments into flags and positional args
+ * @param {string[]} args 
+ * @returns {{ flags: Object<string, boolean>, positional: string[] }}
+ */
+  parseArgs(args) {
+    const flags = {}
+    const positional = []
+
+    for (const arg of args) {
+      if (arg.startsWith('--')) {
+        const key = arg.slice(2)
+        flags[key] = true
+      } else if (arg.startsWith('-')) {
+        const letters = arg.slice(1)
+        for (const letter of letters) {
+          flags[letter] = true
+        }
+      } else {
+        positional.push(arg)
+      }
+    }
+
+    return { flags, positional }
   }
 
   /**
@@ -141,15 +171,6 @@ export default class OsTerminal extends CApp {
  * @type {Object<string, function}
  */
   static commands = {
-  /**
-   * List files in the directory
-   * @param {Array} args - additional options for the ls command
-   * @returns {string} - result of running ls command
-   */
-  ls: function(args) {
-    return `[NOT IMPLEMENTED] Running ls with ${args}`
-  },
-
 
   kbind: function() {
     return `CTRL + S :  : SETTINGS`
@@ -162,8 +183,8 @@ export default class OsTerminal extends CApp {
     | ,----------------------------.  |
     | |                             | |
     | |            OS_OS            | |
-    | |      VERSION:  :0.6.7       | |
-    | |  LAST UPDATE:  :02.XII.24   | |     CPU: 0.66MHz Apophis
+    | |  VERSION    :  :    0.7.1   | |
+    | |  LAST UPDATE:  :  26 V 25   | |     CPU: 0.66MHz Apophis
     | |                             | |     RAM: 32MB DDR1 
     | |                             | |    GPU1: MISSING
     | |.............................| |    GPU2: 16MB VRAM
@@ -182,22 +203,21 @@ export default class OsTerminal extends CApp {
    */
   help: function() {
     return `Avaiable commands:
-> ls [...OPTIONS]
 > kbind
   - shows a list of key bindings
 > neofetch
   - displays system info
 > clear
   - clears terminal
-> wpf
-  - shows WPF hints
+> alert [MSG] [OPTIONS]
+  - shows OS_OS alert window with message
+
+  OPTIONS:
+    -d | danger - shows a danger-styled OS_OS alert window
+    -i | info   - shows a info-styled OS_OS alert window
 `
   },
 
-
-  // wpf: function() {
-  //   return `Slajd [X] i slajd [Y]`
-  // },
 
   /**
    * Clears the terminal output
@@ -206,6 +226,21 @@ export default class OsTerminal extends CApp {
   clear: function() {
     document.getElementById(`terminal-output`).innerHTML = ""
     return ``
+  },
+
+  alert: function({ flags, positional }) {
+    const msg = positional.join(" ") || "No message"
+    let type = "default"
+  
+    if (flags.d || flags.danger) {
+      type = "danger"
+    } else if (flags.w || flags.warning) {
+      type = "warning"
+    }
+  
+    window.alert(msg, type)
+  
+    // return `Alert: ${msg} (${type})`
   }
 
 }

@@ -30,7 +30,7 @@ class OsContextMenuItem {
   }
 }
 
-export class OsContextMenu {
+export default class OsContextMenu {
   /**
    * @type {HTMLDivElement}
    */
@@ -58,7 +58,7 @@ export class OsContextMenu {
       new OsContextMenuItem(
         OS_TERMINAL.name, "context-menu-item-terminal", OS_TERMINAL.command, OS_TERMINAL),
       new OsContextMenuItem(
-        CHOIR.name, "context-menu-item-audio-player", CHOIR.command, CHOIR)
+        CHOIR.name, "context-menu-item-audio-player", CHOIR.command, CHOIR),
     ]
 
     this.#body.append(this.#header)

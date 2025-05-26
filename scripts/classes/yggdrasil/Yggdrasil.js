@@ -9,15 +9,15 @@ import Snake from "../Snake/Snake.js";
 
 const DND = new CDirectory("D&D");
 DND.addFiles(
-  new CFile("README.md", 'md', "TO ADD"),
-  new CFile("Characters.txt", 'txt', 'TO ADD')
+  new CFile("README", 'md', "TO ADD"),
+  new CFile("Characters", 'txt', 'TO ADD')
 );
 
 const WORK = new CDirectory("WORK");
 WORK.addFiles(
-  new CFile("Misc.bat", "bat", "TO ADD"),
-  new CFile("Amazon.bat", "bat", "TO ADD"),
-  new CFile("Teacher.txt", "txt", `
+  new CFile("Misc", "bat", "TO ADD"),
+  new CFile("Amazon", "bat", "TO ADD"),
+  new CFile("Teacher", "txt", `
     <h1>I was a teacher</h1>
     <h3>2022 - 2025</h3>
     <img src="static/rolnik.jpg">
@@ -32,7 +32,7 @@ WORK.addFiles(
     <p>I've also began my joruney with Computer Science in this building. I was a student of a technical class with an IT profile where I was taught in the dark arts of Hardware, Networking and Web Development. This journey laid foundations for my knowlage, and even though the lessons were outdated and sometimes even cruelly tedious, those were one of the best year of my life</p>
     <p>After getting my engineering degree in Computer Science I was given an offer to work there as a teacher and I thought <em>Why not?</em></p>
   `),
-  new CFile("Hosting.txt", "txt",`
+  new CFile("Hosting", "txt",`
   <h1>Hosting</h1>
   <h3>Since 2025</h3>
   <img src="static/hosting.jpg">
@@ -52,11 +52,7 @@ export const COMPOSER = new Composer()
 export const SNAKE = new Snake()
 export const OS_TERMINAL = new OsTerminal()
 
-// Just for looks
-//
-// Directories
-// Archives
-// Apps
+
 
 // Apps can be only be run one instance of at a tine, so no 2 terminals at once, windows overwrite
 document.addEventListener('showSnake', () => {
@@ -72,9 +68,34 @@ document.addEventListener('showTerminal', () => {
   OS_TERMINAL.showTerminal()
 })
 
+// Load CFiles made by the user in Composer app
+const userFiles = new CDirectory('MY FILES')
 
-export const YGGDRASIL = [
+for(let i = 0; i < localStorage.length; i++) {
+  const key = localStorage.key(i)
+
+  if(key.startsWith('userFile-')) {
+
+    const value = localStorage.getItem(key)
+    const fileName = key.slice(9)
+    // userFiles.push(new CFile(key, 'txt', value))
+    userFiles.addFile(new CFile(fileName, 'txt', value))
+  }
+}
+
+
+
+
+// Just for looks
+//
+// Directories
+// Archives
+// Apps
+
+export const osFiles = [
   DND, WORK, 
   ASTRONOMY,
   CHOIR, COMPOSER, SNAKE, OS_TERMINAL
 ];
+
+export const YGGDRASIL = osFiles.concat(userFiles)

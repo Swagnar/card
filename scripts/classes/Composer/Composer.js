@@ -30,6 +30,8 @@ export default class Composer extends CApp {
   saveFile() {
     window.prompt("Name your file").then(result => {
       console.log('returned:', result)
+
+      localStorage.setItem(`userFile-${result}`, this.window.bodyTag.innerHTML)
     })
   }
 }

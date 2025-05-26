@@ -18,8 +18,8 @@ export default class CFile {
    */
   constructor(name, type, content) {
     this.name = name
-    this.nameElement.innerText = this.name
     this.type = type
+    this.nameElement.innerText = `${this.name}.${this.type}`
 
     // For now this works with innerHTML and string
     //
