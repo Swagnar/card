@@ -43,6 +43,90 @@ Yggdrasil uses [`CDirectory`](scripts/classes/yggdrasil/CDirectory.js) and [`CFi
 
 ## Usage
 
+### Creating your own app
+
+### 1. JavaScript class 🍵
+
+To create a new app, you can create a new folder to hold all of its JavaScript files inside `classes/` directory. There, create its main file with export class like so:
+```js
+import CApp from "../yggdrasil/CApp.js";
+
+export default class MyApp extends CApp {
+    constructor() {
+        super('MyApp', 'showMyApp')
+    }
+}
+```
+
+### 2. Create app instance 👥
+
+Go to `Yggdrasil.js` and create your app instance like this:
+```js
+// built-in apps
+export const CHOIR = new Choir()
+export const OS_TERMINAL = new OsTerminal()
+
+// register your apps here
+export const MYAPP = new MyApp()
+```
+
+### 3. Add event listener 👂🏻
+
+Still inside `Yggdrasil.js` create global event listener for running your app. If you've created your custom window functionality, here is where you invoke that special method:
+```js
+document.addEventListener('showMyApp', () => {
+  MYAPP.window.showWindow()
+  // or
+  MYAPP.showMyApp()
+})
+```
+You can modify how the window looks and its contents by using the `window` property of the `CApp` parent of your application
+
+### 4. Add your app instance to Yggdrasil 🌳
+
+At the end of the `Yggdrasil.js` file, there is an array called `osFiles`. It contains all direcotires, apps and archives stored in the system. Add your app instance to this array like this:
+
+```js
+// Just for looks
+//
+// Directories
+// Archives
+// Apps
+
+export const osFiles = [
+  DND, WORK, 
+  ASTRONOMY,
+  CHOIR, COMPOSER, SNAKE, OS_TERMINAL, MYAPP
+];
+```
+
+
+
+And for the basics, that's it! (kinda)
+
+### Icon
+
+Of course, you'd like to add some kind of icon to you app, so that the user can run it by double clicking on the desktop icon (right now you should see your app as a lonely label on the desktop)
+
+Every app has its unique HTML `id` - for OsWindow and OsDesktopIcon, so that you can easly write a CSS selector to change how they look.
+
+> [!IMPORTANT]
+> The HTML `id` of your app is the lowercased app name, so for our example - `"MyApp"` the `id` would be `"myapp"`
+
+To add an desktop icon to your app, upload your icon file to the `static/` directory. Then, inside the `apps.css` file inside `styles/` directory, add the following CSS rules:
+
+```css
+.file-icon.myapp-icon {
+    background: transparent url('../static/myicon.png');
+}
+```
+
+> [!IMPORTANT]
+> If your app icon is not equal to 32x32 pixels, you also need to add `background-size: 32px` 
+
+
+## Running
+
 ### Github Pages
 
 Application is hosted on Github Pages, check it out [here](https://swagnar.github.io/card/) <br>
@@ -52,7 +136,7 @@ Application is hosted on Github Pages, check it out [here](https://swagnar.githu
 
 This application is also hosted on my personal domain [euklideosowo.pl](https://euklidesowo.pl)
 
-### Running locally
+### Locally
 
 Serve on your favourite HTTP server, no need to build. Use [http-server](https://www.npmjs.com/package/http-server) for node, or [Apache](https://apache.org/).
 

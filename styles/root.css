@@ -59,9 +59,10 @@ input:focus {
   border-radius: 0.65rem;
   overflow: hidden;
   margin-top: 2.5rem;
+  display: grid;
   grid-template-rows: 10% repeat(8, 11.125%);
-display: grid;
-grid-template-columns: repeat(10, 10%);
+  grid-template-columns: repeat(10, 10%);
+  column-gap: 1rem;
 }
 #desktop::before {
   content: " ";

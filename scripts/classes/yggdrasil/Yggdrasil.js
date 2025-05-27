@@ -46,11 +46,13 @@ const ASTRONOMY = new CArchive('ASTRONOMY.ZIP', `
 I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil.
 `);
 
-// export const CHOIR = new CApp('Choir', 'showAudioPlayer')
+// built-in apps
 export const CHOIR = new Choir()
 export const COMPOSER = new Composer()
 export const SNAKE = new Snake()
 export const OS_TERMINAL = new OsTerminal()
+
+// register your apps here
 
 
 

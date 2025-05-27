@@ -7,7 +7,6 @@
 .file-icon.choir-icon {
   background: transparent url(../static/choir.png);
   background-size: 32px;
-  margin-bottom: 6px;
 }
 
 /* OsWindow */
@@ -152,7 +151,6 @@
 .file-icon.terminal-icon {
   background: transparent url(../static/terminal.png);
   background-size: 32px;
-  margin-bottom: 6px;
 }
 
 /* OsWindow */
@@ -234,7 +232,6 @@
 .file-icon.snake-icon {
   background: transparent url(../static/snake.png);
   background-size: 32px;
-  margin-bottom: 6px;
 }
 
 
@@ -246,7 +243,6 @@
 .file-icon.composer-icon {
   background: transparent url(../static/composer.png);
   background-size: 32px;
-  margin-bottom: 6px;
 }
 
 /* OsWindow */
