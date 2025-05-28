@@ -1,19 +1,16 @@
 .file {
-  padding-top: 40px;
   border: none;
   font: inherit;
   color: inherit;
   background-color: transparent;
   cursor: pointer;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: .25rem;
   margin: 10px;
   outline: 0;
   width: 120px;
   position: relative;
-}
-.file.archive, .file.folder {
-  padding-top: 40px;
 }
 .file.app {
   right: 0;
@@ -23,11 +20,9 @@
 }
 
 .file-icon {
-  position: absolute;
   bottom: 10px;
   display: block;
-  left: 50%;
-  transform: translateX(-50%);
+  margin: 0 auto;
   height: 32px;
   width: 32px;
 }

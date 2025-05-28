@@ -228,6 +228,19 @@ export default class OsTerminal extends CApp {
     return ``
   },
 
+  /**
+ * Displays an alert window with a message and an optional style based on flags.
+ *
+ * Recognized flags:
+ * - `-d` or `--danger`: Shows the alert as a danger message.
+ * - `-w` or `--warning`: Shows the alert as a warning message.
+ *
+ * If no flags are provided, a default alert is shown.
+ *
+ * @param {Object} param0 - Parsed command arguments.
+ * @param {Object<string, boolean>} param0.flags - Flags parsed from the command line (e.g., -d, --danger).
+ * @param {string[]} param0.positional - Positional arguments used as the alert message.
+ */
   alert: function({ flags, positional }) {
     const msg = positional.join(" ") || "No message"
     let type = "default"
@@ -239,8 +252,6 @@ export default class OsTerminal extends CApp {
     }
   
     window.alert(msg, type)
-  
-    // return `Alert: ${msg} (${type})`
   }
 
 }
