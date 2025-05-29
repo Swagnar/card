@@ -1,4 +1,4 @@
-import { MUSIC_ALBUMS } from '../../resources/MusicAlbums.js';
+// import { MUSIC_ALBUMS } from '../../resources/MusicAlbums.js';
 
 import CMusicAlbum from './CMusicAlbum.js';
 import CMusicTrack from './CMusicTrack.js';
@@ -156,7 +156,8 @@ export default class Choir extends CApp {
     }
   }
 
-  createAlbumSelectionScreen() {
+  async createAlbumSelectionScreen() {
+    const { MUSIC_ALBUMS } = await import('../../resources/MusicAlbums.js')
     MUSIC_ALBUMS.forEach(album => {
       if(!album instanceof CMusicAlbum) {
         throw new TypeError("Can't read as album")
