@@ -21,6 +21,8 @@ export default class CApp {
     this.command = command
     this.window = new OsWindow(this.name.toUpperCase(), this.name.toLowerCase(), false)
     logWithColors("CApp {} successfully initialized", this.name)
+
+    this.desktopIcon.icon.addEventListener('dblclick', command => this.dispatchEvent(command))
   }
 
   dispatchEvent() {

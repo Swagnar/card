@@ -26,7 +26,7 @@ export default class CDirectory {
   }
 
   open() {
-    let window = new OsWindow(this.name, null, true)
+    const window = new OsWindow(this.name, null, true)
     window.setAsDirectory(this)
     window.showWindow()
   }
@@ -70,40 +70,4 @@ export default class CDirectory {
     this.desktopIcon.label.style.backgroundColor = "#fff"
     this.desktopIcon.label.style.color = "#111"
   }
-
-  /*---------------------------------------------//
-  //             Moving the Window               //
-  //---------------------------------------------*/
-
-  /**
-   * @param {PointerEvent} e
-   * 
-   */
-  startMovingDirectory(e) {
-    this.isDragging = true
-    this.offsetX = e.clientX - this.desktopIcon.container.offsetLeft
-    this.offsetY = e.clientY - this.desktopIcon.container.offsetTop
-    this.desktopIcon.container.style.cursor = 'grabbing'
-  }
-  /**
-   * @param {PointerEvent} e 
-   */
-  moveDirectory(e) {
-    if(!this.isDragging) return;
-    this.desktopIcon.container.style.left = (e.clientX - this.offsetX) + 'px'
-    this.desktopIcon.container.style.top = (e.clientY - this.offsetY) + 'px'
-  }
-  /**
-   * @param {PointerEvent} e 
-   */
-  stopMovingDirectory(e) {
-    this.isDragging = false;
-    this.desktopIcon.container.style.cursor = 'grab'
-  }
-
-
-  get icon() {
-    return this.desktopIcon.icon
-  }
-
 }

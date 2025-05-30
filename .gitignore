@@ -5,3 +5,11 @@ TODO.md
 *.tar
 
 static/audio/
+
+package.json
+package-lock.json
+
+eslint.config.mjs
+
+node_modules/
+lib/

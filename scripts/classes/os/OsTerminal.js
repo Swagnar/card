@@ -1,5 +1,4 @@
 import CApp from "../yggdrasil/CApp.js"
-import OsWindow from "./OsWindow.js"
 /**
  * Class representing a terminal
  * 
@@ -160,10 +159,8 @@ export default class OsTerminal extends CApp {
     this.#terminalOutputContainer.scrollTop = this.#terminalOutputContainer.scrollHeight
   }
 
-  // ! Do i really need to do this?
-  // ! No u idiot, but i'll do it later
-  // TODO: just invoke the `showWindow` 
-  showTerminal() { this.window.showWindow(); }
+
+  
 
 
   /**

@@ -2,12 +2,20 @@
 
 import OsWindow from "../os/OsWindow.js"
 
+
+const MIMETYPES = {
+  md: "../static/md-file.png",
+  txt: "../static/text-file.png",
+  bat: "../static/bat-file.png"
+}
+
+
 /**
  * Class representing a single file that can be contained inside a folder. 
  * The file icon is created via `::before` pseudoelement, based on the `type` property of the file
  */
 export default class CFile {
-  fileContainer = document.createElement('button')
+  // fileContainer = document.createElement('button')
   nameElement = document.createElement('span')
 
   /**
@@ -19,43 +27,40 @@ export default class CFile {
   constructor(name, type, content) {
     this.name = name
     this.type = type
-    this.nameElement.innerText = `${this.name}.${this.type}`
-
-    // For now this works with innerHTML and string
-    //
     this.content = content
-
-    this.init()
+    this.nameElement.innerText = `${this.name}.${this.type}`
   }
 
-  init() {
-    this.fileContainer.classList.add('file', `${this.type}-file`)
-    this.fileContainer.draggable = true
-    this.fileContainer.id = `file-${this.name}`
-    this.fileContainer.append(this.nameElement)
+  get fileContainer() {
+    const btn = document.createElement('button')
+    const img = document.createElement('img')
+    const span = document.createElement('span')
+  
+    btn.classList.add('file', `${this.type}-file`)
+    btn.draggable = true
+    btn.id = `file-${this.name}`
 
-    // When double clicked, create a new OsWindow and show the file contents inside
-    //
-    this.fileContainer.addEventListener('dblclick', () => {
+    img.src = MIMETYPES[this.type]
+    img.classList.add('file-icon')
+    img.style.height = 43 + 'px'
+
+    span.innerText = `${this.name}.${this.type}`
+    btn.append(img,span)
+  
+    btn.addEventListener('dblclick', () => {
       const viewer = new OsWindow(this.name)
       viewer.setAsFileViewer(this.content)
       viewer.showWindow()
     })
-
-    // Change the icon color to invert when single clicked
-    //
-    this.fileContainer.addEventListener('pointerdown', () => {
-      this.fileContainer.style.filter = 'invert(100%)'
-      this.nameElement.style.backgroundColor = 'white'
+  
+    btn.addEventListener('pointerdown', () => {
+      btn.style.filter = 'invert(100%)'
     })
-
-    // Revert the inverted colors when click is released
-    //
-    this.fileContainer.addEventListener('pointerup', () => {
-      this.fileContainer.style.filter = ''
-      this.fileContainer.style.color = ''
+  
+    btn.addEventListener('pointerup', () => {
+      btn.style.filter = 'invert(0%)'
     })
+  
+    return btn 
   }
-
-
 }

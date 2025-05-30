@@ -4,6 +4,10 @@ import { DESKTOP } from "../../../script.js";
 import { applyDithering } from "../../utils/dithering.js";
 import logWithColors from "../../utils/logs.js";
 
+function generateWindowId(appName) {
+  return `${appName.toLowerCase()}-${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 5)}`
+}
+
 export default class OsWindow {
 
   container = document.createElement('div');
@@ -32,19 +36,20 @@ export default class OsWindow {
   /**
    * 
    * @param {string} name Window name, shown in the header tag
-   * @param {string?} id If you want to have a custom window ID, pass this parameter
    */
-  constructor(name, id = "", resize) {
+  constructor(name, resize) {
     this.name = name
     this.#windowName = name
 
     this.container.classList.add('window');
 
-    if(id !== "") {
-      this.container.id = `window-${id}`;
-    } else {
-      this.container.id = `window-${name}`
-    }
+    this.container.id = generateWindowId(name)
+
+    // if(id !== "") {
+    //   this.container.id = `window-${id}`;
+    // } else {
+    //   this.container.id = `window-${name}`
+    // }
 
     if(resize) {
       this.container.style.resize = 'both'
@@ -60,11 +65,11 @@ export default class OsWindow {
     this.container.append(this.headerTag)
     this.container.append(this.bodyTag)
     
-    this.container.addEventListener('pointerdown', (ev) => { this.focusWindow(ev) })
+    this.container.addEventListener('pointerdown', (ev) => this.focusWindow(ev) )
 
-    this.headerTag.addEventListener('pointerdown', (ev) => { this.startMovingWindow(ev) }) 
-    document.addEventListener('pointermove', (ev) => { this.moveWindow(ev) })
-    document.addEventListener('pointerup', (ev) => { this.stopMovingWindow(ev)})
+    this.headerTag.addEventListener('pointerdown', (ev) => this.startMovingWindow(ev) ) 
+          document.addEventListener('pointermove', (ev) => this.moveWindow(ev) )
+          document.addEventListener('pointerup',   (ev) => this.stopMovingWindow(ev))
 
     
     logWithColors("Successfully created OsWindow with name {}", name)
@@ -74,11 +79,32 @@ export default class OsWindow {
    * @param {CDirectory} directory 
    */
   setAsDirectory(directory) {
-    if(!directory || !directory instanceof CDirectory) {
+    if(!directory || !(directory instanceof CDirectory)) {
       throw new TypeError("Directory passed to the window is undefined or not a CDirectory");
     }
     this.#files = directory.files
-    this.populateBodyWithFiles()
+    try {
+      /**
+       * @type {HTMLDivElement} `<div>` tag with `d-flex` and `flex-wrap` CSS classes
+       */
+      let layout = this.bodyTag.firstChild
+      
+      if(!layout) {
+        layout = document.createElement('div');
+        layout.classList.add('d-flex', 'flex-wrap');
+        this.bodyTag.append(layout);
+      }
+      if(!this.#files || this.#files.length == 0) {
+        throw new Error('Files array is empty or not set')
+      }
+      
+      this.#files.forEach(file /** @type {CFile} */ => {
+        layout.append(file.fileContainer)
+      })
+      logWithColors("Finished populating {} with {} files", this.#windowName, this.#files.length)
+    } catch(e) {
+      console.error(`Error while populating ${this.#windowName} window body:`, e)
+    }
   }
 
   /**
@@ -170,28 +196,7 @@ export default class OsWindow {
    * found in the OsWindow.#files
    */
   populateBodyWithFiles() {
-    try {
-      /**
-       * @type {HTMLDivElement} `<div>` tag with `d-flex` and `flex-wrap` CSS classes
-       */
-      let layout = this.bodyTag.firstChild
-      
-      if(!layout) {
-        layout = document.createElement('div');
-        layout.classList.add('d-flex', 'flex-wrap');
-        this.bodyTag.append(layout);
-      }
-      if(!this.#files || this.#files.length == 0) {
-        throw new Error('Files array is empty or not set')
-      }
-      
-      this.#files.forEach(file /** @type {CFile} */ => {
-        layout.append(file.fileContainer)
-      })
-      logWithColors("Finished populating {} with {} files", this.#windowName, this.#files.length)
-    } catch(e) {
-      console.error(`Error while populating ${this.#windowName} window body:`, e)
-    }
+    
   }
 
   focusWindow() {
@@ -225,7 +230,6 @@ export default class OsWindow {
       this.container.classList.add('show')
     }, 50)
     this.container.style.zIndex = 3
-    
   }
 
   /*---------------------------------------------//
@@ -241,6 +245,9 @@ export default class OsWindow {
     this.offsetX = e.clientX - this.container.offsetLeft
     this.offsetY = e.clientY - this.container.offsetTop
     this.headerTag.style.cursor = 'grabbing'
+
+    // Globally disable text selection
+    document.body.style.userSelect = 'none'
   }
   /**
    * @param {PointerEvent} e 
@@ -250,11 +257,12 @@ export default class OsWindow {
     this.container.style.left = (e.clientX - this.offsetX) + 'px'
     this.container.style.top = (e.clientY - this.offsetY) + 'px'
   }
-  /**
-   * @param {PointerEvent} e 
-   */
-  stopMovingWindow(e) {
+
+  stopMovingWindow() {
     this.isDragging = false;
     this.headerTag.style.cursor = 'grab'
+
+    // Globally enable text selection
+    document.body.style.userSelect = ''
   }
 }

@@ -1,7 +1,6 @@
 import CFile from "./CFile.js"
 import CDirectory from "./CDirectory.js"
 import CArchive from "./CArchive.js"
-import CApp from "./CApp.js";
 import Composer from "../Composer/Composer.js";
 import Choir from "../Choir/Choir.js";
 import OsTerminal from "../os/OsTerminal.js";
@@ -58,16 +57,20 @@ export const OS_TERMINAL = new OsTerminal()
 
 // Apps can be only be run one instance of at a tine, so no 2 terminals at once, windows overwrite
 document.addEventListener('showSnake', () => {
-  SNAKE.window.showWindow()
+  var snake = new Snake()
+  snake.window.showWindow()
 })
 document.addEventListener('showChoir', () => {
-  CHOIR.window.showWindow()
+  var choir = new Choir()
+  choir.window.showWindow()
 })
 document.addEventListener('showComposer', () => {
-  COMPOSER.window.showWindow()
+  var composer = new Composer()
+  composer.window.showWindow()
 })
 document.addEventListener('showTerminal', () => {
-  OS_TERMINAL.showTerminal()
+  var terminal = new OsTerminal()
+  terminal.window.showWindow()
 })
 
 // Load CFiles made by the user in Composer app

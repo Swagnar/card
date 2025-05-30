@@ -82,6 +82,7 @@
   &.cfile-fr { float: right; margin-left: .5rem; }
 }
 
+
 .window-body.file-viewer h3,
 .window-body.file-viewer h1 {
   clear: both;
@@ -99,7 +100,35 @@
   transform: translateX(-50%);
 }
 
-.txt-file::before {
+
+
+#desktop.dark-mode div.window.show {
+  background-color: rgb(47, 47, 47);
+
+  header {
+    background-color: rgb(74, 74, 74);
+    font-weight: normal;
+
+    span {
+      background-color: rgb(100, 100, 100);
+      color: #fff;
+      border-radius: .2rem;
+    }
+
+    button {
+      background-color: rgb(74, 74, 74);
+      color: #fff;
+    }
+  }
+
+  button.file span {
+    background-color: rgb(100, 100, 100);
+    color: #fff;
+    border-radius: .2rem;
+  }
+}
+
+/* .txt-file::before {
   background: url(../static/text-file.png);
 }
 
@@ -109,4 +138,4 @@
 
 .bat-file::before {
   background: url(../static/bat-file.png);
-}
+} */

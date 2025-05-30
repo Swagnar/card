@@ -1,5 +1,3 @@
-import logWithColors from "../../utils/logs.js";
-
 export default class OsDesktopIcon {
     /** @type {HTMLButtonElement} */
     container = document.createElement('button')
@@ -23,7 +21,6 @@ export default class OsDesktopIcon {
     constructor(name, fileType, command=null) {
       this.name = name
       this.files = []
-      this.id = `window-${this.name}`
       this.fileType = fileType
       this.command = command
       this.init()
@@ -48,16 +45,7 @@ export default class OsDesktopIcon {
         this.container.classList.add('app')
        
         this.icon.classList.add(`${this.name.toLowerCase()}-icon`)
-
-        if(this.command) {
-          this.container.addEventListener('dblclick', () =>  {
-            let event = new CustomEvent(this.command)
-            logWithColors(`Dispatching event from DesktopIcon {} with command {}`, this.name, this.command)
-            document.dispatchEvent(event)
-          })
-        }
       }
-
 
       this.container.classList.add('file')
       this.icon.classList.add('file-icon')

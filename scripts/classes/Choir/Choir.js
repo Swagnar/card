@@ -55,7 +55,6 @@ export default class Choir extends CApp {
       }
       this.#currentTrackAudio.pause()
     })
-    
   }
 
   initElements() {
@@ -159,7 +158,7 @@ export default class Choir extends CApp {
   async createAlbumSelectionScreen() {
     const { MUSIC_ALBUMS } = await import('../../resources/MusicAlbums.js')
     MUSIC_ALBUMS.forEach(album => {
-      if(!album instanceof CMusicAlbum) {
+      if(!(album instanceof CMusicAlbum)) {
         throw new TypeError("Can't read as album")
       } 
 
@@ -174,7 +173,7 @@ export default class Choir extends CApp {
   }
 
   selectAlbum(album) {
-    if(!album instanceof CMusicAlbum) {
+    if(!(album instanceof CMusicAlbum)) {
       throw new TypeError("Selected album index is not an album");
     }
     try {
@@ -193,14 +192,14 @@ export default class Choir extends CApp {
   }
 
   createPlaybackLayout() {
-    if(!this.currentAlbum || !this.currentAlbum instanceof CMusicAlbum) {
+    if(!this.currentAlbum || !(this.currentAlbum instanceof CMusicAlbum)) {
       throw new TypeError('Selected album is undefined or not MusicAlbum, got:', this.currentAlbum)
     }
     var tracksContainer = document.createElement('div')
     tracksContainer.classList.add('choir-playback-tracks-container')
     this.currentAlbum.tracks.forEach((track,i) => {
 
-      if(!track || !track instanceof CMusicTrack ) {
+      if(!track || !(track instanceof CMusicTrack)) {
         throw new TypeError('Error while rendering tracks, got:', track);
       }
 
@@ -238,7 +237,7 @@ export default class Choir extends CApp {
    * @returns {null} returns null if CMusicTrack data is not defined, this is expected for most tracks
    */
   handlePlayAudio(track, trackContainer) {
-    if(!track || !track instanceof CMusicTrack) {
+    if(!track || !(track instanceof CMusicTrack)) {
       throw new TypeError('Error while playing audio track, got:', track)
     }
     if(!track.data) {
