@@ -300,7 +300,7 @@ export default class Choir extends CApp {
  * @param {number} index 
  * @returns 
  */
-  returnTrackHTML(track, index) {
+  returnTrackHTML(track) {
     const trackContainer = document.createElement('div');
     trackContainer.classList.add('choir-playback-track-container');
 

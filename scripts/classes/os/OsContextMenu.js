@@ -1,4 +1,5 @@
-import { CHOIR, OS_TERMINAL } from "../yggdrasil/Yggdrasil.js";
+import OsTerminal from "./OsTerminal.js";
+import Choir from "../Choir/Choir.js";
 
 class OsContextMenuItem {
   constructor(innerText, id, ev, app=null) {
@@ -9,7 +10,7 @@ class OsContextMenuItem {
 
     if(ev) {
       var event;
-      if(ev.includes("showDialog-")) {
+      if(ev.includes("showDialogViaString-")) {
         let params = ev.split("-");
         event = new CustomEvent('showDialog', { detail: params[1] });
       } else {
@@ -45,6 +46,9 @@ export default class OsContextMenu {
   #elements
 
   constructor(root) {
+
+    const terminal = new OsTerminal()
+    const choir = new Choir()
     
     this.#body = document.createElement('div')
     this.#body.id = "context-menu"
@@ -53,12 +57,14 @@ export default class OsContextMenu {
     this.#header.innerText = "[ OS_OS ]"
     this.#elements = [
       new OsContextMenuItem("Reset desktop", "context-menu-item-reset-desktop"),
-      new OsContextMenuItem("Properties", "context-menu-item-properties", "showDialog-properties"),
+      new OsContextMenuItem("Properties", "context-menu-item-properties", "showDialogViaString-properties"),
       new OsContextMenuItem("Settings", "context-menu-item-settings", "showSettings"),
       new OsContextMenuItem(
-        OS_TERMINAL.name, "context-menu-item-terminal", OS_TERMINAL.command, OS_TERMINAL),
+        terminal.name, "context-menu-item-terminal", terminal.command, terminal
+      ),
       new OsContextMenuItem(
-        CHOIR.name, "context-menu-item-audio-player", CHOIR.command, CHOIR),
+        choir.name, "context-menu-item-audio-player", choir.command, choir
+      ),
     ]
 
     this.#body.append(this.#header)

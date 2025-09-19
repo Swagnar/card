@@ -114,37 +114,6 @@
         </div>
         <div id="dialog-body" class="dialog-body"></div>
       </div>
-
-      <div id="settings" class="dialog dialog-hidden">
-        <div class="dialog-head">
-          <button id="settings-close-btn">X</button>
-        </div>
-        <div id="settings-body" class="dialog-body">
-          CRT Flicker
-          <div class="checkbox-wrapper">
-            <input class="toggle-input" type="checkbox" id="flickering-chbx"></input>
-            <label for="flickering-chbx" class="toggle-label"></label>
-          </div>
-
-          Dark mode
-          <div class="checkbox-wrapper">            
-            <input class="toggle-input" type="checkbox" id="dark-mode-chbx"></input>
-            <label for="dark-mode-chbx" class="toggle-label"></label>
-          </div>
-
-
-          Resolution [px]
-          <select id="resolution-select">
-            <option value="800x600">800x600</option>
-            <option value="1280x768">1280x768</option>
-            <option value="1400x1050">1400x1050</option>
-          </select>
-
-          <button onclick="saveSettingsForm()">Save</button>
-          <button onclick="resetSettings()">Reset</button>
-          
-        </div>
-      </div>
   </div>
   <script src="scripts/settings.js"></script>
   <script type="module" src="script.js"></script>

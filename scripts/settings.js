@@ -1,12 +1,4 @@
 /**
- * Saves the provided settings to the local storage
- * @param {Object} settings - settings to be saved
- */
-function saveSettings(settings) {
-  localStorage.setItem('savedSettings', JSON.stringify(settings))
-}
-
-/**
  * Applies the given settings to the desktop
  * @param {Object} settings - settings to be applied
  */
@@ -209,33 +201,3 @@ function resetSettings() {
 /**
  * Displays the settings dialog
  */
-function showSettings() {
-  
-  /**
-   * Settings dialog element
-   * @type {HTMLElement}
-   */
-  let settings = document.getElementById('settings')
-  
-  if(!settings.classList.contains('dialog-open')) {
-    settings.classList.remove('dialog-hidden')
-    settings.classList.add('dialog-open')
-  }
-}
-
-/**
- * Closes the settings dialog
- */
-function closeSettings() {
-
-  /**
-   * Settings dialog element
-   * @type {HTMLElement}
-   */
-  let settings = document.getElementById('settings')
-
-  if(settings.classList.contains('dialog-open')) {
-    settings.classList.remove('dialog-open')
-    settings.classList.add('dialog-hidden')
-  }
-}

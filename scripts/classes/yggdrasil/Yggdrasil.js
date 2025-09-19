@@ -55,7 +55,7 @@ export const OS_TERMINAL = new OsTerminal()
 
 
 
-// Apps can be only be run one instance of at a tine, so no 2 terminals at once, windows overwrite
+// Apps can be only be run one instance of at a time, so no 2 terminals at once, windows overwrite
 document.addEventListener('showSnake', () => {
   var snake = new Snake()
   snake.window.showWindow()
@@ -104,3 +104,4 @@ export const osFiles = [
 ];
 
 export const YGGDRASIL = osFiles.concat(userFiles)
+// export const YGGDRASIL = osFiles

@@ -4,9 +4,6 @@
   color: inherit;
   background-color: transparent;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: .25rem;
   margin: 10px;
   outline: 0;
   width: 120px;
@@ -15,8 +12,8 @@
 .file.app {
   right: 0;
   bottom: 0;
-  position: relative;
-  grid-row: 9;
+  position: absolute;
+  height: fit-content;
 }
 
 .file-icon {

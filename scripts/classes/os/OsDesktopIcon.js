@@ -56,17 +56,46 @@ export default class OsDesktopIcon {
       this.container.append(this.label)
 
       
-      this.container.addEventListener('pointerdown', () => this.handlePointerDown())
-      
-      this.container.addEventListener('pointerup', () => this.handlePointerUp())
+      this.container.addEventListener('pointerdown', (ev) => this.handlePointerDown(ev))
+      document.addEventListener('pointermove', (ev) => this.handlePointerMove(ev))
+      document.addEventListener('pointerup', (ev) => this.handlePointerUp(ev))
       
     }
 
-    handlePointerDown() {
+    handlePointerDown(ev) {
       this.container.style.filter = 'invert(100%)'
+      this.startMovingIcon(ev)
     }
 
-    handlePointerUp() {
+    handlePointerMove(ev) {
+      this.moveIcon(ev)
+    }
+
+    handlePointerUp(ev) {
       this.container.style.filter = 'invert(0%)'
+      this.stopMovingIcon(ev)
+    }
+
+    startMovingIcon(ev) {
+      this.isDragging = true
+      this.offsetX = ev.clientX - this.container.offsetLeft
+      this.offsetY = ev.clientY - this.container.offsetTop
+
+      document.body.style.userSelect = 'none'
+
+    }
+    moveIcon(ev) {
+      if(!this.isDragging) return;
+      this.container.style.left = (ev.clientX - this.offsetX) + 'px';
+      this.container.style.top  = (ev.clientY - this.offsetY) + 'px';
+      
+      console.log("clientY", ev.clientY, "offsetY", this.offsetY)
+
+      this.container.style.cursor = 'grabbing'
+      this.container.style.position = "absolute"
+    }
+    stopMovingIcon() {
+      this.isDragging = false
+      this.container.style.cursor = 'pointer'
     }
 }

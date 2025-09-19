@@ -5,10 +5,12 @@
 :root {
   --green: #90ee90;
   --red: #ee9090;
+
+  --font-VT: "VT323";
 }
 
 * {
-  font-family: "VT323", monospace;
+  font-family: var(--font-VT), monospace;
 
   .dark-mode {
     a {
@@ -254,7 +256,17 @@ input:focus {
 #bios p {
   margin: 0;
 }
+body > p.typewriter,
+body > p.typewriter.glitchy,
+body > p.glitchy {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
 
+/* :nth-child(n+3 of #bios p) {
+  height: 2.0rem;
+} */
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 /* ~~~~~~~~~~~~~~~~~~~~        OS_ALERT      ~~~~~~~~~~~~~~~~~~~~ */
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -400,3 +412,27 @@ input:focus {
     opacity: 0.24387;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.typewriter { font-family:var(--retro-font); white-space:nowrap; overflow:hidden; display:inline-block; }
+.tw-caret { display:inline-block; width:10px; height:1.1em; margin-left:2px; vertical-align:middle; background:var(--accent); animation: blink 0.9s steps(2, start) infinite; box-shadow: inset -1px 0 0 rgba(255,255,255,0.08); }
+@keyframes blink{ 50% { opacity:0 } }
+/* --- Continuous glitch animation --- */
+.glitchy{position:relative;transform:translateZ(0);}
+.glitchy::before,.glitchy::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;pointer-events:none;opacity:0.9;}
+.glitchy::before{left:0.5px;text-shadow:-2px 0 rgba(255,0,100,0.55);color:inherit;mix-blend-mode:screen;animation:g-clip 700ms linear infinite;}
+.glitchy::after{left:-0.5px;text-shadow: 2px 0 rgba(115, 115, 115, 0.55);color:#fff;mix-blend-mode:screen;animation:g-jitter 420ms linear infinite;}
+@keyframes g-clip{0%{clip-path:inset(0 0 0 0);transform:translateX(0)}10%{clip-path:inset(10% 0 0 0);transform:translateX(-1px)}20%{clip-path:inset(40% 0 0 0);transform:translateX(1.5px)}30%{clip-path:inset(30% 0 0 0);transform:translateX(-2px)}45%{clip-path:inset(0 0 30% 0);transform:translateX(0.8px)}60%{clip-path:inset(0 0 10% 0);transform:translateX(-1px)}100%{clip-path:inset(0 0 0 0);transform:translateX(0)}}
+@keyframes g-jitter{0%{transform:translate(0,0)}25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,0px)}100%{transform:translate(0,0)}}.scanlines { position: absolute; inset:0; pointer-events:none; background-image: linear-gradient(rgba(0,0,0,0.015) 50%, transparent 50%); background-size: 100% 4px; mix-blend-mode: multiply; opacity:0.6; border-radius:6px; }

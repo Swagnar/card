@@ -1,6 +1,5 @@
 import CDirectory from "../yggdrasil/CDirectory.js";
 
-import { DESKTOP } from "../../../script.js";
 import { applyDithering } from "../../utils/dithering.js";
 import logWithColors from "../../utils/logs.js";
 
@@ -68,8 +67,8 @@ export default class OsWindow {
     this.container.addEventListener('pointerdown', (ev) => this.focusWindow(ev) )
 
     this.headerTag.addEventListener('pointerdown', (ev) => this.startMovingWindow(ev) ) 
-          document.addEventListener('pointermove', (ev) => this.moveWindow(ev) )
-          document.addEventListener('pointerup',   (ev) => this.stopMovingWindow(ev))
+    document.addEventListener('pointermove', (ev) => this.moveWindow(ev) )
+    document.addEventListener('pointerup',   (ev) => this.stopMovingWindow(ev))
 
     
     logWithColors("Successfully created OsWindow with name {}", name)
@@ -219,7 +218,8 @@ export default class OsWindow {
     document.dispatchEvent(event)
   }
   showWindow() {
-    DESKTOP.append(this.container)
+    const desktop = document.getElementById('desktop')
+    desktop.append(this.container)
     setTimeout(() => {
       this.container.style.transition = 'none'
       this.container.classList.remove('show')

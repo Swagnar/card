@@ -1,12 +1,13 @@
-// TODO: CFile.content needs to be able to hold a multiple of HTMLElements, create some functions that would allow to dynamicly append and modify tags inside?
+// TODO: CFile.content needs to be able to hold a multiple of HTMLElements, 
+// create some functions that would allow to dynamicly append and modify tags inside?
 
 import OsWindow from "../os/OsWindow.js"
 
 
 const MIMETYPES = {
-  md: "../static/md-file.png",
-  txt: "../static/text-file.png",
-  bat: "../static/bat-file.png"
+  md: "/static/md-file.png",
+  txt: "/static/text-file.png",
+  bat: "/static/bat-file.png"
 }
 
 

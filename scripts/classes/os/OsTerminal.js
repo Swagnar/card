@@ -181,7 +181,7 @@ export default class OsTerminal extends CApp {
     | |                             | |
     | |            OS_OS            | |
     | |  VERSION    :  :    0.7.1   | |
-    | |  LAST UPDATE:  :  26 V 25   | |     CPU: 0.66MHz Apophis
+    | |  LAST UPDATE:  :  12 IX 25  | |     CPU: 0.66MHz Apophis
     | |                             | |     RAM: 32MB DDR1 
     | |                             | |    GPU1: MISSING
     | |.............................| |    GPU2: 16MB VRAM

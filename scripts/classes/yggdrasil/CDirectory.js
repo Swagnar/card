@@ -59,15 +59,4 @@ export default class CDirectory {
         }
     })
   }
-
-  handlePointerDown() {
-    this.desktopIcon.icon.style.backgroundImage = "url('static/dir-clicked.png')"
-    this.desktopIcon.label.style.backgroundColor = "#111"
-    this.desktopIcon.label.style.color = "#fff"
-  }
-  handlePointerUp() {
-    this.desktopIcon.icon.style.backgroundImage = "url('static/dir.png')"
-    this.desktopIcon.label.style.backgroundColor = "#fff"
-    this.desktopIcon.label.style.color = "#111"
-  }
 }
