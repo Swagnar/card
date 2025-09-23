@@ -44,7 +44,7 @@ export default function steinbergFloydDither(imageData, width, height) {
  * 
  * @param {HTMLImageElement} img 
  * @param {HTMLCanvasElement} cnv 
- * @param {steinbergFloydDither} ditheringFunction 
+ * @param {function} ditheringFunction 
  */
 export async function applyDithering(img, cnv, ditheringFunction = steinbergFloydDither) {
     async function loadImage(image) {

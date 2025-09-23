@@ -7,21 +7,35 @@ export class OsSettingsControl {
   static DEFAULT_VALUES = { NULL: null, TOGGLE_ON: true, TOGGLE_OFF: false }
 
   inputElement;
+  label;
 
-  constructor(name, type, value,defaultValue, displayText, options = null) {
+  constructor(name, type, value,defaultValue, displayText, options = null, onInput= null) {
     this.name = name
     this.type = type
     this.value = value
     this.defaultValue = defaultValue
     this.displayText = displayText
     this.options = options
+
     
     switch(this.type) {
       case 'toggle':
+        
+        this.inputWrapper = document.createElement('div')
+        this.inputWrapper.classList.add('checkbox-wrapper')
+
+        this.inputLabel = document.createElement('label')
+        this.inputLabel.classList.add('toggle-label')
+        this.inputLabel.setAttribute('for', `${this.name}-chbx`)
+        
         this.inputElement = document.createElement('input')
         this.inputElement.type = 'checkbox'
         this.inputElement.id = `${this.name}-chbx`
         this.inputElement.checked = this.defaultValue
+        this.inputElement.classList.add('toggle-input')
+        
+        this.inputWrapper.append(this.inputElement, this.inputLabel)
+
         break
       case 'select':
         this.inputElement = document.createElement('select')
@@ -43,8 +57,12 @@ export class OsSettingsControl {
         this.inputElement.id = `${this.name}-input`
 
     }
+    
+    this.label = document.createElement('p')
+    this.label.textContent = displayText
 
-    this.inputElement.addEventListener('input', () => this.updateValue())
+    this.inputElement.addEventListener('input', () => {this.updateValue(); onInput()} )
+    
     this.updateValue()
   }
 
@@ -60,16 +78,24 @@ export class OsSettingsControl {
 
 export default class OsSettings {
 
-  flickering = new OsSettingsControl('flickering', OsSettingsControl.CONTROL_TYPES.TOGGLE, OsSettingsControl.DEFAULT_VALUES.NULL, OsSettingsControl.DEFAULT_VALUES.TOGGLE_ON, "CRT Flicker" )
-  darkMode = new OsSettingsControl('dark-mode', OsSettingsControl.CONTROL_TYPES.TOGGLE,OsSettingsControl.DEFAULT_VALUES.NULL, OsSettingsControl.DEFAULT_VALUES.TOGGLE_OFF, "Dark mode" )
+  flickering = new OsSettingsControl('flickering', OsSettingsControl.CONTROL_TYPES.TOGGLE, OsSettingsControl.DEFAULT_VALUES.NULL, OsSettingsControl.DEFAULT_VALUES.TOGGLE_ON, "CRT Flicker", )
+  darkMode = new OsSettingsControl('dark-mode', OsSettingsControl.CONTROL_TYPES.TOGGLE,OsSettingsControl.DEFAULT_VALUES.NULL, OsSettingsControl.DEFAULT_VALUES.TOGGLE_OFF, "Dark mode", null, DarkMode )
   resolution = new OsSettingsControl('resolution', OsSettingsControl.CONTROL_TYPES.SELECT, '800x600', '800x600', "Resolution [px]", ['800x600', '1280x768', '1400x1050'] )
   
+  saveSettingsButton = document.createElement('button')
+  resetSettingsButton = document.createElement('button')
 
-  controls
+  controls = [this.flickering, this.darkMode, this.resolution]
+  settings;
 
   constructor() {
-    // this.loadSettings()
-    this.controls = [this.flickering, this.darkMode, this.resolution]
+    this.loadSettings()
+    this.saveSettingsButton.innerText = "SAVE"
+    this.saveSettingsButton.onclick = () => this.saveSettingsForm()
+
+    this.resetSettingsButton.innerText = "RESET"
+    this.resetSettingsButton.onclick = () => this.setDefaultValues()
+    console.log('loaded settings:', this.settings)
   }
 
   addControl(c) {
@@ -82,99 +108,25 @@ export default class OsSettings {
 
   saveSettingsForm() {
 
-    const [width, height] = this.controls.resolution.value.split("x")
-
-    var values = {
-      width: width,
-      height: height,
-    }
-
+    var values = {}
 
     this.controls.forEach((c) => {
-      values[c.name] = c.value
+      if(c.type === 'toggle') values[c.name] = c.inputElement.checked
+      if(c.type === 'select') values[c.name] = c.inputElement.value
     })
-  }
 
+    console.log('values from form: ', values)
 
-
-  SETTINGS_HTML_BODY = `
-    <div id="settings" class="dialog dialog-hidden">
-      <div class="dialog-head">
-        <button id="settings-close-btn">X</button>
-      </div>
-      <div id="settings-body" class="dialog-body">
-        CRT Flicker
-        <div class="checkbox-wrapper">
-          <input class="toggle-input" type="checkbox" id="flickering-chbx"></input>
-          <label for="flickering-chbx" class="toggle-label"></label>
-        </div>
-
-        Dark mode
-        <div class="checkbox-wrapper">            
-          <input class="toggle-input" type="checkbox" id="dark-mode-chbx"></input>
-          <label for="dark-mode-chbx" class="toggle-label"></label>
-        </div>
-
-
-        Resolution [px]
-        <select id="resolution-select">
-          <option value="800x600">800x600</option>
-          <option value="1280x768">1280x768</option>
-          <option value="1400x1050">1400x1050</option>
-        </select>
-
-        <button onclick="saveSettingsForm()">Save</button>
-        <button onclick="resetSettings()">Reset</button>
-        
-      </div>
-    </div>
-  `
-
-  returnToggleHTML(control) {
-    return `
-      ${control.displayText}
-      <div class="checkbox-wrapper">
-        <input class="toggle-input" type="checkbox" id="${control.constructor.name}-chbx"></input>
-        <label for="${control.constructor.name}-chbx" class="toggle-label"></label>
-      </div>
-    `
-  }
-  returnSelectHTML(control) {
-    return `
-    ${control.displayText}
-    <select id="${control.constructor.name}-select">
-      ${(() => {
-        let optionsHTML = ''
-        control.options.forEach( (o) => {
-          optionsHTML += "<option value='" + o + "'>" + o + "</option>" 
-        })
-        return optionsHTML
-      })()}
-    </select>
-    `
   }
 
   showSettings() {
-    // var HTMLString = ''
-    // this.controls.forEach( (c) => {
-    //   if(c.type === 'toggle') {
-    //     HTMLString += this.returnToggleHTML(c)
-    //   }
-    //   if(c.type === 'select') {
-    //     HTMLString += this.returnSelectHTML(c)
-    //   }
-    // })
-
-    // let saveBtn  
-
-    // OsDialog.showDialog(HTMLString)
-    var controlsElements = []
-
-    this.controls.forEach((c) => {
-      controlsElements.push(c.inputElement)
+    let htmlTags = []
+    this.controls.forEach( (c) => {
+      if(c.type === 'toggle') htmlTags.push(c.label, c.inputWrapper)
+      if(c.type === 'select') htmlTags.push(c.label, c.inputElement)
     })
-
-    OsDialog.showDialogViaHTML(controlsElements)
+    htmlTags.push(this.saveSettingsButton, this.resetSettingsButton)
+    OsDialog.showDialogViaHTML(htmlTags, 'settings-body')
   }
 
   applySettings(settings) {
@@ -267,19 +219,51 @@ export default class OsSettings {
   loadSettings() {
 
     const savedSettings = localStorage.getItem('savedSettings')
-    var settings = null
+    this.settings = null
 
     if(savedSettings) {
       try {
-        settings = JSON.parse(savedSettings)
+        this.settings = JSON.parse(savedSettings)
       } catch(e) {
         console.error(e)
       }
     }
 
-    if(!settings || typeof settings !== 'object') {
+    if(!this.settings || typeof this.settings !== 'object') {
       this.setDefaultValues()
     }
   }
+
+}
+
+function DarkMode() {
+  const elements = {
+    desktop: document.getElementById('desktop'),
+    navbar: document.querySelectorAll('.navbar')[0],
+    dropDowns: document.querySelectorAll('.drop'),
+    dialogs: document.querySelectorAll('.dialog'),
+    contextMenu: document.getElementById('context-menu'),
+    checkboxes: document.querySelectorAll('.checkbox-wrapper'),
+  }
+
+  const toggleDarkMode = (element, addClass) => {
+    if (element instanceof NodeList) {
+      element.forEach((el) => el.classList[addClass ? 'add' : 'remove']('dark-mode'));
+    } else {
+      element.classList[addClass ? 'add' : 'remove']('dark-mode');
+    }
+
+  };
+
+  if (this.darkMode.inputElement.checked) {
+    for (const el of Object.values(elements)) {
+      toggleDarkMode(el, true);
+    }
+  } else {
+    for (const el of Object.values(elements)) {
+      toggleDarkMode(el, false);
+    }
+  }
+
 
 }

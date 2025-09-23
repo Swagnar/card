@@ -52,12 +52,13 @@ export default class OsDialog {
     }
   }
 
-  static showDialogViaHTML(nodes) {
+  static showDialogViaHTML(nodes, dialogBodyId = "dialog-body") {
     const dialogBody = this.getDialogBodyTag()
 
     this.toggleDialog()
 
     dialogBody.append(...nodes)
+    dialogBody.id = dialogBodyId
 
     let images = dialogBody.querySelectorAll('img');
     if (images.length > 0) {

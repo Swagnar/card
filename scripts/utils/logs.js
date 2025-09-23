@@ -1,6 +1,7 @@
-const DEBUG = true
+import { OS_CONSTANS } from "../constans.js";
+
 export default function logWithColors(message, ...args) {
-    if(!DEBUG) {
+    if(OS_CONSTANS.DEBUG) {
         return
     }
     const colors = [

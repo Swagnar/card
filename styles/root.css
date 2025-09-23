@@ -29,6 +29,14 @@ body {
   background-color: #202020;
 }
 
+body > p.typewriter,
+body > p.typewriter.glitchy,
+body > p.glitchy {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+
 ul, pre, a, p {
   margin: 0;
   padding: 0;
@@ -253,20 +261,29 @@ input:focus {
   width: 100%;
   height: 100%;
 }
-#bios p {
-  margin: 0;
-}
-body > p.typewriter,
-body > p.typewriter.glitchy,
-body > p.glitchy {
-  position: fixed;
-  bottom: 0;
-  right: 0;
+#bios > p {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+
+  & > span:nth-of-type(n+2) { text-align: center; }
 }
 
-/* :nth-child(n+3 of #bios p) {
-  height: 2.0rem;
-} */
+#bios-info {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+#any-key {
+  margin-top: 1.5rem;
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 /* ~~~~~~~~~~~~~~~~~~~~        OS_ALERT      ~~~~~~~~~~~~~~~~~~~~ */
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
