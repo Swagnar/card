@@ -343,51 +343,198 @@ export default class Choir extends CApp {
   }
 
   startVisualizer() {
-    const ctx = this.#visualiserCanvas.getContext('2d')
-
-    const analyser = this.#analyser; // <-- use the existing one
+    const ctx = this.#visualiserCanvas.getContext('2d');
+    const analyser = this.#analyser;
+    
     if (!analyser) {
       console.warn('Analyser not initialized!');
       return;
     }
-
-    analyser.fftSize = 128; // MASSIVELY reduced fidelity
+  
+    // Classic Mac settings
+    analyser.fftSize = 256;
+    analyser.smoothingTimeConstant = 0.3; // Less smooth for that digital feel
+    
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
-    this.#visualiserCanvas.width = 500
+    
+    // Use actual canvas client dimensions instead of fixed size
+    const clientWidth = this.#visualiserCanvas.clientWidth;
+    const clientHeight = this.#visualiserCanvas.clientHeight;
+    
+    this.#visualiserCanvas.width = clientWidth;
+    this.#visualiserCanvas.height = clientHeight;
+    
     const width = this.#visualiserCanvas.width;
     const height = this.#visualiserCanvas.height;
-    const barWidth = Math.floor(width / bufferLength);
-
-    ctx.imageSmoothingEnabled = false; // no anti-aliasing allowed
-
-    let glitchOffset = 0;
-
+    
+    console.log('Using canvas dimensions:', width, 'x', height);
+    
+    // Disable anti-aliasing for crisp pixels
+    ctx.imageSmoothingEnabled = false;
+    
+    // Classic Mac dither patterns using simple shapes
+    const drawDitherBar = (x, y, barWidth, barHeight, density) => {
+      // Always draw something, even for low density
+      if (density > 0.75) {
+        // Solid black
+        ctx.fillStyle = 'black';
+        ctx.fillRect(x, y, barWidth, barHeight);
+      } else if (density > 0.5) {
+        // 75% pattern - mostly filled
+        ctx.fillStyle = 'black';
+        for (let dy = 0; dy < barHeight; dy++) {
+          for (let dx = 0; dx < barWidth; dx++) {
+            // Draw all pixels except for every 4th/sparse pattern to leave 25% white
+            if ((dx % 2 === 0 && dy % 2 === 0) || (dx % 2 !== 0 && dy % 2 !== 0)) {
+               // Draw the checkerboard pattern (50%)
+            } else {
+               ctx.fillRect(x + dx, y + dy, 1, 1);
+            }
+          }
+        }
+      } else if (density > 0.25) {
+        // 50% checkerboard pattern
+        ctx.fillStyle = 'black';
+        for (let dy = 0; dy < barHeight; dy++) {
+          for (let dx = 0; dx < barWidth; dx++) {
+            // Simple checkerboard: (x+y) % 2 determines the color
+            if ((dx + dy) % 2 === 0) {
+              ctx.fillRect(x + dx, y + dy, 1, 1);
+            }
+          }
+        }
+      } else if (density > 0.05) { // Lower threshold
+        // 25% sparse pattern
+        ctx.fillStyle = 'black';
+        for (let dy = 0; dy < barHeight; dy += 4) {
+          for (let dx = 0; dx < barWidth; dx += 4) {
+            ctx.fillRect(x + dx, y + dy, 1, 1);
+          }
+        }
+      }
+    };
+    
+    let frameCount = 0;
+    
     const renderFrame = () => {
-      setTimeout(() => requestAnimationFrame(renderFrame), 24); // 10 FPS MAX, like it's running on a toaster
-
+      requestAnimationFrame(renderFrame);
+      frameCount++;
+      
       analyser.getByteFrequencyData(dataArray);
-
+      
+      // Classic white background
       ctx.fillStyle = 'white';
       ctx.fillRect(0, 0, width, height);
+      
+      // Oscilloscope-style waveform (top half)
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 1;
+      
+      // Get time domain data for waveform
+      const waveArray = new Uint8Array(analyser.fftSize);
+      analyser.getByteTimeDomainData(waveArray);
+      
+      ctx.beginPath();
+      const waveHeight = height * 0.4;
+      const waveY = waveHeight / 2;
+      
+      for (let i = 0; i < waveArray.length; i++) {
+        const x = (i / waveArray.length) * width;
+        const y = waveY + ((waveArray[i] - 128) / 128) * (waveHeight / 2);
+        
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.stroke();
+      
+      const barAreaY = waveHeight + 20;
+      const barAreaHeight = height - waveHeight - 20;
 
-      ctx.fillStyle = 'black';
+      const numBars = 128;
+      const barWidth = width / numBars; // Use a constant bar width
 
-      let x = glitchOffset; // make the whole thing jitter for "glitch" feel
+      for (let i = 0; i < numBars; i++) {
+        
+        // Stronger log scaling - cube instead of square
+        const logIndex = Math.pow(i / (numBars - 1), 3.0) * (bufferLength - 1);
+        const idx = Math.floor(logIndex);
 
-      for (let i = 0; i < bufferLength; i++) {
-        let value = dataArray[i];
+        // Average small neighborhood
+        const windowSize = 6;
+        let sum = 0;
+        let count = 0;
+        for (let j = -windowSize; j <= windowSize; j++) {
+          const k = idx + j;
+          if (k >= 0 && k < bufferLength) {
+            sum += dataArray[k];
+            count++;
+          }
+        }
+        let value = sum / count;
 
-        if (Math.random() < 0.1) {
-          value = value * 0.3; // simulate shitty signal by randomly weakening bars
+        // Boost highs so they don’t look dead
+        const highBoost = 1 + (i / numBars) * 1.5; // up to 2.5x
+        value *= highBoost;
+
+        const barLeft = i * barWidth;
+        const barWidthActual = Math.ceil(barWidth); // Use an integer width for sharp pixels
+
+        const barHeight = Math.max(8, Math.floor((value / 255) * barAreaHeight));
+        const quantizedHeight = Math.floor(barHeight / 4) * 4;
+        const y = barAreaY + barAreaHeight - quantizedHeight;
+
+        
+        // --- FIX: Apply dither to the top 'cap' of the bar ---
+        const ditherCapHeight = 4; // Height of the dithered section at the top
+        const ditherY = y;
+        const solidY = y + ditherCapHeight;
+        const solidHeight = quantizedHeight - ditherCapHeight;
+        const density = Math.max(0.05, value / 255); // Use the calculated density
+
+        // 1. Draw the solid black base (only if there is space after the cap)
+        if (solidHeight > 0) {
+          ctx.fillStyle = 'black';
+          ctx.fillRect(Math.floor(barLeft), solidY, barWidthActual, solidHeight);
         }
 
-        const barHeight = Math.floor((value / 255) * height / 8) * 8; // big chunky pixel blocks
-        ctx.fillRect(x, height - barHeight, barWidth + 10, barHeight);
-        x += barWidth + 10;
-      }
+        // 2. Draw the dithered cap on top
+        drawDitherBar(
+            Math.floor(barLeft), 
+            ditherY, 
+            barWidthActual, 
+            ditherCapHeight, 
+            density // Pass density for the pattern
+        );
 
-      glitchOffset = (glitchOffset + (Math.random() > 0.9 ? 1 : 0)) % 3; // slight horizontal jitter
+        // --- End Fix ---
+      }
+      
+      // Volume level indicator (classic Mac style) - top right
+      const avgVolume = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
+      const volumeBlocks = Math.floor((avgVolume / 255) * 10);
+      
+      for (let i = 0; i < 10; i++) {
+        const blockX = width - 130 + i * 12;
+        const blockY = 5;
+        
+        if (i < volumeBlocks) {
+          ctx.fillStyle = 'black';
+          ctx.fillRect(blockX, blockY, 8, 8);
+        } else {
+          ctx.strokeStyle = 'black';
+          ctx.strokeRect(blockX, blockY, 8, 8);
+        }
+      }
+      
+      // Classic Mac "breathing" indicator - top left
+      if (frameCount % 60 < 30) { // Blinks every second
+        ctx.fillStyle = 'black';
+        ctx.fillRect(5, 5, 8, 8);
+      }
     };
     
     renderFrame();

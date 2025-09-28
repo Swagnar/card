@@ -14,6 +14,12 @@
   transform-origin: left top;
   transform: scale(0);
   transition: transform 0.5s ease, opacity 0.5s ease, visibility 0.5s ease;
+
+  max-width: 350px;
+  height: 350px;
+}
+div[id^="terminal-"] {
+  height: 350px;
 }
 .window.show {
   visibility: visible;

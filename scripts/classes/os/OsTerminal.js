@@ -1,3 +1,4 @@
+import Choir from "../Choir/Choir.js"
 import CApp from "../yggdrasil/CApp.js"
 /**
  * Class representing a terminal
@@ -181,10 +182,10 @@ export default class OsTerminal extends CApp {
     | |                             | |
     | |            OS_OS            | |
     | |  VERSION    :  :    0.7.1   | |
-    | |  LAST UPDATE:  :  12 IX 25  | |     CPU: 0.66MHz Apophis
-    | |                             | |     RAM: 32MB DDR1 
+    | |  LAST UPDATE:  :  12 IX 25  | |     CPU: 0.66MHz Apophis MN99942
+    | |                             | |     RAM: 31923 B DDR UNDEFINED
     | |                             | |    GPU1: MISSING
-    | |.............................| |    GPU2: 16MB VRAM
+    | |.............................| |    GPU2: 16777216 B VRAM
     | |  _  :          '      :  _  | |
     | | |_| :                 : |_| | |
     | |  _  :_               _:  _  | |
@@ -212,6 +213,9 @@ export default class OsTerminal extends CApp {
   OPTIONS:
     -d | danger - shows a danger-styled OS_OS alert window
     -i | info   - shows a info-styled OS_OS alert window
+
+> choir
+  - runs and shows Choir app
 `
   },
 
@@ -222,6 +226,12 @@ export default class OsTerminal extends CApp {
    */
   clear: function() {
     document.getElementById(`terminal-output`).innerHTML = ""
+    return ``
+  },
+
+  choir: function() {
+    const tux = new Choir()    
+    tux.dispatchEvent()
     return ``
   },
 

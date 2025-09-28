@@ -28,7 +28,7 @@ This application does not use any framework whatsoever, it's pure native JavaScr
 
 - a `MacOS.1`-esque design. 
 - a broken filesystem - [`Yggdrasil`](scripts/classes/yggdrasil/Yggdrasil.js) (array of objects!)
-- terminal (also a bit broken at the moment)
+- Terminal
 - settings stored in the browser `localStorage`
 - client side Floyd–Steinberg dithering for images
 - audio player - play tracks made by the phenomenal **toasty digital** in crisp Base64 quality
@@ -50,15 +50,13 @@ this.#currentTrackAudio = new Audio("data:audio/mpeg;base64," + track.data)
 
 Unfortunately, with just 2 songs the whole file containing this data weights almost 20 MB, so most of the songs are not playable and have only metadata.
 
-Choir also has a very crude audio visualizer that I'm planning to expand upon.
+Choir also has a audio visualizer that I tried to make as retro and fitting to the overall style of the app as possible.
 
 If you're interested on how it works, [here](scripts/classes/Choir/Choir.js) is the source.
 
 Choir uses [`CMusicTrack`](scripts/classes/Choir/CMusicTrack.js) instances for containing the audio file data - its track number, track name and the base64 data. Then, a collection of CMusicTrack is put inside [`CMusicAlbum`](scripts/classes/Choir/CMusicAlbum.js) that then is used by the app. 
 
 The main file containing all music albums and music class instances is [`MusicAlbums.js`](scripts/resources/MusicAlbums.js) inside `scripts/resources/` directory.
-
-I'm planning to upload a version of this app with all songs playable, that would be avaiable on my site - [euklidesowo.pl](https://euklidesowo.pl)
 
 ## Composer 🪶📜
 
@@ -70,7 +68,7 @@ Composer also uses [`OsPrompt`](scripts/OsPrompt.js) and [`OsAlert`](scripts/OsA
 
 Every OS needs to have a shell, so OS_OS also have a Terminal app. It can be launched via the desktop icon or the context menu. 
 
-This terminal needs to be re-writen to more profoundly use CApp, since the Terminal is the first app that was made for the OS_OS.
+This terminal app was rewritten in the past, since the Terminal was the first app avaiable in OS_OS but after some time, the `CApp` class was introduced. Now the `OsTerminal` also extends the `CApp` class.
 
 By typing `help` you can get the list of all avaiable commands. Commands are stored as an OsTerminal static property called `commands`. It's an Object containing functions that are ran when called. For example, command `clear` for cleaning the Terminal window looks like this:
 ```js
@@ -144,7 +142,7 @@ export default class MyApp extends CApp {
 }
 ```
 
-Every app main class should be a child of `CApp` class, it handles all things related to `OsWindow` and creates a desktop icon with `OsDesktopIcon` class. Using `super()`, you pass to CApp two very important data related to your app - its name and its event name. 
+Every app main class should be a child of `CApp` class, it handles all things related to `OsWindow` and creates a desktop icon with `OsDesktopIcon` class. Using `super()`, you pass to `CApp`` two very important data related to your app - its name and its event name. 
 
 The event with the same name is dispatched every time you want to open your app, below you'll find how do we react to such an event. 
 

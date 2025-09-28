@@ -1,11 +1,17 @@
 import { applyDithering } from "../../utils/dithering.js";
+import Os from "./Os.js";
 
 export default class OsDialog {
 
   DIALOG_CONTENTS = {
     about: `
-      <p>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p>
-      <p>Inspired by <a href='https://kanye2049.com'>Kanye2049</a></p>
+      <p style='text-align: center;'>Made by <a href='https://github.com/Swagnar'>Swagnar</a></p>
+      <br>
+      <fieldset>
+        <legend>Inspired by</legend>
+        > <a href='https://kanye2049.com'>Kanye2049</a><br>
+        > the life of <a href='https://templeos.org/'>Terry A. Davis</a>
+      </fieldset>
     `,
     battery: `
       <p>Battery power provided by YEG Inc. YEG Inc. is not liable for any burns, explosions or airborne carcinogens caused by this battery pack. Battery pack is single (1) use. <u>Do not</u> attempt to recycle</p>
@@ -41,6 +47,8 @@ export default class OsDialog {
     `,
   }
 
+  addToDialogContents(name, content) { this.DIALOG_CONTENTS[name] = content }
+
   static getDialogTag() { return document.getElementById('dialog'); }
   static getDialogBodyTag() { return document.getElementById('dialog-body'); }
 
@@ -52,13 +60,13 @@ export default class OsDialog {
     }
   }
 
-  static showDialogViaHTML(nodes, dialogBodyId = "dialog-body") {
+  static showDialogViaHTML(nodes, cssClass) {
     const dialogBody = this.getDialogBodyTag()
 
     this.toggleDialog()
 
     dialogBody.append(...nodes)
-    dialogBody.id = dialogBodyId
+    dialogBody.classList.add(cssClass)
 
     let images = dialogBody.querySelectorAll('img');
     if (images.length > 0) {
@@ -77,33 +85,26 @@ export default class OsDialog {
 
     dialogBody.innerHTML = content
 
-    if (content.includes("<img")) {
-      try {
-        let images = dialogBody.querySelectorAll('img');
-        if (images.length === 0) {
-          throw new Error('Images not found');
-        }
-        for (let image of images) {
-          let canvas = document.createElement('canvas');
-          image.after(canvas);
-          applyDithering(image, canvas);
-        }
-      } catch (er) {
-        console.error(er);
+    let images = dialogBody.querySelectorAll('img');
+    if (images.length > 0) {
+      for (let image of images) {
+        let canvas = document.createElement('canvas');
+        image.after(canvas);
+        applyDithering(image, canvas);
       }
     }
   }
 
   static closeDialog() {
     const dialog = this.getDialogTag()
-
+    const dialogBody = this.getDialogBodyTag()
     dialog.classList.remove('dialog-open')
     dialog.classList.add('dialog-hidden')
+    dialogBody.innerHTML = ''
+    document.title = 'OS_OS'
+    Os.setDefaultDocumentTitle()
   }
 
-  addToDialogContents(name, content) {
-    this.DIALOG_CONTENTS[name] = content
-  }
 
   
 }

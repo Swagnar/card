@@ -176,7 +176,7 @@ input:focus {
   justify-content: center;
   padding: 1rem 0 1rem 0;
 }
-.dialog .dialog-body#settings-body {
+.dialog .dialog-body.settings-body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
