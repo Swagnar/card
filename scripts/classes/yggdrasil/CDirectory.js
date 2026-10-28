@@ -8,15 +8,6 @@ export default class CDirectory {
   /** @type {OsDesktopIcon} */
   desktopIcon;
 
-  /**
-   * @type {boolean}
-   * A flag used to detect if the window is moving or still in place
-   */
-  isDragging = false;
-  offsetX;
-  offsetY;
-
-
   constructor(name) {
     this.name = name
     this.files = []
@@ -26,37 +17,30 @@ export default class CDirectory {
   }
 
   open() {
-    const window = new OsWindow(this.name, null, true)
+    const window = new OsWindow(this.name)
     window.setAsDirectory(this)
     window.showWindow()
   }
 
-  
   /**
    * Adds one single file into the directory `files` array
-   * @param {CFile} file 
+   * @param {CFile} file
    * @throws Will throw an error if the file argument is not an instance of CFile
    */
   addFile(file) {
-    if(file instanceof CFile) {
-      this.files.push(file)
-      logWithColors("Adding CFile with name {} to CDirectory {}", file.name, this.name)
-    } else {
+    if(!(file instanceof CFile)) {
       throw new Error('Function `addFile()` only accepts an instance of CFile')
     }
+    this.files.push(file)
+    logWithColors("Adding CFile with name {} to CDirectory {}", file.name, this.name)
   }
 
   /**
    * Adds a collection of files into the directory `files` array
-   * @param  {...CFile} files 
+   * @param  {...CFile} files
+   * @throws Will throw an error if any of the files is not an instance of CFile
    */
   addFiles(...files) {
-    files.forEach(file => {
-        if(file instanceof CFile) {
-          this.addFile(file)
-        } else {
-          throw new Error('Function `addFiles()` only accepts instances of CFile')
-        }
-    })
+    files.forEach(file => this.addFile(file))
   }
 }

@@ -1,32 +1,19 @@
-import OsTerminal from "./OsTerminal.js";
-import Choir from "../Choir/Choir.js";
+import { CHOIR, OS_TERMINAL } from "../yggdrasil/Yggdrasil.js"
 
 class OsContextMenuItem {
-  constructor(innerText, id, ev, app=null) {
+  /**
+   * @param {string} innerText
+   * @param {string} id
+   * @param {function|null} onClick
+   */
+  constructor(innerText, id, onClick = null) {
     this.body = document.createElement('span')
     this.body.classList.add('context-menu-item')
     this.body.id = id
     this.body.innerText = innerText
 
-    if(ev) {
-      var event;
-      if(ev.includes("showDialogViaString-")) {
-        let params = ev.split("-");
-        event = new CustomEvent('showDialog', { detail: params[1] });
-      } else {
-        event = new Event(ev)
-      }
-      if(!event) {
-        throw new Error("Couldn't create event for ContextMenuItem with params: ", innerText, id, ev)
-      }
-      this.body.addEventListener('click', function() {
-        if(app) {
-          app.dispatchEvent()
-        } else {
-          document.dispatchEvent(event)
-        }
-      })
-      
+    if(onClick) {
+      this.body.addEventListener('click', onClick)
     }
   }
 }
@@ -41,15 +28,11 @@ export default class OsContextMenu {
    */
   #header
   /**
-   * @type {Array[]}
+   * @type {OsContextMenuItem[]}
    */
   #elements
 
   constructor(root) {
-
-    const terminal = new OsTerminal()
-    const choir = new Choir()
-    
     this.#body = document.createElement('div')
     this.#body.id = "context-menu"
 
@@ -57,21 +40,17 @@ export default class OsContextMenu {
     this.#header.innerText = "[ OS_OS ]"
     this.#elements = [
       new OsContextMenuItem("Reset desktop", "context-menu-item-reset-desktop"),
-      new OsContextMenuItem("Properties", "context-menu-item-properties", "showDialogViaString-properties"),
-      new OsContextMenuItem("Settings", "context-menu-item-settings", "showSettings"),
-      new OsContextMenuItem(
-        terminal.name, "context-menu-item-terminal", terminal.command, terminal
+      new OsContextMenuItem("Properties", "context-menu-item-properties",
+        () => document.dispatchEvent(new CustomEvent('showDialog', { detail: 'properties' }))
       ),
-      new OsContextMenuItem(
-        choir.name, "context-menu-item-audio-player", choir.command, choir
+      new OsContextMenuItem("Settings", "context-menu-item-settings",
+        () => document.dispatchEvent(new Event('showSettings'))
       ),
+      new OsContextMenuItem(OS_TERMINAL.name, "context-menu-item-terminal", () => OS_TERMINAL.dispatchEvent()),
+      new OsContextMenuItem(CHOIR.name, "context-menu-item-audio-player", () => CHOIR.dispatchEvent()),
     ]
 
-    this.#body.append(this.#header)
-
-    this.#elements.forEach(el => {
-      this.#body.append(el.body);
-    })
+    this.#body.append(this.#header, ...this.#elements.map(el => el.body))
 
     root.append(this.#body)
   }
@@ -81,5 +60,9 @@ export default class OsContextMenu {
     this.#body.style.display = 'block'
     this.#body.style.left = event.layerX + "px"
     this.#body.style.top = event.layerY + "px"
+  }
+
+  hideContextMenu() {
+    this.#body.style.display = 'none'
   }
 }

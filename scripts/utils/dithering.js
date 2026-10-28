@@ -1,5 +1,15 @@
 /**
- * 
+ * Floyd-Steinberg error diffusion kernel - neighbour offsets and the part of the error they receive
+ */
+const FLOYD_STEINBERG_KERNEL = [
+  { dx:  1, dy: 0, weight: 7 / 16 },
+  { dx: -1, dy: 1, weight: 3 / 16 },
+  { dx:  0, dy: 1, weight: 5 / 16 },
+  { dx:  1, dy: 1, weight: 1 / 16 },
+]
+
+/**
+ *
  * @param {Uint8ClampedArray} imageData - `data` property of the ImageData. Returned from `ctx.getImageData()`
  * @param {number} width - image width
  * @param {number} height - image height
@@ -7,73 +17,65 @@
 export default function steinbergFloydDither(imageData, width, height) {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-        let index = (y * width + x) * 4;
+      const index = (y * width + x) * 4
 
-        let oldPixel = imageData[index];
-        let newPixel = oldPixel < 128 ? 0 : 255;
-        let quantError = oldPixel - newPixel;
+      const oldPixel = imageData[index]
+      const newPixel = oldPixel < 128 ? 0 : 255
+      const quantError = oldPixel - newPixel
 
-        imageData[index] = newPixel;
-        imageData[index + 1] = newPixel;
-        imageData[index + 2] = newPixel;
+      imageData[index] = newPixel
+      imageData[index + 1] = newPixel
+      imageData[index + 2] = newPixel
 
-        if (x + 1 < width) {
-            imageData[(y * width + x + 1) * 4] += quantError * 7 / 16;
-            imageData[(y * width + x + 1) * 4 + 1] += quantError * 7 / 16;
-            imageData[(y * width + x + 1) * 4 + 2] += quantError * 7 / 16;
-        }
-        if (x - 1 >= 0 && y + 1 < height) {
-            imageData[((y + 1) * width + x - 1) * 4] += quantError * 3 / 16;
-            imageData[((y + 1) * width + x - 1) * 4 + 1] += quantError * 3 / 16;
-            imageData[((y + 1) * width + x - 1) * 4 + 2] += quantError * 3 / 16;
-        }
-        if (y + 1 < height) {
-            imageData[((y + 1) * width + x) * 4] += quantError * 5 / 16;
-            imageData[((y + 1) * width + x) * 4 + 1] += quantError * 5 / 16;
-            imageData[((y + 1) * width + x) * 4 + 2] += quantError * 5 / 16;
-        }
-        if (x + 1 < width && y + 1 < height) {
-            imageData[((y + 1) * width + x + 1) * 4] += quantError * 1 / 16;
-            imageData[((y + 1) * width + x + 1) * 4 + 1] += quantError * 1 / 16;
-            imageData[((y + 1) * width + x + 1) * 4 + 2] += quantError * 1 / 16;
-        }
+      for (const { dx, dy, weight } of FLOYD_STEINBERG_KERNEL) {
+        const nx = x + dx
+        const ny = y + dy
+        if (nx < 0 || nx >= width || ny >= height) continue
+
+        const neighbourIndex = (ny * width + nx) * 4
+        imageData[neighbourIndex] += quantError * weight
+        imageData[neighbourIndex + 1] += quantError * weight
+        imageData[neighbourIndex + 2] += quantError * weight
+      }
     }
+  }
 }
-}
+
 /**
- * 
- * @param {HTMLImageElement} img 
- * @param {HTMLCanvasElement} cnv 
- * @param {function} ditheringFunction 
+ * Resolves once the image is loaded
+ * @param {HTMLImageElement} image
+ */
+function loadImage(image) {
+  return new Promise((resolve, reject) => {
+    if (image.complete) {
+      resolve()
+    } else {
+      image.onload = () => resolve()
+      image.onerror = () => reject(new Error('Failed to load image'))
+    }
+  })
+}
+
+/**
+ *
+ * @param {HTMLImageElement} img
+ * @param {HTMLCanvasElement} cnv
+ * @param {function} ditheringFunction
  */
 export async function applyDithering(img, cnv, ditheringFunction = steinbergFloydDither) {
-    async function loadImage(image) {
-        return new Promise((resolve, reject) => {
-          if (image.complete) {
-            resolve();
-          } else {
-            image.onload = () => resolve();
-            image.onerror = () => reject(new Error('Failed to load image'));
-          }
-        });
-      }
+  await loadImage(img)
 
-    await loadImage(img)
+  /** @type {CanvasRenderingContext2D} */
+  const ctx = cnv.getContext('2d')
 
-    /** @type {CanvasRenderingContext2D} */
-    let ctx = cnv.getContext('2d');
-  
-    ctx.canvas.width = img.width;
-    ctx.canvas.height = img.height;
-  
-    ctx.drawImage(img, 0, 0, img.width, img.height);
-  
-    /** @type {ImageData} */
-    let imageData = ctx.getImageData(0, 0, img.width, img.height);
-    
-    /** @type {Uint8ClampedArray} */
-    let data = imageData.data;
-  
-    await ditheringFunction(data, img.width, img.height);
-    ctx.putImageData(imageData, 0, 0);
-  }
+  ctx.canvas.width = img.width
+  ctx.canvas.height = img.height
+
+  ctx.drawImage(img, 0, 0, img.width, img.height)
+
+  /** @type {ImageData} */
+  const imageData = ctx.getImageData(0, 0, img.width, img.height)
+
+  await ditheringFunction(imageData.data, img.width, img.height)
+  ctx.putImageData(imageData, 0, 0)
+}

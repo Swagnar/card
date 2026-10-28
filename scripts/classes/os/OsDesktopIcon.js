@@ -1,101 +1,92 @@
 export default class OsDesktopIcon {
-    /** @type {HTMLButtonElement} */
-    container = document.createElement('button')
+  /** @type {HTMLButtonElement} */
+  container = document.createElement('button')
 
-    /** @type {HTMLSpanElement} */
-    icon = document.createElement('span')
-  
-    /** @type {HTMLSpanElement} */
-    label = document.createElement('span')
-  
-    /**
-     * @type {boolean}
-     * A flag used to detect if the window is moving or still in place
-     */
-    isDragging = false;
-    offsetX;
-    offsetY;
+  /** @type {HTMLSpanElement} */
+  icon = document.createElement('span')
 
+  /** @type {HTMLSpanElement} */
+  label = document.createElement('span')
 
+  /**
+   * @type {boolean}
+   * A flag used to detect if the icon is moving or still in place
+   */
+  isDragging = false;
+  offsetX;
+  offsetY;
 
-    constructor(name, fileType, command=null) {
-      this.name = name
-      this.files = []
-      this.fileType = fileType
-      this.command = command
-      this.init()
-    }
+  /**
+   * @param {string} name label shown below the icon
+   * @param {'dir'|'archive'|'app'} fileType
+   * @param {string|null} command
+   */
+  constructor(name, fileType, command=null) {
+    this.name = name
+    this.fileType = fileType
+    this.command = command
+    this.init()
+  }
 
-    init() {
-
-      if(this.fileType === 'dir') {
-
+  init() {
+    switch(this.fileType) {
+      case 'dir':
         this.container.classList.add('folder')
         this.container.style.top = "40px"
         this.icon.classList.add('folder-icon')
-
-      } else if(this.fileType === 'archive') {
-
+        break
+      case 'archive':
         this.container.classList.add('archive')
         this.container.style.top = "40px"
         this.icon.classList.add('archive-icon')
-
-      } else if(this.fileType === 'app') {
-
+        break
+      case 'app':
         this.container.classList.add('app')
-       
         this.icon.classList.add(`${this.name.toLowerCase()}-icon`)
-      }
-
-      this.container.classList.add('file')
-      this.icon.classList.add('file-icon')
-      this.label.classList.add('file-label')
-      this.label.innerText = this.name
-
-      this.container.append(this.icon)
-      this.container.append(this.label)
-
-      
-      this.container.addEventListener('pointerdown', (ev) => this.handlePointerDown(ev))
-      document.addEventListener('pointermove', (ev) => this.handlePointerMove(ev))
-      document.addEventListener('pointerup', (ev) => this.handlePointerUp(ev))
-      
+        break
     }
 
-    handlePointerDown(ev) {
-      this.container.style.filter = 'invert(100%)'
-      this.startMovingIcon(ev)
-    }
+    this.container.classList.add('file')
+    this.icon.classList.add('file-icon')
+    this.label.classList.add('file-label')
+    this.label.innerText = this.name
 
-    handlePointerMove(ev) {
-      this.moveIcon(ev)
-    }
+    this.container.append(this.icon, this.label)
 
-    handlePointerUp(ev) {
-      this.container.style.filter = 'invert(0%)'
-      this.stopMovingIcon(ev)
-    }
+    this.container.addEventListener('pointerdown', (ev) => this.startMovingIcon(ev))
+    document.addEventListener('pointermove', (ev) => this.moveIcon(ev))
+    document.addEventListener('pointerup', () => this.stopMovingIcon())
+  }
 
-    startMovingIcon(ev) {
-      this.isDragging = true
-      this.offsetX = ev.clientX - this.container.offsetLeft
-      this.offsetY = ev.clientY - this.container.offsetTop
+  /**
+   * @param {PointerEvent} ev
+   */
+  startMovingIcon(ev) {
+    this.container.style.filter = 'invert(100%)'
 
-      document.body.style.userSelect = 'none'
+    this.isDragging = true
+    this.offsetX = ev.clientX - this.container.offsetLeft
+    this.offsetY = ev.clientY - this.container.offsetTop
 
-    }
-    moveIcon(ev) {
-      if(!this.isDragging) return;
-      this.container.style.left = (ev.clientX - this.offsetX) + 'px';
-      this.container.style.top  = (ev.clientY - this.offsetY) + 'px';
-      
-      console.log("clientY", ev.clientY, "offsetY", this.offsetY)
+    document.body.style.userSelect = 'none'
+  }
 
-      this.container.style.cursor = 'grabbing'
-      this.container.style.position = "absolute"
-    }
-    stopMovingIcon() {
-      this.isDragging = false
-      this.container.style.cursor = 'pointer'
-    }
+  /**
+   * @param {PointerEvent} ev
+   */
+  moveIcon(ev) {
+    if(!this.isDragging) return;
+    this.container.style.left = (ev.clientX - this.offsetX) + 'px';
+    this.container.style.top  = (ev.clientY - this.offsetY) + 'px';
+
+    this.container.style.cursor = 'grabbing'
+    this.container.style.position = "absolute"
+  }
+
+  stopMovingIcon() {
+    this.container.style.filter = 'invert(0%)'
+
+    this.isDragging = false
+    this.container.style.cursor = 'pointer'
+  }
 }

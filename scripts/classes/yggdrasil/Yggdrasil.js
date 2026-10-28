@@ -5,6 +5,7 @@ import Composer from "../Composer/Composer.js";
 import Choir from "../Choir/Choir.js";
 import OsTerminal from "../os/OsTerminal.js";
 import Snake from "../Snake/Snake.js";
+import { OS_CONSTANS } from "../../constans.js";
 
 const DND = new CDirectory("D&D");
 DND.addFiles(
@@ -45,51 +46,48 @@ const ASTRONOMY = new CArchive('ASTRONOMY.ZIP', `
 I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil.
 `);
 
+
+/**
+ * Creates the app instance shown on the desktop and opens a new instance of the app
+ * every time its event is dispatched
+ * @template {CApp} T
+ * @param {new () => T} AppClass class extending CApp
+ * @returns {T} desktop instance of the app
+ */
+function registerApp(AppClass) {
+  const app = new AppClass()
+  document.addEventListener(app.command, () => {
+    new AppClass().window.showWindow()
+  })
+  return app
+}
+
 // built-in apps
-export const CHOIR = new Choir()
-export const COMPOSER = new Composer()
-export const SNAKE = new Snake()
-export const OS_TERMINAL = new OsTerminal()
+export const CHOIR = registerApp(Choir)
+export const COMPOSER = registerApp(Composer)
+export const SNAKE = registerApp(Snake)
+export const OS_TERMINAL = registerApp(OsTerminal)
 
 // register your apps here
 
 
+/**
+ * Loads CFiles made by the user in Composer app
+ * @returns {CDirectory}
+ */
+function loadUserFiles() {
+  const userFiles = new CDirectory('MY FILES')
 
-// Apps can be only be run one instance of at a time, so no 2 terminals at once, windows overwrite
-document.addEventListener('showSnake', () => {
-  var snake = new Snake()
-  snake.window.showWindow()
-})
-document.addEventListener('showChoir', () => {
-  var choir = new Choir()
-  choir.window.showWindow()
-})
-document.addEventListener('showComposer', () => {
-  var composer = new Composer()
-  composer.window.showWindow()
-})
-document.addEventListener('showTerminal', () => {
-  var terminal = new OsTerminal()
-  terminal.window.showWindow()
-})
+  for(let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
 
-// Load CFiles made by the user in Composer app
-const userFiles = new CDirectory('MY FILES')
-
-for(let i = 0; i < localStorage.length; i++) {
-  const key = localStorage.key(i)
-
-  if(key.startsWith('userFile-')) {
-
-    const value = localStorage.getItem(key)
-    const fileName = key.slice(9)
-    // userFiles.push(new CFile(key, 'txt', value))
-    userFiles.addFile(new CFile(fileName, 'txt', value))
+    if(key.startsWith(OS_CONSTANS.USER_FILE_PREFIX)) {
+      const fileName = key.slice(OS_CONSTANS.USER_FILE_PREFIX.length)
+      userFiles.addFile(new CFile(fileName, 'txt', localStorage.getItem(key)))
+    }
   }
+  return userFiles
 }
-
-
-
 
 // Just for looks
 //
@@ -98,10 +96,9 @@ for(let i = 0; i < localStorage.length; i++) {
 // Apps
 
 export const osFiles = [
-  DND, WORK, 
+  DND, WORK,
   ASTRONOMY,
   CHOIR, COMPOSER, SNAKE, OS_TERMINAL
 ];
 
-export const YGGDRASIL = osFiles.concat(userFiles)
-// export const YGGDRASIL = osFiles
+export const YGGDRASIL = osFiles.concat(loadUserFiles())

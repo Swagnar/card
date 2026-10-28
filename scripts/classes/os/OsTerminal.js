@@ -1,8 +1,7 @@
-import Choir from "../Choir/Choir.js"
 import CApp from "../yggdrasil/CApp.js"
 /**
  * Class representing a terminal
- * 
+ *
  */
 export default class OsTerminal extends CApp {
 
@@ -17,12 +16,11 @@ export default class OsTerminal extends CApp {
 
   /** @type {HTMLInputElement} with `type="text"` */
   #terminalInputElement
-  
+
   prefix = "~:";
-  
+
   /**
-   * Creates new `OsTerminal` window and shows it on the screen. Window frame is created via `OsWindow` class 
-   * @param {HTMLElement} root Application root HTML element
+   * Creates new `OsTerminal` window and shows it on the screen. Window frame is created via `OsWindow` class
    */
   constructor() {
     super('Terminal', 'showTerminal')
@@ -33,11 +31,9 @@ export default class OsTerminal extends CApp {
     this.#terminalOutputContainer.addEventListener('click', () => {
       this.#terminalInputElement.focus()
     })
-    
 
     this.#terminalInputContainer = document.createElement('div');
     this.#terminalInputContainer.classList.add('terminal-input-wrapper');
-
 
     this.#terminalInputElement = document.createElement('input')
     this.#terminalInputElement.type = "text";
@@ -52,9 +48,9 @@ export default class OsTerminal extends CApp {
 
     this.#terminalInputPrefixElement = document.createElement('span')
     this.#terminalInputPrefixElement.innerText = this.prefix
-    
+
     this.#terminalInputContainer.append(this.#terminalInputPrefixElement, this.#terminalInputElement)
-    
+
     this.window.setAsTerminal(this.#terminalOutputContainer, this.#terminalInputContainer)
 
     this.history = [];
@@ -74,25 +70,22 @@ export default class OsTerminal extends CApp {
    * @param {boolean} isPrefix - whether to show command prefix
    */
   appendToLog(content, commandName, isPrefix) {
-
     const logElement = document.createElement('div')
     logElement.classList.add('terminal-log-element')
 
-    const logElementText = document.createElement('pre')
-    const logElementCommandSpan = document.createElement('span')
-    
     if(isPrefix) {
       const logElementPrefixSpan = document.createElement('span')
       logElementPrefixSpan.innerText = this.prefix
       logElement.append(logElementPrefixSpan)
     }
-    
-    
+
+    const logElementCommandSpan = document.createElement('span')
     logElementCommandSpan.innerText = commandName
+
+    const logElementText = document.createElement('pre')
     logElementText.innerText = `\n${content}`
 
-    logElement.append(logElementCommandSpan)
-    logElement.append(logElementText)
+    logElement.append(logElementCommandSpan, logElementText)
 
     this.#terminalOutputContainer.append(logElement)
   }
@@ -103,38 +96,34 @@ export default class OsTerminal extends CApp {
    * @returns {string} - command result
    */
   runCommand(command) {
-    let args = command.trim().split(/\s+/)
-    let name = args.shift()
-    let output
-  
+    const args = command.trim().split(/\s+/)
+    const name = args.shift()
+
     this.history.push({ name: name, rawArgs: args })
-  
+
     const parsedArgs = this.parseArgs(args)
-  
+
     if (!OsTerminal.commands[name]) {
       return `Command '${name}' was not found. Try 'help' to see available commands`
     }
-  
-    output = OsTerminal.commands[name](parsedArgs)
-    return output
+
+    return OsTerminal.commands[name](parsedArgs)
   }
 
   /**
- * Parses command arguments into flags and positional args
- * @param {string[]} args 
- * @returns {{ flags: Object<string, boolean>, positional: string[] }}
- */
+   * Parses command arguments into flags and positional args
+   * @param {string[]} args
+   * @returns {{ flags: Object<string, boolean>, positional: string[] }}
+   */
   parseArgs(args) {
     const flags = {}
     const positional = []
 
     for (const arg of args) {
       if (arg.startsWith('--')) {
-        const key = arg.slice(2)
-        flags[key] = true
+        flags[arg.slice(2)] = true
       } else if (arg.startsWith('-')) {
-        const letters = arg.slice(1)
-        for (const letter of letters) {
+        for (const letter of arg.slice(1)) {
           flags[letter] = true
         }
       } else {
@@ -150,32 +139,27 @@ export default class OsTerminal extends CApp {
    * @param {string} input - value from terminal
    */
   handleInput(input) {
-    const command = input
-    const output = this.runCommand(command)
+    const output = this.runCommand(input)
 
-    this.appendToLog(output, command, true)
+    this.appendToLog(output, input, true)
 
     this.#terminalInputElement.value = ''
     this.#terminalInputElement.focus()
     this.#terminalOutputContainer.scrollTop = this.#terminalOutputContainer.scrollHeight
   }
 
-
-  
-
-
   /**
- * Static terminal property containing commands for terminal. Each command is a function that returns a string
- * @type {Object<string, function}
- */
+   * Static terminal property containing commands for terminal. Each command is a function that returns a string
+   * @type {Object<string, function>}
+   */
   static commands = {
 
-  kbind: function() {
-    return `CTRL + S :  : SETTINGS`
-  },
+    kbind: function() {
+      return `CTRL + S :  : SETTINGS`
+    },
 
-  neofetch: function() {
-    return `
+    neofetch: function() {
+      return `
     ,--------------------------===---.
     | YEG Inc.                        |
     | ,----------------------------.  |
@@ -193,14 +177,14 @@ export default class OsTerminal extends CApp {
     | '-----....._________.....-----' |
     '---------------------------------'
     `
-  },
+    },
 
-  /**
-   * Display help information for avaiable commands
-   * @returns {string} - help information
-   */
-  help: function() {
-    return `Avaiable commands:
+    /**
+     * Display help information for avaiable commands
+     * @returns {string} - help information
+     */
+    help: function() {
+      return `Avaiable commands:
 > kbind
   - shows a list of key bindings
 > neofetch
@@ -217,49 +201,50 @@ export default class OsTerminal extends CApp {
 > choir
   - runs and shows Choir app
 `
-  },
+    },
 
+    /**
+     * Clears the terminal output
+     * @returns {string} - empty string
+     */
+    clear: function() {
+      document.getElementById(`terminal-output`).innerHTML = ""
+      return ``
+    },
 
-  /**
-   * Clears the terminal output
-   * @returns {string} - empty string
-   */
-  clear: function() {
-    document.getElementById(`terminal-output`).innerHTML = ""
-    return ``
-  },
+    /**
+     * Opens a new Choir window
+     * @returns {string} - empty string
+     */
+    choir: function() {
+      document.dispatchEvent(new CustomEvent('showChoir'))
+      return ``
+    },
 
-  choir: function() {
-    const tux = new Choir()    
-    tux.dispatchEvent()
-    return ``
-  },
+    /**
+     * Displays an alert window with a message and an optional style based on flags.
+     *
+     * Recognized flags:
+     * - `-d` or `--danger`: Shows the alert as a danger message.
+     * - `-w` or `--warning`: Shows the alert as a warning message.
+     *
+     * If no flags are provided, a default alert is shown.
+     *
+     * @param {Object} param0 - Parsed command arguments.
+     * @param {Object<string, boolean>} param0.flags - Flags parsed from the command line (e.g., -d, --danger).
+     * @param {string[]} param0.positional - Positional arguments used as the alert message.
+     */
+    alert: function({ flags, positional }) {
+      const msg = positional.join(" ") || "No message"
+      let type = "default"
 
-  /**
- * Displays an alert window with a message and an optional style based on flags.
- *
- * Recognized flags:
- * - `-d` or `--danger`: Shows the alert as a danger message.
- * - `-w` or `--warning`: Shows the alert as a warning message.
- *
- * If no flags are provided, a default alert is shown.
- *
- * @param {Object} param0 - Parsed command arguments.
- * @param {Object<string, boolean>} param0.flags - Flags parsed from the command line (e.g., -d, --danger).
- * @param {string[]} param0.positional - Positional arguments used as the alert message.
- */
-  alert: function({ flags, positional }) {
-    const msg = positional.join(" ") || "No message"
-    let type = "default"
-  
-    if (flags.d || flags.danger) {
-      type = "danger"
-    } else if (flags.w || flags.warning) {
-      type = "warning"
+      if (flags.d || flags.danger) {
+        type = "danger"
+      } else if (flags.w || flags.warning) {
+        type = "warning"
+      }
+
+      window.alert(msg, type)
     }
-  
-    window.alert(msg, type)
   }
-
-}
 }

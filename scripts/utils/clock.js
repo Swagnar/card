@@ -1,19 +1,15 @@
 /**
  * This function is passed to setInterval() with delay of 1000ms to update the clock in the navbar
- * @param {HTMLSpanElement} dateTag  
- * @param {HTMLSpanElement} timeTag 
+ * @param {HTMLSpanElement} dateTag
+ * @param {HTMLSpanElement} timeTag
  */
 export default function update_clock(dateTag, timeTag) {
-  var now = new Date()
-  var month = now.toLocaleString('en-us', {month: 'long'})
-  var day = now.getDate()
+  const now = new Date()
+  const month = now.toLocaleString('en-us', {month: 'long'})
 
-  var hours = now.getHours()
-  var minutes = now.getMinutes()
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
 
-  hours = hours < 10 ? '0' + hours : hours
-  minutes = minutes < 10 ? '0' + minutes : minutes
-  
-  dateTag.innerText = `\xa0- ${month.slice(0,3)}. ${day}, ${now.getFullYear()}`
+  dateTag.innerText = `\xa0- ${month.slice(0,3)}. ${now.getDate()}, ${now.getFullYear()}`
   timeTag.innerText = `${hours}:${minutes}`
 }

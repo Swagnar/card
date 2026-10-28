@@ -1,5 +1,6 @@
 import CApp from "../yggdrasil/CApp.js";
 import CFile from "../yggdrasil/CFile.js";
+import { OS_CONSTANS } from "../../constans.js";
 
 export default class Composer extends CApp {
 
@@ -19,7 +20,6 @@ export default class Composer extends CApp {
 
     const saveFileIcon = document.createElement('button')
     saveFileIcon.innerText = '💾'
-
     saveFileIcon.addEventListener('click', () => this.saveFile() )
 
     toolbox.append(saveFileIcon)
@@ -31,7 +31,7 @@ export default class Composer extends CApp {
     window.prompt("Name your file").then(result => {
       console.log('returned:', result)
 
-      localStorage.setItem(`userFile-${result}`, this.window.bodyTag.innerHTML)
+      localStorage.setItem(`${OS_CONSTANS.USER_FILE_PREFIX}${result}`, this.window.bodyTag.innerHTML)
     })
   }
 }

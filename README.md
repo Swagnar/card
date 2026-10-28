@@ -146,25 +146,25 @@ Every app main class should be a child of `CApp` class, it handles all things re
 
 The event with the same name is dispatched every time you want to open your app, below you'll find how do we react to such an event. 
 
-### 2. Create app instance 👥
+### 2. Register your app 👥
 
-Go to `Yggdrasil.js` and create your app instance like this:
+Go to `Yggdrasil.js` and register your app like this:
 ```js
 // built-in apps
-export const CHOIR = new Choir()
-export const OS_TERMINAL = new OsTerminal()
+export const CHOIR = registerApp(Choir)
+export const OS_TERMINAL = registerApp(OsTerminal)
 
 // register your apps here
-export const MYAPP = new MyApp()
+export const MYAPP = registerApp(MyApp)
 ```
 
-### 3. Add event listener 👂🏻
+### 3. Event listener 👂🏻
 
-Still inside `Yggdrasil.js` create global event listener for running your app. If you've created your custom window functionality, here is where you invoke that special method:
+`registerApp()` creates the app instance shown on the desktop and adds a global event listener for your app event (`showMyApp`), that opens a new instance of your app every time the event is dispatched.
+
+If you've created your custom window functionality, you can still add your own listener inside `Yggdrasil.js` and invoke that special method there:
 ```js
 document.addEventListener('showMyApp', () => {
-  MYAPP.window.showWindow()
-  // or
   MYAPP.showMyApp()
 })
 ```

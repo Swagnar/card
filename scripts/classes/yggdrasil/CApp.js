@@ -13,20 +13,21 @@ export default class CApp {
   /** @type {OsWindow} */
   window
 
-
+  /**
+   * @param {string} name app name, shown below its desktop icon
+   * @param {string} command name of the document event that opens the app
+   */
   constructor(name, command) {
     this.name = name
-    this.desktopIcon = new OsDesktopIcon(name, 'app', command)
-    
     this.command = command
-    this.window = new OsWindow(this.name.toUpperCase(), this.name.toLowerCase(), false)
+    this.desktopIcon = new OsDesktopIcon(name, 'app', command)
+    this.window = new OsWindow(this.name.toUpperCase(), true)
     logWithColors("CApp {} successfully initialized", this.name)
 
-    this.desktopIcon.icon.addEventListener('dblclick', command => this.dispatchEvent(command))
+    this.desktopIcon.icon.addEventListener('dblclick', () => this.dispatchEvent())
   }
 
   dispatchEvent() {
-    const event = new CustomEvent(this.command)
-    document.dispatchEvent(event)
+    document.dispatchEvent(new CustomEvent(this.command))
   }
 }

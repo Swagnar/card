@@ -4,7 +4,7 @@ import { applyDithering } from "../../utils/dithering.js";
 import logWithColors from "../../utils/logs.js";
 
 function generateWindowId(appName) {
-  return `${appName.toLowerCase()}-${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 5)}`
+  return `${appName.toLowerCase()}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
 }
 
 export default class OsWindow {
@@ -14,14 +14,8 @@ export default class OsWindow {
   headerTag = document.createElement('header');
   headerWindowName = document.createElement('span')
   closeButton = document.createElement('button')
-  
+
   bodyTag = document.createElement('div');
-
-  /** @type {string} */
-  #windowName
-
-  /** @type {CFile[]} */
-  #files
 
   /**
    * @type {boolean}
@@ -31,84 +25,76 @@ export default class OsWindow {
   offsetX;
   offsetY;
 
-  
+
   /**
-   * 
+   *
    * @param {string} name Window name, shown in the header tag
+   * @param {boolean} [resize=false] whether the user can resize the window
    */
-  constructor(name, resize) {
+  constructor(name, resize = false) {
     this.name = name
-    this.#windowName = name
 
     this.container.classList.add('window');
-
     this.container.id = generateWindowId(name)
-
-    // if(id !== "") {
-    //   this.container.id = `window-${id}`;
-    // } else {
-    //   this.container.id = `window-${name}`
-    // }
 
     if(resize) {
       this.container.style.resize = 'both'
     }
 
-    this.headerWindowName.innerText = `[ ${this.#windowName} ]`
+    this.headerWindowName.innerText = `[ ${this.name} ]`
     this.closeButton.innerText = "X"
     this.closeButton.addEventListener('click', () => { this.closeWindow() })
     this.headerTag.append(this.headerWindowName, this.closeButton)
 
     this.bodyTag.classList.add('window-body')
 
-    this.container.append(this.headerTag)
-    this.container.append(this.bodyTag)
-    
+    this.container.append(this.headerTag, this.bodyTag)
+
     this.container.addEventListener('pointerdown', (ev) => this.focusWindow(ev) )
 
-    this.headerTag.addEventListener('pointerdown', (ev) => this.startMovingWindow(ev) ) 
+    this.headerTag.addEventListener('pointerdown', (ev) => this.startMovingWindow(ev) )
     document.addEventListener('pointermove', (ev) => this.moveWindow(ev) )
     document.addEventListener('pointerup',   (ev) => this.stopMovingWindow(ev))
 
-    
     logWithColors("Successfully created OsWindow with name {}", name)
   }
 
   /**
-   * @param {CDirectory} directory 
+   * Fills the window body with icons of all the files from the directory
+   * @param {CDirectory} directory
    */
   setAsDirectory(directory) {
     if(!directory || !(directory instanceof CDirectory)) {
       throw new TypeError("Directory passed to the window is undefined or not a CDirectory");
     }
-    this.#files = directory.files
+    const files = directory.files
     try {
       /**
        * @type {HTMLDivElement} `<div>` tag with `d-flex` and `flex-wrap` CSS classes
        */
       let layout = this.bodyTag.firstChild
-      
+
       if(!layout) {
         layout = document.createElement('div');
         layout.classList.add('d-flex', 'flex-wrap');
         this.bodyTag.append(layout);
       }
-      if(!this.#files || this.#files.length == 0) {
+      if(!files || files.length == 0) {
         throw new Error('Files array is empty or not set')
       }
-      
-      this.#files.forEach(file /** @type {CFile} */ => {
+
+      files.forEach(file /** @type {CFile} */ => {
         layout.append(file.fileContainer)
       })
-      logWithColors("Finished populating {} with {} files", this.#windowName, this.#files.length)
+      logWithColors("Finished populating {} with {} files", this.name, files.length)
     } catch(e) {
-      console.error(`Error while populating ${this.#windowName} window body:`, e)
+      console.error(`Error while populating ${this.name} window body:`, e)
     }
   }
 
   /**
    * This method appends passed HTML nodes into the OsWindow body
-   * @param {...HTMLElement} nodes 
+   * @param {...HTMLElement} nodes
    */
   appendToWindowBody(...nodes) {
     this.bodyTag.append(...nodes);
@@ -122,12 +108,12 @@ export default class OsWindow {
     this.bodyTag.classList.add(...classNames);
   }
   removeAllClassFromWindowBody() {
-    this.bodyTag.setAttribute('class', '') // lmao?
+    this.bodyTag.setAttribute('class', '')
   }
   removeClassFromWindowBody(token) {
     this.bodyTag.classList.remove(token);
   }
-  
+
   /**
    * Used by OsTerminal to set up the window to look like a terminal screen
    * TODO: move this to OsTerminal.js
@@ -151,7 +137,7 @@ export default class OsWindow {
    * Used when double clicked on a file to open it up
    * @param {string} fileContent A string containing all of the file contents. The string can have HTML tags inside since its injected into `innerHTML` of the window
    * @throws An error if there is a mismatch between the number of `<img>` tags and `<canvas>` tags
-   * 
+   *
    */
   setAsFileViewer(fileContent) {
     this.bodyTag.classList.add('file-viewer')
@@ -175,7 +161,6 @@ export default class OsWindow {
   }
 
   setAsGame(width, height) {
-
     const canvas = document.createElement('canvas')
     canvas.id = this.name
     canvas.width = width
@@ -187,15 +172,6 @@ export default class OsWindow {
 
   setAsBlank() {
     this.bodyTag.innerHTML = ''
-  }
-
-
-  /**
-   * Fill the first child of the #bodyTag with visual representation for each file
-   * found in the OsWindow.#files
-   */
-  populateBodyWithFiles() {
-    
   }
 
   focusWindow() {
@@ -214,13 +190,14 @@ export default class OsWindow {
       this.container.classList.add('hide')
     }, 50)
     this.container.remove()
-    const event = new CustomEvent('closeWindow')
-    document.dispatchEvent(event)
+    document.dispatchEvent(new CustomEvent('closeWindow'))
   }
+
   showWindow() {
     const desktop = document.getElementById('desktop')
     desktop.append(this.container)
     setTimeout(() => {
+      // Restart the opening animation
       this.container.style.transition = 'none'
       this.container.classList.remove('show')
       this.container.classList.add('hide')
@@ -238,7 +215,6 @@ export default class OsWindow {
 
   /**
    * @param {PointerEvent} e
-   * 
    */
   startMovingWindow(e) {
     this.isDragging = true
@@ -249,8 +225,9 @@ export default class OsWindow {
     // Globally disable text selection
     document.body.style.userSelect = 'none'
   }
+
   /**
-   * @param {PointerEvent} e 
+   * @param {PointerEvent} e
    */
   moveWindow(e) {
     if(!this.isDragging) return;

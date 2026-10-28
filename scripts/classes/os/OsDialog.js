@@ -1,6 +1,40 @@
 import { applyDithering } from "../../utils/dithering.js";
 import Os from "./Os.js";
 
+/**
+ * @returns {string} desktop size in pixels, e.g. `800px X 600px`
+ */
+function getDesktopSize() {
+  const bounds = document.getElementById('desktop').getBoundingClientRect()
+  return bounds.width + "px X " + bounds.height + "px"
+}
+
+/**
+ * @returns {string} name of the OS the browser is running on
+ */
+function getHostOsName() {
+  const platform = navigator.platform
+
+  if (platform.includes('Win')) return 'Windows'
+  if (platform.includes('Mac')) return 'Mac OS'
+  if (platform.includes('Linux')) return 'Linux'
+  if (platform.includes('Iphone') || platform.includes('ipad') || platform.includes('ipod')) return 'iOS'
+  if (platform.includes('Android')) return 'Android'
+  return 'Unknown'
+}
+
+/**
+ * Replaces every `<img>` inside the container with its dithered `<canvas>` copy
+ * @param {HTMLElement} container
+ */
+function ditherImages(container) {
+  for (const image of container.querySelectorAll('img')) {
+    const canvas = document.createElement('canvas');
+    image.after(canvas);
+    applyDithering(image, canvas);
+  }
+}
+
 export default class OsDialog {
 
   DIALOG_CONTENTS = {
@@ -20,22 +54,12 @@ export default class OsDialog {
     properties: `
       <fieldset>
         <legend>OS_OS</legend>
-        <p><strong>Screen size</strong>: ${(() => {
-          let bounds = document.getElementById('desktop').getBoundingClientRect()
-          let clientWidth = bounds.width
-          let clientHeight = bounds.height
-          return clientWidth + "px X " + clientHeight + "px"
-        })()}</p>
+        <p><strong>Screen size</strong>: ${getDesktopSize()}</p>
         <p><strong>Color depth</strong>: 8-bit</p>
       </fieldset>
       <fieldset>
         <legend>Impostor host</legend>
-        <p><strong>OS</strong>: ${navigator.platform.includes('Win') ? 'Windows' :
-        navigator.platform.includes('Mac') ? 'Mac OS' :
-        navigator.platform.includes('Linux') ? 'Linux' :
-        navigator.platform.includes('Iphone') || navigator.platform.includes('ipad') || navigator.platform.includes('ipod') ? 'iOS' :
-        navigator.platform.includes('Android') ? 'Android' :
-        'Unknown'}</p>
+        <p><strong>OS</strong>: ${getHostOsName()}</p>
         <p><strong>AGENT</strong>: ${navigator.userAgent}</p>
         <p><strong>AUTOMATA</strong>: ${navigator.webdriver}</p>
         <p><strong>AVAIABLE CORES</strong>: ${navigator.hardwareConcurrency}</p>
@@ -52,8 +76,8 @@ export default class OsDialog {
   static getDialogTag() { return document.getElementById('dialog'); }
   static getDialogBodyTag() { return document.getElementById('dialog-body'); }
 
-  static toggleDialog() {
-    const dialog  = this.getDialogTag()
+  static openDialog() {
+    const dialog = this.getDialogTag()
     if (!dialog.classList.contains('dialog-open')) {
       dialog.classList.remove('dialog-hidden');
       dialog.classList.add('dialog-open');
@@ -63,48 +87,29 @@ export default class OsDialog {
   static showDialogViaHTML(nodes, cssClass) {
     const dialogBody = this.getDialogBodyTag()
 
-    this.toggleDialog()
+    this.openDialog()
 
     dialogBody.append(...nodes)
     dialogBody.classList.add(cssClass)
 
-    let images = dialogBody.querySelectorAll('img');
-    if (images.length > 0) {
-      for (let image of images) {
-        let canvas = document.createElement('canvas');
-        image.after(canvas);
-        applyDithering(image, canvas);
-      }
-    }
+    ditherImages(dialogBody)
   }
 
   static showDialogViaString(content) {
     const dialogBody = this.getDialogBodyTag()
 
-    this.toggleDialog()
+    this.openDialog()
 
     dialogBody.innerHTML = content
 
-    let images = dialogBody.querySelectorAll('img');
-    if (images.length > 0) {
-      for (let image of images) {
-        let canvas = document.createElement('canvas');
-        image.after(canvas);
-        applyDithering(image, canvas);
-      }
-    }
+    ditherImages(dialogBody)
   }
 
   static closeDialog() {
     const dialog = this.getDialogTag()
-    const dialogBody = this.getDialogBodyTag()
     dialog.classList.remove('dialog-open')
     dialog.classList.add('dialog-hidden')
-    dialogBody.innerHTML = ''
-    document.title = 'OS_OS'
+    this.getDialogBodyTag().innerHTML = ''
     Os.setDefaultDocumentTitle()
   }
-
-
-  
 }
