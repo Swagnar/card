@@ -8,9 +8,6 @@ function createButton(text, id, onClick) {
   const button = document.createElement('button')
   button.textContent = text
   button.id = id
-  button.style.padding = '4px 12px'
-  button.style.border = '1px solid black'
-  button.style.cursor = 'pointer'
   button.onclick = onClick
   return button
 }
@@ -44,9 +41,7 @@ export default function OsPrompt(msg, defaultValue = '') {
     }
 
     const buttons = document.createElement('div')
-    buttons.style.display = 'flex'
-    buttons.style.justifyContent = 'flex-end'
-    buttons.style.gap = '6px'
+    buttons.classList.add('prompt-buttons')
     buttons.append(
       createButton('Cancel', 'prompt-cancel-btn', () => close(null)),
       createButton('OK', 'prompt-ok-btn', () => close(input.value)),

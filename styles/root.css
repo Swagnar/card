@@ -228,7 +228,8 @@ input:focus {
   background-color: #fff;
   color: #000;
   width: 10rem;
-  z-index: 3;
+  /* above focused windows (z-index: 3), below the BIOS screen */
+  z-index: 8;
   border: 1px solid #000;
   border-radius: 0.2rem;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
@@ -331,6 +332,38 @@ input:focus {
   align-items: center;
   text-align: center;
   gap: 10px;
+
+  .alert-text { font-size: 14px; }
+
+  button {
+    padding: 4px 12px;
+    border: 1px solid black;
+    background: white;
+    cursor: pointer;
+  }
+}
+
+#alert-body.alert-danger {
+  background: #fff0f0;
+  animation: alert-danger-blink 500ms 6;
+
+  .alert-text { color: #b00000; }
+}
+@keyframes alert-danger-blink {
+  50% { background-color: #ff0000; }
+}
+
+#alert-body.alert-warning {
+  background: #fffbe0;
+
+  .alert-text { color: #8a6d00; }
+}
+
+#alert-body.alert-easter-egg {
+  background: yellow;
+  border: 3px dotted red;
+
+  .alert-text { font-size: 20px; }
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -367,6 +400,18 @@ input:focus {
     border: 1px solid black;
     font-family: monospace;
     font-size: 14px;
+  }
+
+  .prompt-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  button {
+    padding: 4px 12px;
+    border: 1px solid black;
+    cursor: pointer;
   }
 }
 

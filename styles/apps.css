@@ -113,6 +113,18 @@
   & span:last-child {
     justify-self: end;
   }
+
+  &.playable {
+    cursor: pointer;
+  }
+  &.playable:hover,
+  &.playing {
+    font-weight: bold;
+  }
+  &.unavailable {
+    color: gray;
+    text-decoration: line-through;
+  }
 }
 
 .choir-volume-wrapper {

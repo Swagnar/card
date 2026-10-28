@@ -1,7 +1,7 @@
 import { YGGDRASIL } from "./classes/yggdrasil/Yggdrasil.js"
 import CDirectory from "./classes/yggdrasil/CDirectory.js"
 import CArchive from "./classes/yggdrasil/CArchive.js"
-import CApp from "./classes/yggdrasil/CApp.js"
+import CAppShortcut from "./classes/yggdrasil/CAppShortcut.js"
 
 import logWithColors from "./utils/logs.js"
 import sleep from "./utils/sleep.js"
@@ -127,7 +127,7 @@ function bootOS() {
 function getOsTypeName(element) {
   if (element instanceof CDirectory) return 'CDirectory'
   if (element instanceof CArchive) return 'CArchive'
-  if (element instanceof CApp) return 'CApp'
+  if (element instanceof CAppShortcut) return 'CApp'
   return null
 }
 
@@ -135,14 +135,13 @@ function loadDesktop() {
   const navbar = document.querySelector('.navbar')
   let appIconRight = APP_ICONS_START_RIGHT
 
-  console.log(YGGDRASIL)
   YGGDRASIL.forEach(element => {
     const typeName = getOsTypeName(element)
     if (!typeName) {
       throw new TypeError(`Yggdrasil element does not have OS recognizable type, got:`, element)
     }
 
-    if (element instanceof CApp) {
+    if (element instanceof CAppShortcut) {
       element.desktopIcon.container.style.right = `${appIconRight}px`
       appIconRight += APP_ICON_OFFSET
     }

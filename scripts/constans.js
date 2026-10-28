@@ -30,5 +30,6 @@ export const OS_CONSTANS = {
   },
 
 
-  DEBUG: true
+  // logs extra info into the console, see utils/logs.js
+  DEBUG: false
 }

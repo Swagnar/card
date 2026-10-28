@@ -5,6 +5,8 @@ import Composer from "../Composer/Composer.js";
 import Choir from "../Choir/Choir.js";
 import OsTerminal from "../os/OsTerminal.js";
 import Snake from "../Snake/Snake.js";
+import CAppShortcut from "./CAppShortcut.js";
+import sanitizeHTML from "../../utils/sanitize.js";
 import { OS_CONSTANS } from "../../constans.js";
 
 const DND = new CDirectory("D&D");
@@ -48,18 +50,12 @@ I love astronomy. In the future I want to buy a telescope and look into the void
 
 
 /**
- * Creates the app instance shown on the desktop and opens a new instance of the app
- * every time its event is dispatched
- * @template {CApp} T
- * @param {new () => T} AppClass class extending CApp
- * @returns {T} desktop instance of the app
+ * Adds the app icon to the desktop. A new instance of the app is opened every time its event is dispatched
+ * @param {typeof import("./CApp.js").default} AppClass class extending CApp
+ * @returns {CAppShortcut} desktop shortcut of the app
  */
 function registerApp(AppClass) {
-  const app = new AppClass()
-  document.addEventListener(app.command, () => {
-    new AppClass().window.showWindow()
-  })
-  return app
+  return new CAppShortcut(AppClass)
 }
 
 // built-in apps
@@ -83,11 +79,19 @@ function loadUserFiles() {
 
     if(key.startsWith(OS_CONSTANS.USER_FILE_PREFIX)) {
       const fileName = key.slice(OS_CONSTANS.USER_FILE_PREFIX.length)
-      userFiles.addFile(new CFile(fileName, 'txt', localStorage.getItem(key)))
+      userFiles.addFile(new CFile(fileName, 'txt', sanitizeHTML(localStorage.getItem(key))))
     }
   }
   return userFiles
 }
+
+const USER_FILES = loadUserFiles()
+
+// files saved in Composer show up without reloading the page, saving under the same name overwrites the file
+document.addEventListener('userFileSaved', ({ detail }) => {
+  USER_FILES.removeFile(detail.name)
+  USER_FILES.addFile(new CFile(detail.name, 'txt', detail.content))
+})
 
 // Just for looks
 //
@@ -101,4 +105,4 @@ export const osFiles = [
   CHOIR, COMPOSER, SNAKE, OS_TERMINAL
 ];
 
-export const YGGDRASIL = osFiles.concat(loadUserFiles())
+export const YGGDRASIL = osFiles.concat(USER_FILES)

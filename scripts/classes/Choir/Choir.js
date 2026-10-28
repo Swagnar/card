@@ -32,22 +32,33 @@ function formatDuration(duration) {
   return `${minutes}:${secs.toString().padStart(2, '0')}`
 }
 
+/**
+ * @typedef {Object} PlaylistEntry
+ * @property {CMusicTrack} track
+ * @property {HTMLDivElement} element track row in the tracks list
+ * @property {HTMLAudioElement} audio
+ * @property {MediaElementAudioSourceNode|null} source created when the track is played for the first time
+ */
+
 export default class Choir extends CApp {
 
-  /** @type {CMusicTrack} */
-  currentTrack;
-
-  /** @type {HTMLAudioElement} */
-  #currentTrackAudio
-
-  /** @type {GainNode} */
-  #gainNode
+  static appName = 'Choir'
+  static command = 'showChoir'
 
   /** @type {CMusicAlbum} */
   currentAlbum;
 
+  /** @type {PlaylistEntry[]} playable tracks of the current album, in the album order */
+  #playlist = []
+
+  /** @type {number} index of the current track in the playlist, -1 until a track is played */
+  #currentIndex = -1
+
   /** @type {HTMLCanvasElement} */
   #visualiserCanvas = document.createElement('canvas')
+
+  /** @type {function(): void|null} stops the visualizer, `null` until it's started with the first track */
+  #stopVisualizer = null
 
   infoContainer = document.createElement('div')
 
@@ -60,17 +71,33 @@ export default class Choir extends CApp {
 
   /** @type {AudioContext} */
   #audioCtx = new window.AudioContext()
-  #analyser;
+  #analyser = this.#audioCtx.createAnalyser()
+  #gainNode = this.#audioCtx.createGain()
 
   constructor() {
-    super('Choir', 'showChoir')
+    super()
+    this.#gainNode.connect(this.#audioCtx.destination)
+    this.setVolume(DEFAULT_VOLUME)
+
     this.window.addClassToWindowBody('choir-body', 'choir-selection-layout');
     this.initElements();
     this.createAlbumSelectionScreen();
 
-    document.addEventListener('closeWindow', () => {
-      this.#currentTrackAudio?.pause()
-    })
+    this.window.container.addEventListener('closeWindow', () => this.close())
+  }
+
+  /** @returns {PlaylistEntry|undefined} */
+  get #currentEntry() {
+    return this.#playlist[this.#currentIndex]
+  }
+
+  /**
+   * Stops the music and releases the audio resources, once the window is closed
+   */
+  close() {
+    this.#currentEntry?.audio.pause()
+    this.#stopVisualizer?.()
+    this.#audioCtx.close()
   }
 
   initElements() {
@@ -96,25 +123,28 @@ export default class Choir extends CApp {
   #createPlaybackButtons() {
     this.#nextTrackButton.innerHTML = UI_SYMBOLS.nextSong;
     this.#nextTrackButton.disabled = true;
+    this.#nextTrackButton.addEventListener('click', () => this.playTrack(this.#currentIndex + 1))
 
     this.#prevTrackButton.innerHTML = UI_SYMBOLS.prevSong;
     this.#prevTrackButton.disabled = true;
+    this.#prevTrackButton.addEventListener('click', () => this.playTrack(this.#currentIndex - 1))
 
     this.#pauseUnpauseTrackButton.innerHTML = UI_SYMBOLS.unpause;
     this.#pauseUnpauseTrackButton.dataset.playing = 'false'
     this.#pauseUnpauseTrackButton.role = 'switch'
 
     this.#pauseUnpauseTrackButton.addEventListener('click', () => {
-      if(this.#audioCtx.state === 'suspended') {
-        this.#audioCtx.resume()
-      }
+      const audio = this.#currentEntry?.audio
 
-      if(this.#pauseUnpauseTrackButton.dataset.playing === 'false') {
-        this.unpauseAudio()
-      } else if(this.#pauseUnpauseTrackButton.dataset.playing === 'true') {
-        this.#currentTrackAudio.pause();
+      // nothing to play until a track is selected
+      if(!audio) return
+
+      if(audio.paused) {
+        this.#resumeAudioContext()
+        audio.play()
+      } else {
+        audio.pause()
       }
-      this.#syncPlayButton()
     })
 
     return [this.#prevTrackButton, this.#pauseUnpauseTrackButton, this.#nextTrackButton]
@@ -128,6 +158,7 @@ export default class Choir extends CApp {
     this.#soundRangeInput.step = "0.1"
     this.#soundRangeInput.min = 0
     this.#soundRangeInput.max = 1
+    this.#soundRangeInput.value = DEFAULT_VOLUME
     this.#soundRangeInput.setAttribute('orient', 'vertical')
     this.#soundRangeInput.classList.add("choir-volume-range")
 
@@ -155,13 +186,23 @@ export default class Choir extends CApp {
   }
 
   /**
-   * Updates the play/pause button to match the current audio state
+   * Updates the playback buttons to match the current track and its audio state
    */
-  #syncPlayButton() {
-    const paused = this.#currentTrackAudio.paused
+  #syncButtons() {
+    const audio = this.#currentEntry?.audio
+    const playing = Boolean(audio && !audio.paused)
 
-    this.#pauseUnpauseTrackButton.innerHTML = paused ? UI_SYMBOLS.unpause : UI_SYMBOLS.pause
-    this.#pauseUnpauseTrackButton.dataset.playing = paused ? 'false' : 'true'
+    this.#pauseUnpauseTrackButton.innerHTML = playing ? UI_SYMBOLS.pause : UI_SYMBOLS.unpause
+    this.#pauseUnpauseTrackButton.dataset.playing = playing ? 'true' : 'false'
+
+    this.#prevTrackButton.disabled = this.#currentIndex <= 0
+    this.#nextTrackButton.disabled = this.#currentIndex < 0 || this.#currentIndex >= this.#playlist.length - 1
+  }
+
+  #resumeAudioContext() {
+    if(this.#audioCtx.state === 'suspended') {
+      this.#audioCtx.resume()
+    }
   }
 
   async createAlbumSelectionScreen() {
@@ -188,7 +229,7 @@ export default class Choir extends CApp {
     try {
       this.currentAlbum = album;
 
-      document.querySelectorAll("div[class='choir-album-cover']").forEach(cover => cover.remove())
+      this.window.bodyTag.querySelectorAll('.choir-album-cover').forEach(cover => cover.remove())
 
       this.window.removeClassFromWindowBody('choir-selection-layout');
       this.window.addClassToWindowBody('choir-playback-layout');
@@ -211,11 +252,13 @@ export default class Choir extends CApp {
         throw new TypeError('Error while rendering tracks, got:', track);
       }
 
-      const trackContainer = this.createTrackElement(track)
+      // most of the tracks have only metadata and can't be played
+      const audio = track.data ? createTrackAudio(track) : null
+      const trackContainer = this.createTrackElement(track, audio)
 
-      trackContainer.addEventListener('click', () => {
-        this.handlePlayAudio(track, trackContainer)
-      })
+      if(audio) {
+        this.#addToPlaylist({ track, element: trackContainer, audio, source: null })
+      }
 
       tracksContainer.append(trackContainer);
     })
@@ -234,43 +277,53 @@ export default class Choir extends CApp {
     this.window.appendToWindowBody(this.#visualiserCanvas, tracksContainer, this.infoContainer);
   }
 
+  /**
+   * @param {PlaylistEntry} entry
+   */
+  #addToPlaylist(entry) {
+    const index = this.#playlist.push(entry) - 1
+
+    entry.element.addEventListener('click', () => this.playTrack(index))
+
+    entry.audio.addEventListener('play', () => this.#syncButtons())
+    entry.audio.addEventListener('pause', () => this.#syncButtons())
+    entry.audio.addEventListener('ended', () => {
+      if(index < this.#playlist.length - 1) {
+        this.playTrack(index + 1)
+      }
+    })
+  }
 
   /**
-   * Starts playing a new song when selected from numbered list of all music tracks in an album
-   * @param {CMusicTrack} track
-   * @param {HTMLDivElement} trackContainer
-   * @returns {undefined} returns early if CMusicTrack data is not defined, this is expected for most tracks
+   * Starts playing the track from the beginning, stops the previous one
+   * @param {number} index index of the track in the playlist, does nothing if there is no such track
    */
-  handlePlayAudio(track, trackContainer) {
-    if(!track || !(track instanceof CMusicTrack)) {
-      throw new TypeError('Error while playing audio track, got:', track)
-    }
-    if(!track.data) {
-      return
-    }
-    if(this.#currentTrackAudio) {
-      this.#currentTrackAudio.pause()
-      this.#currentTrackAudio = null
+  playTrack(index) {
+    const entry = this.#playlist[index]
+    if(!entry) return
+
+    const previous = this.#currentEntry
+    if(previous) {
+      previous.audio.pause()
+      previous.element.classList.remove('playing')
     }
 
-    // TODO: do it in another way
-    // clear all bolded tracks
-    document.querySelectorAll('.choir-playback-track-container').forEach(el => el.style.fontWeight = "")
+    // a media element can be connected to the audio graph only once
+    if(!entry.source) {
+      entry.source = this.#audioCtx.createMediaElementSource(entry.audio)
+      entry.source.connect(this.#gainNode)
+      entry.source.connect(this.#analyser)
+    }
 
-    this.#analyser = this.#audioCtx.createAnalyser();
+    this.#currentIndex = index
+    entry.element.classList.add('playing')
 
-    this.#currentTrackAudio = createTrackAudio(track)
+    this.#resumeAudioContext()
+    entry.audio.currentTime = 0
+    entry.audio.play()
 
-    const trackSrc = this.#audioCtx.createMediaElementSource(this.#currentTrackAudio)
-    this.#gainNode = this.#audioCtx.createGain()
-
-    trackSrc.connect(this.#gainNode).connect(this.#audioCtx.destination)
-    trackSrc.connect(this.#analyser)
-
-    this.setVolume(DEFAULT_VOLUME)
-    this.unpauseAudio()
-    startVisualizer(this.#visualiserCanvas, this.#analyser)
-    trackContainer.style.fontWeight = "bold"
+    this.#stopVisualizer ??= startVisualizer(this.#visualiserCanvas, this.#analyser)
+    this.#syncButtons()
   }
 
   /**
@@ -303,9 +356,10 @@ export default class Choir extends CApp {
 
   /**
    * @param {CMusicTrack} track
+   * @param {HTMLAudioElement|null} audio audio of the track, `null` if the track can't be played
    * @returns {HTMLDivElement} track row with its number, name and duration
    */
-  createTrackElement(track) {
+  createTrackElement(track, audio) {
     const trackContainer = document.createElement('div');
     trackContainer.classList.add('choir-playback-track-container');
 
@@ -316,25 +370,22 @@ export default class Choir extends CApp {
     trackIdElement.innerHTML = `${track.number}`;
     trackNameElement.innerHTML = track.name;
 
-    if(track.data) {
+    if(audio) {
+      trackContainer.classList.add('playable')
+
       trackContainer.addEventListener('mouseenter', () => {
         trackIdElement.innerHTML = UI_SYMBOLS.unpause;
-        trackContainer.style.fontWeight = 'bold'
-        trackContainer.style.cursor = 'pointer'
       })
 
       trackContainer.addEventListener('mouseleave', () => {
         trackIdElement.innerHTML = track.number;
-        trackContainer.style.fontWeight = 'normal'
       })
 
-      const audio = createTrackAudio(track)
       audio.addEventListener('loadedmetadata', () => {
         trackDuration.innerHTML = formatDuration(audio.duration)
       })
     } else {
-      trackContainer.style.color = 'gray'
-      trackContainer.style.textDecoration = 'line-through'
+      trackContainer.classList.add('unavailable')
     }
 
     trackContainer.append(trackIdElement, trackNameElement, trackDuration);
@@ -343,18 +394,6 @@ export default class Choir extends CApp {
   }
 
   setVolume(volume) {
-    if (this.#gainNode) {
-      this.#gainNode.gain.value = Math.max(0, Math.min(1, volume)); // Clamp value between 0 and 1
-    } else {
-      console.warn('Gain node is not initialized.');
-    }
+    this.#gainNode.gain.value = Math.max(0, Math.min(1, volume)); // Clamp value between 0 and 1
   }
-
-  unpauseAudio() {
-    this.#currentTrackAudio.play()
-    this.#syncPlayButton()
-  }
-
-  showPlayer() { this.window.showWindow() }
-
 }

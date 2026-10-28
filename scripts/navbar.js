@@ -1,4 +1,5 @@
 import OsDialog from "./classes/os/OsDialog.js"
+import { COMPOSER } from "./classes/yggdrasil/Yggdrasil.js"
 
 /**
  * Sets up the navbar dropdowns - clicking a button toggles its list and closes all the other ones
@@ -27,7 +28,20 @@ function initDropdowns() {
 }
 
 /**
- * Sets up actions of the items in the OS_OS logo submenu
+ * Copies the link to OS_OS into the clipboard
+ */
+async function shareLink() {
+  try {
+    await navigator.clipboard.writeText(location.href)
+    window.alert('Link to OS_OS copied to the clipboard')
+  } catch(e) {
+    console.error(e)
+    window.alert(`Could not copy the link, share it by hand: ${location.href}`, 'warning')
+  }
+}
+
+/**
+ * Sets up actions of the items in the navbar submenus
  * @param {OsDialog} osDialog
  */
 function initSubmenuItems(osDialog) {
@@ -38,9 +52,13 @@ function initSubmenuItems(osDialog) {
     'navbar-submenu-item-battery': showDialog('battery'),
     'navbar-submenu-item-properties': showDialog('properties'),
     'navbar-submenu-item-restart': () => location.reload(),
+    'navbar-submenu-item-new': () => COMPOSER.dispatchEvent(),
+    'navbar-submenu-item-share': () => shareLink(),
     'navbar-submenu-item-toggle-fullscreen': () => {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen()
+      } else {
+        document.exitFullscreen()
       }
     },
   }

@@ -1,7 +1,9 @@
+const ALERT_TYPES = ['default', 'danger', 'warning', 'easter-egg']
+
 /**
  * 
  * @param {string} msg Alert message to display
- * @param {string} [type='default'] Optional type of alert styling to show the message with. Avaiable options are `"default"`, `"danger"` and `"info"`. Defaults to `"default"`
+ * @param {string} [type='default'] Optional type of alert styling to show the message with. Avaiable options are `"default"`, `"danger"`, `"warning"` and `"easter-egg"`. Defaults to `"default"`
  * @returns Promise that resolves once OK button is clicked and alert window closed. 
  */
 export default function OsAlert(msg, type = 'default') {
@@ -12,44 +14,20 @@ export default function OsAlert(msg, type = 'default') {
     const box = document.createElement('div')
     box.id = 'alert-body'
 
+    // styles of each type are in root.css, unknown types are shown as default
+    if (type !== 'default' && ALERT_TYPES.includes(type)) {
+      box.classList.add(`alert-${type}`)
+    }
+
     const text = document.createElement('div')
-    text.textContent = msg
-    text.style.fontSize = '14px'
+    text.classList.add('alert-text')
+    text.textContent = type === 'easter-egg' ? `🧀 ${msg} 🧀` : msg
 
     const btn = document.createElement('button')
-    btn.textContent = 'OK'
-    btn.style.padding = '4px 12px'
-    btn.style.border = '1px solid black'
-    btn.style.background = 'white'
-    btn.style.cursor = 'pointer'
+    btn.textContent = type === 'easter-egg' ? 'miau?' : 'OK'
     btn.onclick = () => {
       document.body.removeChild(overlay)
       resolve()
-    }
-
-    switch (type) {
-      case 'danger':
-        box.style.background = '#fff0f0'
-        text.style.color = '#b00000'
-        box.animate([
-          { backgroundColor: '#fff0f0' },
-          { backgroundColor: '#ff0000' },
-          { backgroundColor: '#fff0f0' }
-        ], {
-          duration: 500,
-          iterations: 6
-        })
-        break
-      case 'easter-egg':
-        text.textContent = '🧀 ' + msg + ' 🧀'
-        text.style.fontSize = '20px'
-        box.style.background = 'yellow'
-        box.style.border = '3px dotted red'
-        btn.textContent = 'miau?'
-        break
-      case 'default':
-      default:
-        break
     }
 
     box.appendChild(text)

@@ -25,6 +25,10 @@ export default class OsWindow {
   offsetX;
   offsetY;
 
+  // bound once, so they can be removed from the document after moving the window
+  #onPointerMove = (ev) => this.moveWindow(ev)
+  #onPointerUp = () => this.stopMovingWindow()
+
 
   /**
    *
@@ -53,8 +57,6 @@ export default class OsWindow {
     this.container.addEventListener('pointerdown', (ev) => this.focusWindow(ev) )
 
     this.headerTag.addEventListener('pointerdown', (ev) => this.startMovingWindow(ev) )
-    document.addEventListener('pointermove', (ev) => this.moveWindow(ev) )
-    document.addEventListener('pointerup',   (ev) => this.stopMovingWindow(ev))
 
     logWithColors("Successfully created OsWindow with name {}", name)
   }
@@ -79,8 +81,8 @@ export default class OsWindow {
         layout.classList.add('d-flex', 'flex-wrap');
         this.bodyTag.append(layout);
       }
-      if(!files || files.length == 0) {
-        throw new Error('Files array is empty or not set')
+      if(!files) {
+        throw new Error('Files array is not set')
       }
 
       files.forEach(file /** @type {CFile} */ => {
@@ -184,13 +186,14 @@ export default class OsWindow {
   //       Opening and Closing the Window        //
   //---------------------------------------------*/
 
+  /**
+   * Removes the window from the desktop and dispatches `closeWindow` event on the window container
+   */
   closeWindow() {
-    setTimeout(() => {
-      this.container.classList.remove('show')
-      this.container.classList.add('hide')
-    }, 50)
+    this.container.classList.remove('show')
+    this.container.classList.add('hide')
     this.container.remove()
-    document.dispatchEvent(new CustomEvent('closeWindow'))
+    this.container.dispatchEvent(new CustomEvent('closeWindow'))
   }
 
   showWindow() {
@@ -224,6 +227,9 @@ export default class OsWindow {
 
     // Globally disable text selection
     document.body.style.userSelect = 'none'
+
+    document.addEventListener('pointermove', this.#onPointerMove)
+    document.addEventListener('pointerup', this.#onPointerUp)
   }
 
   /**
@@ -236,6 +242,9 @@ export default class OsWindow {
   }
 
   stopMovingWindow() {
+    document.removeEventListener('pointermove', this.#onPointerMove)
+    document.removeEventListener('pointerup', this.#onPointerUp)
+
     this.isDragging = false;
     this.headerTag.style.cursor = 'grab'
 

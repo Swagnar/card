@@ -109,6 +109,19 @@ export class OsSettingsControl {
     return this.type === OsSettingsControl.CONTROL_TYPES.TOGGLE ? this.inputElement.checked : this.inputElement.value
   }
 
+  /**
+   * Sets the HTML input to the passed value
+   * @param {boolean|string} value
+   */
+  writeInputValue(value) {
+    if (this.type === OsSettingsControl.CONTROL_TYPES.TOGGLE) {
+      this.inputElement.checked = Boolean(value)
+    } else {
+      this.inputElement.value = value
+    }
+    this.updateValue()
+  }
+
   updateValue() {
     this.value = this.readInputValue()
   }
@@ -125,7 +138,7 @@ export default class OsSettings {
   darkMode = new OsSettingsControl(
     'dark-mode', OsSettingsControl.CONTROL_TYPES.TOGGLE,
     OsSettingsControl.DEFAULT_VALUES.NULL, OsSettingsControl.DEFAULT_VALUES.TOGGLE_OFF,
-    "Dark mode", (control) => setDarkMode(control.inputElement.checked)
+    "Dark mode", (control) => this.setDarkMode(control.inputElement.checked)
   )
   resolution = new OsSettingsControl(
     'resolution', OsSettingsControl.CONTROL_TYPES.SELECT,
@@ -137,16 +150,16 @@ export default class OsSettings {
   resetSettingsButton = document.createElement('button')
 
   controls = [this.flickering, this.darkMode, this.resolution]
+
+  /** @type {Object<string, *>} currently applied settings, keyed by control names */
   settings;
 
   constructor() {
-    // this.loadSettings()
     this.saveSettingsButton.innerText = "SAVE"
     this.saveSettingsButton.onclick = () => this.saveSettingsForm()
 
     this.resetSettingsButton.innerText = "RESET"
-    this.resetSettingsButton.onclick = () => this.setDefaultValues()
-    console.log('loaded settings:', this.settings)
+    this.resetSettingsButton.onclick = () => this.applySettings(this.getDefaultValues())
   }
 
   addControl(c) {
@@ -161,8 +174,6 @@ export default class OsSettings {
     const values = {}
     this.controls.forEach((c) => values[c.name] = c.readInputValue())
 
-    console.log('values from form: ', values)
-
     this.saveSettingsInLocalStorage(values)
     this.applySettings(values)
   }
@@ -173,62 +184,77 @@ export default class OsSettings {
     OsDialog.showDialogViaHTML(htmlTags, 'settings-body')
   }
 
+  /**
+   * Applies the settings to the desktop and fills the settings form with them
+   * @param {Object<string, *>} settings values keyed by control names
+   */
   applySettings(settings) {
     const desktop = document.getElementById('desktop')
 
-    desktop.className = ''
+    desktop.classList.toggle(FLICKER_CSS_CLASS, Boolean(settings[this.flickering.name]))
 
-    if (settings.flickering) {
-      desktop.classList.add(FLICKER_CSS_CLASS)
-    }
-    if (settings.darkMode) {
-      setDarkMode(settings.darkMode)
-    }
+    desktop.classList.remove(...this.resolution.options.map(getResolutionCssClass))
+    desktop.classList.add(getResolutionCssClass(settings[this.resolution.name]))
 
-    desktop.classList.add(`res${settings.resolution}`)
+    this.setDarkMode(settings[this.darkMode.name])
 
-    this.flickering.inputElement.checked = settings.flickering
-    this.darkMode.inputElement.checked = settings.darkMode
-    this.resolution.inputElement.value = `${settings.resolution}`
+    this.controls.forEach((c) => {
+      if (c.name in settings) c.writeInputValue(settings[c.name])
+    })
+    this.settings = settings
   }
 
-  setDefaultValues() {
-    this.controls.forEach((c) => c.value = c.defaultValue)
+  /**
+   * @returns {Object<string, *>} default values of all the controls, keyed by control names
+   */
+  getDefaultValues() {
+    const values = {}
+    this.controls.forEach((c) => values[c.name] = c.defaultValue)
+    return values
   }
 
+  /**
+   * Applies the settings saved in the `localStorage`, missing values are replaced with the defaults
+   */
   loadSettings() {
-    const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY)
-    this.settings = null
+    let savedSettings = null
 
-    if(savedSettings) {
-      try {
-        this.settings = JSON.parse(savedSettings)
-      } catch(e) {
-        console.error(e)
-      }
+    try {
+      savedSettings = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY))
+    } catch(e) {
+      console.error(e)
     }
 
-    if(!this.settings || typeof this.settings !== 'object') {
-      this.setDefaultValues()
+    if (!savedSettings || typeof savedSettings !== 'object') {
+      savedSettings = {}
     }
 
-    this.applySettings(this.settings)
+    this.applySettings({ ...this.getDefaultValues(), ...savedSettings })
+  }
+
+  /**
+   * Adds or removes the dark mode CSS class on all of the themed OS elements
+   * @param {boolean} enabled
+   */
+  setDarkMode(enabled) {
+    const elements = [
+      document.getElementById('desktop'),
+      document.querySelector('.navbar'),
+      ...document.querySelectorAll('.drop'),
+      ...document.querySelectorAll('.dialog'),
+      document.getElementById('context-menu'),
+      // toggles are not in the document until the settings dialog is opened
+      ...this.controls.map((c) => c.inputWrapper).filter(Boolean),
+    ]
+
+    elements.forEach(el => el?.classList.toggle(DARK_MODE_CSS_CLASS, Boolean(enabled)))
   }
 }
 
 /**
- * Adds or removes the dark mode CSS class on all of the themed OS elements
- * @param {boolean} enabled
+ * @param {string} resolution e.g. `800x600`
+ * @returns {string} CSS class that sets the desktop size
  */
-function setDarkMode(enabled) {
-  const elements = [
-    document.getElementById('desktop'),
-    document.querySelector('.navbar'),
-    ...document.querySelectorAll('.drop'),
-    ...document.querySelectorAll('.dialog'),
-    document.getElementById('context-menu'),
-    ...document.querySelectorAll('.checkbox-wrapper'),
-  ]
-
-  elements.forEach(el => el.classList.toggle(DARK_MODE_CSS_CLASS, Boolean(enabled)))
+function getResolutionCssClass(resolution) {
+  return `res${resolution}`
 }

@@ -51,7 +51,7 @@ export default class OsDialog {
       <p>Battery power provided by YEG Inc. YEG Inc. is not liable for any burns, explosions or airborne carcinogens caused by this battery pack. Battery pack is single (1) use. <u>Do not</u> attempt to recycle</p>
       <div class='dialog-img-wrapper'><img src="static/battery2.jpg" style="display: none;"></div>
     `,
-    properties: `
+    get properties() { return `
       <fieldset>
         <legend>OS_OS</legend>
         <p><strong>Screen size</strong>: ${getDesktopSize()}</p>
@@ -64,7 +64,7 @@ export default class OsDialog {
         <p><strong>AUTOMATA</strong>: ${navigator.webdriver}</p>
         <p><strong>AVAIABLE CORES</strong>: ${navigator.hardwareConcurrency}</p>
       </fieldset>
-    `,
+    ` },
     archive1: `
       <s>File corrupted! Please download again.</s><br>
       I love astronomy. In the future I want to buy a telescope and look into the void. I hope to bear witness, within the span of my existence, to the monumental event of human alighting upon the Martian soil.
@@ -84,8 +84,19 @@ export default class OsDialog {
     }
   }
 
-  static showDialogViaHTML(nodes, cssClass) {
+  /**
+   * Removes the previous dialog contents and its extra CSS classes
+   * @returns {HTMLDivElement} the emptied dialog body
+   */
+  static resetDialogBody() {
     const dialogBody = this.getDialogBodyTag()
+    dialogBody.replaceChildren()
+    dialogBody.className = 'dialog-body'
+    return dialogBody
+  }
+
+  static showDialogViaHTML(nodes, cssClass) {
+    const dialogBody = this.resetDialogBody()
 
     this.openDialog()
 
@@ -96,7 +107,7 @@ export default class OsDialog {
   }
 
   static showDialogViaString(content) {
-    const dialogBody = this.getDialogBodyTag()
+    const dialogBody = this.resetDialogBody()
 
     this.openDialog()
 
@@ -109,7 +120,7 @@ export default class OsDialog {
     const dialog = this.getDialogTag()
     dialog.classList.remove('dialog-open')
     dialog.classList.add('dialog-hidden')
-    this.getDialogBodyTag().innerHTML = ''
+    this.resetDialogBody()
     Os.setDefaultDocumentTitle()
   }
 }

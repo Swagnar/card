@@ -16,6 +16,13 @@ export default class OsDesktopIcon {
   offsetX;
   offsetY;
 
+  /** @type {string|undefined} inline style of the icon before it was moved for the first time */
+  #initialStyle
+
+  // bound once, so they can be removed from the document after moving the icon
+  #onPointerMove = (ev) => this.moveIcon(ev)
+  #onPointerUp = () => this.stopMovingIcon()
+
   /**
    * @param {string} name label shown below the icon
    * @param {'dir'|'archive'|'app'} fileType
@@ -54,14 +61,23 @@ export default class OsDesktopIcon {
     this.container.append(this.icon, this.label)
 
     this.container.addEventListener('pointerdown', (ev) => this.startMovingIcon(ev))
-    document.addEventListener('pointermove', (ev) => this.moveIcon(ev))
-    document.addEventListener('pointerup', () => this.stopMovingIcon())
+  }
+
+  /**
+   * Moves the icon back to the place it had before the user moved it
+   */
+  resetPosition() {
+    if(this.#initialStyle === undefined) return
+    this.container.style.cssText = this.#initialStyle
   }
 
   /**
    * @param {PointerEvent} ev
    */
   startMovingIcon(ev) {
+    // the app icons are positioned while the desktop loads, so the initial style is saved here
+    this.#initialStyle ??= this.container.style.cssText
+
     this.container.style.filter = 'invert(100%)'
 
     this.isDragging = true
@@ -69,6 +85,9 @@ export default class OsDesktopIcon {
     this.offsetY = ev.clientY - this.container.offsetTop
 
     document.body.style.userSelect = 'none'
+
+    document.addEventListener('pointermove', this.#onPointerMove)
+    document.addEventListener('pointerup', this.#onPointerUp)
   }
 
   /**
@@ -84,6 +103,9 @@ export default class OsDesktopIcon {
   }
 
   stopMovingIcon() {
+    document.removeEventListener('pointermove', this.#onPointerMove)
+    document.removeEventListener('pointerup', this.#onPointerUp)
+
     this.container.style.filter = 'invert(0%)'
 
     this.isDragging = false

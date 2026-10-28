@@ -1,4 +1,4 @@
-import { CHOIR, OS_TERMINAL } from "../yggdrasil/Yggdrasil.js"
+import { CHOIR, OS_TERMINAL, YGGDRASIL } from "../yggdrasil/Yggdrasil.js"
 
 class OsContextMenuItem {
   /**
@@ -39,7 +39,9 @@ export default class OsContextMenu {
     this.#header = document.createElement('header')
     this.#header.innerText = "[ OS_OS ]"
     this.#elements = [
-      new OsContextMenuItem("Reset desktop", "context-menu-item-reset-desktop"),
+      new OsContextMenuItem("Reset desktop", "context-menu-item-reset-desktop",
+        () => YGGDRASIL.forEach(element => element.desktopIcon.resetPosition())
+      ),
       new OsContextMenuItem("Properties", "context-menu-item-properties",
         () => document.dispatchEvent(new CustomEvent('showDialog', { detail: 'properties' }))
       ),

@@ -36,6 +36,14 @@ export default class CDirectory {
   }
 
   /**
+   * Removes all files with the name from the directory `files` array
+   * @param {string} name
+   */
+  removeFile(name) {
+    this.files = this.files.filter(file => file.name !== name)
+  }
+
+  /**
    * Adds a collection of files into the directory `files` array
    * @param  {...CFile} files
    * @throws Will throw an error if any of the files is not an instance of CFile

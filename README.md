@@ -22,7 +22,7 @@ Inspired by [Kanye2049](https://kanye2049.com/) <br>
 
 This application serves as my *curriculum vitae*. I took heavy inspiration from above mentioned Kanye2049, which is a media player/visualizer made for [toasy digital](https://toastydigital.com/). I wanted to make something simillar, a very crude simulation of a operating system, where each directory would tell a different story from my life.
 
-This application does not use any framework whatsoever, it's pure native JavaScript + HTML + CSS, just as God intended. The only external library used is called [Mousetrap](https://github.com/ccampbell/mousetrap) by [ccampbell](https://github.com/ccampbell) and it allows for easy handling of keyboard shortcuts. I don't even use any keyboard shortcuts at the moment so this could change in the future.
+This application does not use any framework whatsoever, it's pure native JavaScript + HTML + CSS, just as God intended. The only external library used is called [Mousetrap](https://github.com/ccampbell/mousetrap) by [ccampbell](https://github.com/ccampbell) and it allows for easy handling of keyboard shortcuts. At the moment it's used only for the `CTRL + S` shortcut that opens the settings.
 
 **OS_OS** has following features:
 
@@ -33,6 +33,7 @@ This application does not use any framework whatsoever, it's pure native JavaScr
 - client side Floyd–Steinberg dithering for images
 - audio player - play tracks made by the phenomenal **toasty digital** in crisp Base64 quality
 - WIP: text editor, that allows for creating own files stored in `localStorage`
+- keyboard shortcut `CTRL + S` for the settings
 - rusty window manager used by the *file explorer*, terminal and other *software*, see [`OsWindow`](scripts/classes/os/OsWindow.js)
 
 ## Yggdrasil 🌳
@@ -45,8 +46,10 @@ Yggdrasil uses [`CDirectory`](scripts/classes/yggdrasil/CDirectory.js) and [`CFi
 
 Choir is the OS_OS audio player, that allows to play tracks made by [toasy digital](https://toastydigital.com/). The author allowed to use his songs in this project, but I didn't want to upload `.mp3` files to an open repo, so instead I'm using audio files converted to base64 text value, and then play them like so:
 ```js
-this.#currentTrackAudio = new Audio("data:audio/mpeg;base64," + track.data)
+new Audio("data:audio/mpeg;base64," + track.data)
 ```
+
+Each playable track gets one `<audio>` element, used both for reading its duration and for playing it. Tracks can be switched with ⏮ and ⏭ buttons, and after a track ends the next one starts playing.
 
 Unfortunately, with just 2 songs the whole file containing this data weights almost 20 MB, so most of the songs are not playable and have only metadata.
 
@@ -60,7 +63,7 @@ The main file containing all music albums and music class instances is [`MusicAl
 
 ## Composer 🪶📜
 
-Composer is the OS_OS text editor, that allows for creating and editing user files. When saved, files are stored in the `localStorage` in an array called `userFiles`. Each file is saved as an Object containing two values - file name and its content. 
+Composer is the OS_OS text editor, that allows for creating and editing user files. When saved, each file is stored in the `localStorage` as a separate item - the key is the file name with `userFile-` prefix (`OS_CONSTANS.USER_FILE_PREFIX`) and the value is the file content. Saved files show up in the `MY FILES` directory right away. Scripts, event handler attributes and `javascript:` links are removed from the file content (see [`sanitize.js`](scripts/utils/sanitize.js)). 
 
 Composer also uses [`OsPrompt`](scripts/OsPrompt.js) and [`OsAlert`](scripts/OsAlert.js), these are 2 functions that overwrite built-in `window.prompt()` and `window.alert()` methods for esthetic reasons.
 
@@ -70,7 +73,7 @@ Every OS needs to have a shell, so OS_OS also have a Terminal app. It can be lau
 
 This terminal app was rewritten in the past, since the Terminal was the first app avaiable in OS_OS but after some time, the `CApp` class was introduced. Now the `OsTerminal` also extends the `CApp` class.
 
-By typing `help` you can get the list of all avaiable commands. Commands are stored as an OsTerminal static property called `commands`. It's an Object containing functions that are ran when called. For example, command `clear` for cleaning the Terminal window looks like this:
+By typing `help` you can get the list of all avaiable commands. Commands are stored as an OsTerminal static property called `commands`. It's an Object containing functions that are ran when called, with `this` set to the `OsTerminal` instance. A command returns a string that is printed to the terminal, or `null` when nothing should be printed. For example, command `clear` for cleaning the Terminal window looks like this:
 ```js
 // OsTerminal.js
 static commands = {
@@ -78,11 +81,11 @@ static commands = {
 
     /**
      * Clears the terminal output
-    * @returns {string} - empty string
-    */
+     * @returns {null} - the `clear` command itself is not logged
+     */
     clear: function() {
-        document.getElementById(`terminal-output`).innerHTML = ""
-        return ``
+        this.clearLog()
+        return null
     },
 
     // ...
@@ -119,6 +122,7 @@ static commands = {
         }
   
         window.alert(msg, type)
+        return ``
     }
 
     // ...
@@ -136,13 +140,17 @@ To create a new app, you can create a new folder to hold all of its JavaScript f
 import CApp from "../yggdrasil/CApp.js";
 
 export default class MyApp extends CApp {
+
+    static appName = 'MyApp'
+    static command = 'showMyApp'
+
     constructor() {
-        super('MyApp', 'showMyApp')
+        super()
     }
 }
 ```
 
-Every app main class should be a child of `CApp` class, it handles all things related to `OsWindow` and creates a desktop icon with `OsDesktopIcon` class. Using `super()`, you pass to `CApp`` two very important data related to your app - its name and its event name. 
+Every app main class should be a child of `CApp` class, it handles all things related to `OsWindow`. Using static properties, you pass to `CApp` two very important data related to your app - its name (`appName`) and its event name (`command`). 
 
 The event with the same name is dispatched every time you want to open your app, below you'll find how do we react to such an event. 
 
@@ -160,19 +168,15 @@ export const MYAPP = registerApp(MyApp)
 
 ### 3. Event listener 👂🏻
 
-`registerApp()` creates the app instance shown on the desktop and adds a global event listener for your app event (`showMyApp`), that opens a new instance of your app every time the event is dispatched.
+`registerApp()` creates a `CAppShortcut` - the app desktop icon - and adds a global event listener for your app event (`showMyApp`), that opens a new instance of your app every time the event is dispatched. The app itself is not created until the user opens it.
 
-If you've created your custom window functionality, you can still add your own listener inside `Yggdrasil.js` and invoke that special method there:
-```js
-document.addEventListener('showMyApp', () => {
-  MYAPP.showMyApp()
-})
-```
+`registerApp()` returns the shortcut, so you can open the app from the code with `MYAPP.dispatchEvent()`.
+
 You can modify how the window looks and its contents by using the `window` property of the `CApp` parent of your application
 
-### 4. Add your app instance to Yggdrasil 🌳
+### 4. Add your app shortcut to Yggdrasil 🌳
 
-At the end of the `Yggdrasil.js` file, there is an array called `osFiles`. It contains all directories, apps and archives stored in the system. Add your app instance to this array like this:
+At the end of the `Yggdrasil.js` file, there is an array called `osFiles`. It contains all directories, apps and archives stored in the system. Add your app shortcut to this array like this:
 
 ```js
 // Just for looks
@@ -228,11 +232,19 @@ This application is also hosted on my personal domain [euklideosowo.pl](https://
 
 Serve on your favourite HTTP server, no need to build. Use [http-server](https://www.npmjs.com/package/http-server) for node, or [Apache](https://apache.org/).
 
+## Testing
+
+End-to-end tests run the whole OS_OS in headless Chrome - booting, apps, settings, files and the Choir player. They don't need any packages, only Node 22+ and Chrome (or Edge):
+
+```
+node tests/e2e.mjs
+```
+
+If the browser is not found automatically, set its path in the `CHROME_PATH` environment variable.
+
 ## Known bugs
 
 - desktop icons don't render correctly on 800x600 desktop resolution
-- opening an empty directory will result in OsWindow that has no body height
-- z-index on context menu is not correct, sometimes menu can appear under the window
 
 ## Libraries
 

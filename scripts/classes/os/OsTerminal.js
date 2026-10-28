@@ -5,6 +5,9 @@ import CApp from "../yggdrasil/CApp.js"
  */
 export default class OsTerminal extends CApp {
 
+  static appName = 'Terminal'
+  static command = 'showTerminal'
+
   /** @type {HTMLDivElement} */
   #terminalOutputContainer
 
@@ -23,7 +26,7 @@ export default class OsTerminal extends CApp {
    * Creates new `OsTerminal` window and shows it on the screen. Window frame is created via `OsWindow` class
    */
   constructor() {
-    super('Terminal', 'showTerminal')
+    super()
 
     this.#terminalOutputContainer = document.createElement('div');
     this.#terminalOutputContainer.classList.add('terminal-output');
@@ -107,7 +110,14 @@ export default class OsTerminal extends CApp {
       return `Command '${name}' was not found. Try 'help' to see available commands`
     }
 
-    return OsTerminal.commands[name](parsedArgs)
+    return OsTerminal.commands[name].call(this, parsedArgs)
+  }
+
+  /**
+   * Removes all of the logs from the terminal output
+   */
+  clearLog() {
+    this.#terminalOutputContainer.replaceChildren()
   }
 
   /**
@@ -141,7 +151,9 @@ export default class OsTerminal extends CApp {
   handleInput(input) {
     const output = this.runCommand(input)
 
-    this.appendToLog(output, input, true)
+    if (output !== null) {
+      this.appendToLog(output, input, true)
+    }
 
     this.#terminalInputElement.value = ''
     this.#terminalInputElement.focus()
@@ -149,7 +161,8 @@ export default class OsTerminal extends CApp {
   }
 
   /**
-   * Static terminal property containing commands for terminal. Each command is a function that returns a string
+   * Static terminal property containing commands for terminal. Each command is a function that returns a string,
+   * or `null` when nothing should be logged. Commands are called with `this` set to the `OsTerminal` instance
    * @type {Object<string, function>}
    */
   static commands = {
@@ -195,8 +208,8 @@ export default class OsTerminal extends CApp {
   - shows OS_OS alert window with message
 
   OPTIONS:
-    -d | danger - shows a danger-styled OS_OS alert window
-    -i | info   - shows a info-styled OS_OS alert window
+    -d | danger  - shows a danger-styled OS_OS alert window
+    -w | warning - shows a warning-styled OS_OS alert window
 
 > choir
   - runs and shows Choir app
@@ -205,11 +218,11 @@ export default class OsTerminal extends CApp {
 
     /**
      * Clears the terminal output
-     * @returns {string} - empty string
+     * @returns {null} - the `clear` command itself is not logged
      */
     clear: function() {
-      document.getElementById(`terminal-output`).innerHTML = ""
-      return ``
+      this.clearLog()
+      return null
     },
 
     /**
@@ -233,6 +246,7 @@ export default class OsTerminal extends CApp {
      * @param {Object} param0 - Parsed command arguments.
      * @param {Object<string, boolean>} param0.flags - Flags parsed from the command line (e.g., -d, --danger).
      * @param {string[]} param0.positional - Positional arguments used as the alert message.
+     * @returns {string} - empty string
      */
     alert: function({ flags, positional }) {
       const msg = positional.join(" ") || "No message"
@@ -245,6 +259,7 @@ export default class OsTerminal extends CApp {
       }
 
       window.alert(msg, type)
+      return ``
     }
   }
 }

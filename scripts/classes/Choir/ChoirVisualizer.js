@@ -180,13 +180,14 @@ function drawVolumeMeter(ctx, dataArray, width) {
  * Starts drawing the retro audio visualizer on the canvas
  * @param {HTMLCanvasElement} canvas
  * @param {AnalyserNode} analyser
+ * @returns {function(): void} stops the drawing loop
  */
 export function startVisualizer(canvas, analyser) {
   const ctx = canvas.getContext('2d')
 
   if (!analyser) {
     console.warn('Analyser not initialized!')
-    return
+    return () => {}
   }
 
   analyser.fftSize = FFT_SIZE
@@ -202,8 +203,6 @@ export function startVisualizer(canvas, analyser) {
   const width = canvas.width
   const height = canvas.height
 
-  console.log('Using canvas dimensions:', width, 'x', height)
-
   // Disable anti-aliasing for crisp pixels
   ctx.imageSmoothingEnabled = false
 
@@ -212,9 +211,10 @@ export function startVisualizer(canvas, analyser) {
   const barAreaHeight = height - waveHeight - WAVEFORM_BARS_GAP
 
   let frameCount = 0
+  let frameId
 
   const renderFrame = () => {
-    requestAnimationFrame(renderFrame)
+    frameId = requestAnimationFrame(renderFrame)
     frameCount++
 
     analyser.getByteFrequencyData(dataArray)
@@ -236,4 +236,6 @@ export function startVisualizer(canvas, analyser) {
   }
 
   renderFrame()
+
+  return () => cancelAnimationFrame(frameId)
 }

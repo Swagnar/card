@@ -30,6 +30,12 @@ function initDesktopEvents() {
     OsDialog.showDialogViaString(OS_DIALOG.DIALOG_CONTENTS[ev.detail])
   })
   document.addEventListener('showSettings', () => OS_SETTINGS.showSettings())
+
+  // listed by the terminal `kbind` command, returning false prevents the browser "save page" dialog
+  window.Mousetrap.bind('ctrl+s', () => {
+    OS_SETTINGS.showSettings()
+    return false
+  })
 }
 
 function startClock() {
@@ -40,6 +46,7 @@ function startClock() {
 }
 
 window.onload = async function() {
+  OS_SETTINGS.loadSettings()
   showWIP()
   await bootBIOS()
 
